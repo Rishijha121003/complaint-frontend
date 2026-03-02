@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard | Complaint System</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script>
+        (function () {
+            const saved = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+        })();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="dashboard-body">
+    <button class="menu-toggle" id="menu-toggle">☰</button>
+
+    <div class="sidebar" id="sidebar">
+        <h3>Admin Panel</h3>
+        <a href="admin_dashboard.html" class="active">Overview</a>
+        <a href="profile.html">Profile</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <div class="top-navbar">
+            <div class="nav-links">
+                <a href="admin_dashboard.html" class="nav-item active">Home</a>
+                <a href="#" class="nav-item">System Logs</a>
+                <a href="profile.html" class="nav-item">Profile</a>
+            </div>
+            <div class="nav-actions">
+                <button class="nav-icon-btn" title="Refresh Live Data" onclick="initAdmin()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                        </path>
+                    </svg>
+                </button>
+                <div class="user-profile" onclick="window.location.href='profile.html'">
+                    <div class="user-avatar" id="nav-avatar" style="transition: all 0.3s;">U</div>
+                    <div
+                        style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding-right: 5px;">
+                        <span
+                            style="font-size: 10px; color: var(--text-muted); line-height: 1; margin-bottom: 3px;">Welcome,
+                            Admin</span>
+                        <span id="nav-email"
+                            style="font-size: 13px; font-weight: 700; line-height: 1;">Loading...</span>
+                    </div>
+                </div>
+                <button class="nav-icon-btn" onclick="toggleTheme()" id="themeToggleBtn" title="Toggle Dark/Light Mode">
+                    <svg id="themeIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard-header"
+            style="display: flex; flex-wrap: wrap; gap: 15px; align-items: center; justify-content: space-between;">
+            <h2 style="margin: 0;">System Overview</h2>
+            <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <select id="filterStatus"
+                    style="padding: 10px; border-radius: 8px; border: 1px solid #ddd; outline: none; background: var(--surface); color: var(--text-strong);">
+                    <option value="">All Statuses</option>
+                    <option value="OPEN">Open</option>
+                    <option value="ASSIGNED">Assigned</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="RESOLVED">Resolved</option>
+                    <option value="CLOSED">Closed</option>
+                </select>
+                <div
+                    style="display: flex; align-items: center; padding: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;">
+                    <label
+                        style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted);">
+                        <input type="checkbox" id="historyToggle" onchange="toggleAdminHistory()"
+                            style="accent-color: var(--primary);">
+                        Show Hidden Records (>24h)
+                    </label>
+                </div>
+                <select id="filterCategory"
+                    style="padding: 10px; border-radius: 8px; border: 1px solid #ddd; outline: none; background: var(--surface); color: var(--text-strong);">
+                    <option value="">All Categories</option>
+                    <option value="ELECTRICAL">Electrical</option>
+                    <option value="PLUMBING">Plumbing</option>
+                    <option value="CLEANING">Cleaning</option>
+                    <option value="ACADEMIC">Academic</option>
+                    <option value="HOSTEL">Hostel</option>
+                    <option value="OTHER">Other</option>
+                </select>
+                <input type="text" id="adminSearch" placeholder="Search text..."
+                    style="width: 200px; padding: 10px; border-radius: 8px; border: 1px solid var(--border); outline: none; background: var(--surface); color: var(--text-strong);">
+                <button onclick="filterComplaints()" class="btn-primary"
+                    style="padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none; background: #2563eb; color: white;">Apply
+                    Filter</button>
+                <button onclick="exportCSV()" class="btn-primary" title="Download Report as CSV"
+                    style="padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none; background: #10b981; color: white; display: flex; align-items: center; gap: 8px;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    Export CSV
+                </button>
+            </div>
+        </div>
+
+        <div class="admin-stats-grid">
+            <div class="stat-card">
+                <h3 id="total-count">0</h3>
+                <p>Total Complaints</p>
+            </div>
+            <div class="stat-card warning">
+                <h3 id="pending-count">0</h3>
+                <p>Active (Pending/In Progress)</p>
+            </div>
+            <div class="stat-card success">
+                <h3 id="resolved-count">0</h3>
+                <p>Resolved</p>
+            </div>
+        </div>
+
+        <div class="stat-card" style="margin-bottom: 40px; padding: 25px; border-top: 4px solid var(--info);">
+            <h4 style="margin-bottom: 20px; font-size: 18px; letter-spacing: -0.5px;">Category Breakdown (Analytics)
+            </h4>
+            <div style="height: 300px; width: 100%; max-width: 800px; margin: 0 auto;">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+
+        <div id="status-message" style="text-align: center; padding: 20px; color: var(--text-muted);">
+            Fetching records from server...
+        </div>
+        <div class="complaint-grid" id="admin-container"></div>
+    </div>
+
+    <script>
+        let staffList = [];
+        let allComplaintsList = [];
+        let showHistory = false;
+
+        function toggleAdminHistory() {
+            showHistory = document.getElementById("historyToggle").checked;
+            displayAdminComplaints(allComplaintsList);
+        }
+
+        // --- TOP SLIDE MENU LOGIC ---
+        const menuBtn = document.getElementById("menu-toggle");
+        const sidebar = document.getElementById("sidebar");
+
+        menuBtn.addEventListener("click", (e) => {
+            e.stopPropagation(); // Click event ko body tak jane se rokein
+            sidebar.classList.toggle("active");
+
+            // Icon badlein: ☰ to ✕
+            menuBtn.innerText = sidebar.classList.contains("active") ? "✕" : "☰";
+
+            // Links staggered animation (ek-ek karke niche aana)
+            const links = sidebar.querySelectorAll("a");
+            links.forEach((link, index) => {
+                if (sidebar.classList.contains("active")) {
+                    link.style.transitionDelay = `${(index + 1) * 0.1}s`;
+                } else {
+                    link.style.transitionDelay = "0s";
+                }
+            });
+        });
+
+        // Bahar click karne par menu band kar dein
+        document.addEventListener("click", (event) => {
+            if (!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+                sidebar.classList.remove("active");
+                menuBtn.innerText = "☰";
+            }
+        });
+
+        // --- CORE ADMIN LOGIC ---
+        async function initAdmin() {
+            const email = sessionStorage.getItem("userEmail");
+            // Ab hume password/pass ki zarurat nahi hai header mein
+            if (!email) { window.location.href = "login.html"; return; }
+
+            const statusMsg = document.getElementById("status-message");
+
+            try {
+                // 🚨 Naya Header Style: User-Email ka use karein
+                const headers = {
+                    "Content-Type": "application/json",
+                    "User-Email": email
+                };
+
+                // Staff list fetch karein
+                const staffRes = await fetch("https://complaint-backend-5rdk.onrender.com/api/v1/complaints/admin/staff-list", {
+                    headers: headers
+                });
+                staffList = await staffRes.json();
+
+                // Saari complaints fetch karein
+                const res = await fetch("https://complaint-backend-5rdk.onrender.com/api/v1/complaints/admin/all", {
+                    headers: headers
+                });
+
+                if (!res.ok) throw new Error("Server error: " + res.status);
+
+                allComplaintsList = await res.json();
+
+                statusMsg.style.display = "none";
+                updateStats(allComplaintsList);
+                renderChart(allComplaintsList);
+                displayAdminComplaints(allComplaintsList);
+
+            } catch (err) {
+                console.error(err);
+                statusMsg.innerHTML = "<b style='color:red;'>Error connecting to backend! Headers check kijiye.</b>";
+            }
+        }
+
+        async function assignStaff(complaintId) {
+            const staffId = document.getElementById(`staff-select-${complaintId}`).value;
+            if (!staffId) return alert("Please select a staff member!");
+
+            const email = sessionStorage.getItem("userEmail");
+
+            try {
+                const res = await fetch(`https://complaint-backend-5rdk.onrender.com/api/v1/complaints/admin/assign?complaintId=${complaintId}&staffId=${staffId}`, {
+                    method: "POST",
+                    headers: {
+                        "User-Email": email // Backend identity isi se verify karega
+                    }
+                });
+
+                if (res.ok) {
+                    alert("Staff Assigned Successfully! ✅");
+                    initAdmin();
+                } else {
+                    alert("Failed to assign staff. Role check kijiye.");
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        function updateStats(complaints) {
+            document.getElementById("total-count").innerText = complaints.length;
+            // Include OPEN, ASSIGNED, and IN_PROGRESS as active/pending complaints
+            document.getElementById("pending-count").innerText = complaints.filter(c => c.status === 'OPEN' || c.status === 'ASSIGNED' || c.status === 'IN_PROGRESS').length;
+            // Include RESOLVED and CLOSED as resolved ones
+            document.getElementById("resolved-count").innerText = complaints.filter(c => c.status === 'RESOLVED' || c.status === 'CLOSED').length;
+        }
+
+        function displayAdminComplaints(complaints) {
+            const container = document.getElementById("admin-container");
+            container.innerHTML = "";
+
+            if (complaints.length === 0) {
+                container.innerHTML = "<p>No complaints found.</p>";
+                return;
+            }
+
+            // Sort by newest first
+            complaints.sort((a, b) => {
+                const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+                const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+                return dateB - dateA;
+            });
+
+            complaints.forEach(c => {
+                // Logic for hiding CLOSED complaints after 24 hours
+                if (c.status === 'CLOSED') {
+                    const actionDate = c.updatedAt ? new Date(c.updatedAt) : (c.createdAt ? new Date(c.createdAt) : new Date());
+                    const today = new Date();
+                    const diffInHours = (today - actionDate) / (1000 * 60 * 60);
+
+                    // Drop if 24 hours have passed AND we don't want to show history
+                    if (diffInHours >= 24 && !showHistory) {
+                        return;
+                    }
+                }
+
+                // Filter staff based on complaint category
+                const relevantStaff = staffList.filter(s => s.department === c.category);
+                let staffOptions = relevantStaff.map(s => `<option value="${s.id}">${s.name} (${s.department || 'General'})</option>`).join('');
+
+                // Fallback to all staff if no specific staff exists for this category
+                if (relevantStaff.length === 0) {
+                    staffOptions = staffList.map(s => `<option value="${s.id}">${s.name} (${s.department || 'General'})</option>`).join('');
+                }
+
+                const statusClass = (c.status || 'open').toLowerCase().replace('_', '-');
+
+                let actionHtml = '';
+                if (c.status === 'OPEN') {
+                    actionHtml = `
+                    <span class="card-footer-label">Assign Staff</span>
+                    <select id="staff-select-${c.id}" style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #cbd5e1; background: var(--surface); color: var(--text-strong); outline:none;">
+                        <option value="">-- Choose Staff --</option>
+                        ${staffOptions}
+                    </select>
+                    <button onclick="assignStaff(${c.id})" class="btn-primary" style="margin-top:10px; padding:10px; font-size:13px; width:100%; border-radius:8px;">Assign Now</button>`;
+                } else if (c.status === 'ASSIGNED') {
+                    actionHtml = `
+                    <span class="card-footer-label">Assigned To</span>
+                    <div class="card-footer-text" style="color: #4338ca;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        ${c.assignedStaff ? c.assignedStaff.name : 'Staff'}
+                    </div>`;
+                } else if (c.status === 'IN_PROGRESS') {
+                    actionHtml = `
+                    <span class="card-footer-label">Current Status</span>
+                    <div class="card-footer-text" style="color: #1d4ed8;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Staff (${c.assignedStaff ? c.assignedStaff.name : 'Unknown'}) is working on this
+                    </div>`;
+                } else if (c.status === 'RESOLVED') {
+                    actionHtml = `
+                    <span class="card-footer-label">Current Status</span>
+                    <div class="card-footer-text" style="color: #047857;">
+                        ✅ Resolved by staff. Pending student confirmation.
+                    </div>`;
+                } else if (c.status === 'CLOSED') {
+                    actionHtml = `
+                    <span class="card-footer-label">Status</span>
+                    <div class="card-footer-text" style="color: #4b5563;">
+                        🔒 Closed
+                    </div>`;
+                }
+
+                const categoryVal = c.category ? c.category.toUpperCase() : "OTHER";
+                const statusVal = c.status ? c.status.toUpperCase() : "OPEN";
+
+                container.innerHTML += `
+            <div class="complaint-box badge-${statusClass}" data-category="${categoryVal}" data-status="${statusVal}">
+                <div class="card-header">
+                    <h4 class="card-title">${c.title}</h4>
+                    <span class="card-status-badge">${c.status}</span>
+                </div>
+                <div class="card-meta-container">
+                    <div class="card-meta-item">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                        ${c.category || 'N/A'}
+                    </div>
+                    <div class="card-meta-item">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        ${new Date(c.createdAt || Date.now()).toLocaleDateString()}
+                    </div>
+                </div>
+                <p class="card-desc">${c.description}</p>
+                
+                <!-- Evidences -->
+                ${c.imageUrl ? `<div style="margin-top: 10px; margin-bottom: 10px;"><a href="https://complaint-backend-5rdk.onrender.com${c.imageUrl}" target="_blank"><img src="https://complaint-backend-5rdk.onrender.com${c.imageUrl}" style="max-width: 100%; border-radius: 8px; max-height: 200px; object-fit: cover; border: 1px solid var(--border);" alt="Evidence Image"></a></div>` : ""}
+                ${c.resolvedImageUrl ? `<div style="margin-top: 10px; margin-bottom: 10px; padding: 10px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border: 1px solid #10b981;"><p style="font-size: 12px; color: #047857; margin-bottom: 5px;"><strong>Staff Proof of Resolution:</strong></p><a href="https://complaint-backend-5rdk.onrender.com${c.resolvedImageUrl}" target="_blank"><img src="https://complaint-backend-5rdk.onrender.com${c.resolvedImageUrl}" style="max-width: 100%; border-radius: 8px; max-height: 200px; object-fit: cover; border: 1px solid #a7f3d0;" alt="Staff Proof"></a></div>` : ""}
+                ${c.staffRemark ? `<div style="margin-top: 10px; margin-bottom: 15px; padding: 10px; background: var(--surface); border-left: 3px solid var(--primary); font-size: 13px;"><strong>Staff Remark:</strong> ${c.staffRemark}</div>` : ""}
+
+                <div class="card-footer">
+                    ${actionHtml}
+                </div>
+
+                <!-- COMMENTS SECTION (Admin View Only) -->
+                <div class="card-footer" style="padding-top: 10px; border-top: 1px dotted var(--border);">
+                    <button class="btn-secondary" style="width: 100%; padding: 8px; font-size: 13px; font-weight: 600;" onclick="toggleComments(${c.id})">💬 View Discussion / Comments</button>
+                    
+                    <div id="chatbox-${c.id}" class="chat-container">
+                        <div id="chat-messages-${c.id}" class="chat-messages">
+                            <div style="text-align: center; color: var(--text-muted); font-size: 12px;">Loading comments...</div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" id="chat-input-${c.id}" class="chat-input" placeholder="Type a message as Admin..." onkeypress="handleChatKeypress(event, ${c.id})">
+                            <button class="chat-send-btn" onclick="postComment(${c.id})">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; margin-left: 2px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        `;
+            });
+        }
+
+        async function toggleComments(complaintId) {
+            const chatbox = document.getElementById(`chatbox-${complaintId}`);
+            if (chatbox.style.display === "flex") {
+                chatbox.style.display = "none";
+            } else {
+                chatbox.style.display = "flex";
+                await fetchComments(complaintId);
+            }
+        }
+
+        async function fetchComments(complaintId) {
+            const container = document.getElementById(`chat-messages-${complaintId}`);
+            try {
+                const res = await fetch(`https://complaint-backend-5rdk.onrender.com/api/v1/comments/${complaintId}`);
+                if (!res.ok) throw new Error("Failed to fetch comments");
+                const comments = await res.json();
+
+                container.innerHTML = "";
+                if (comments.length === 0) {
+                    container.innerHTML = "<div style='text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 10px;'>No comments yet.</div>";
+                    return;
+                }
+
+                comments.forEach(c => {
+                    const picUrl = c.senderProfilePic ? `https://complaint-backend-5rdk.onrender.com${c.senderProfilePic}` : '';
+                    const initial = c.senderName ? c.senderName.charAt(0).toUpperCase() : 'U';
+                    const isStaff = c.senderRole === 'STAFF';
+                    const isAdmin = c.senderRole === 'ADMIN';
+
+                    let roleBadge = "Student";
+                    let roleColor = "var(--primary)";
+                    let roleBg = "var(--primary-light)";
+                    if (isStaff) { roleBadge = "Staff"; roleColor = "#047857"; roleBg = "#d1fae5"; }
+                    if (isAdmin) { roleBadge = "Admin"; roleColor = "#b91c1c"; roleBg = "#fee2e2"; }
+
+                    const avatarStyle = picUrl ? `background-image: url('${picUrl}');` : '';
+                    const avatarContent = picUrl ? '' : initial;
+
+                    container.innerHTML += `
+                        <div class="chat-message">
+                            <div class="chat-message-avatar" style="${avatarStyle}">${avatarContent}</div>
+                            <div class="chat-bubble">
+                                <div class="chat-bubble-header">
+                                    <span class="chat-sender-name">${c.senderName} <span class="chat-sender-role" style="color:${roleColor}; background:${roleBg}">${roleBadge}</span></span>
+                                    <span class="chat-time">${new Date(c.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                </div>
+                                <div style="color: var(--text-strong);">${c.text}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.scrollTop = container.scrollHeight;
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = "<div style='color: red; font-size: 12px;'>Error loading comments</div>";
+            }
+        }
+
+        async function postComment(complaintId) {
+            const input = document.getElementById(`chat-input-${complaintId}`);
+            const text = input.value.trim();
+            if (!text) return;
+
+            const email = sessionStorage.getItem("userEmail");
+
+            try {
+                input.disabled = true;
+                const res = await fetch(`https://complaint-backend-5rdk.onrender.com/api/v1/comments/${complaintId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'User-Email': email
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+
+                if (res.ok) {
+                    input.value = "";
+                    await fetchComments(complaintId);
+                } else {
+                    alert("Failed to post comment");
+                }
+            } catch (e) { console.error(e); }
+            finally {
+                input.disabled = false;
+                input.focus();
+            }
+        }
+
+        function handleChatKeypress(event, complaintId) {
+            if (event.key === 'Enter') {
+                postComment(complaintId);
+            }
+        }
+
+        function exportCSV() {
+            if (!allComplaintsList || allComplaintsList.length === 0) {
+                return alert("No records found to export!");
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "ID,Title,Category,Status,CreatedAt,AssignedStaff\n";
+
+            allComplaintsList.forEach(c => {
+                const id = c.id;
+                const title = c.title ? `"${c.title.replace(/"/g, '""')}"` : '""';
+                const category = c.category || "N/A";
+                const status = c.status || "OPEN";
+                const dateVal = c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "N/A";
+                const staff = c.assignedStaff ? `"${c.assignedStaff.name}"` : "Not Assigned";
+
+                csvContent += `${id},${title},${category},${status},${dateVal},${staff}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `complaints_report_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        let categoryChartInstance = null;
+
+        function renderChart(complaints) {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            const categoryCounts = { 'Electrical': 0, 'Plumbing': 0, 'Cleaning': 0, 'Academic': 0, 'Hostel': 0, 'Other': 0 };
+
+            complaints.forEach(c => {
+                let cat = (c.category || 'Other').toUpperCase();
+                if (cat === 'ELECTRICAL' || cat === 'ELECTRICITY') categoryCounts['Electrical']++;
+                else if (cat === 'PLUMBING') categoryCounts['Plumbing']++;
+                else if (cat === 'CLEANING') categoryCounts['Cleaning']++;
+                else if (cat === 'ACADEMIC') categoryCounts['Academic']++;
+                else if (cat === 'HOSTEL') categoryCounts['Hostel']++;
+                else categoryCounts['Other']++;
+            });
+
+            if (categoryChartInstance) {
+                categoryChartInstance.destroy();
+            }
+
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const chartColors = [
+                'rgba(245, 158, 11, 0.8)', // Warning Yellow
+                'rgba(59, 130, 246, 0.8)', // Info Blue
+                'rgba(16, 185, 129, 0.8)', // Success Green
+                'rgba(139, 92, 246, 0.8)', // Purple
+                'rgba(236, 72, 153, 0.8)', // Pink
+                'rgba(148, 163, 184, 0.8)' // Gray Slate
+            ];
+
+            categoryChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(categoryCounts),
+                    datasets: [{
+                        label: 'Complaints by Category',
+                        data: Object.values(categoryCounts),
+                        backgroundColor: chartColors,
+                        borderWidth: 2,
+                        borderColor: isDark ? '#1e293b' : '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    color: isDark ? '#cbd5e1' : '#374151',
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: isDark ? '#cbd5e1' : '#374151', font: { family: "'Plus Jakarta Sans', sans-serif" } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    let label = context.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed !== null) { label += context.parsed; }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function filterComplaints() {
+            const term = document.getElementById("adminSearch").value.toLowerCase();
+            const categoryFilter = document.getElementById("filterCategory").value;
+            const statusFilter = document.getElementById("filterStatus").value;
+
+            const boxes = document.querySelectorAll(".complaint-box");
+            boxes.forEach(box => {
+                const text = box.innerText.toLowerCase();
+                const boxCategory = box.getAttribute("data-category") || "";
+                const boxStatus = box.getAttribute("data-status") || "";
+
+                const matchesSearch = term === "" || text.includes(term);
+                const matchesCategory = categoryFilter === "" || boxCategory === categoryFilter;
+                const matchesStatus = statusFilter === "" || boxStatus === statusFilter;
+
+                if (matchesSearch && matchesCategory && matchesStatus) {
+                    box.style.display = "block";
+                } else {
+                    box.style.display = "none";
+                }
+            });
+        }
+
+
+
+        function logout() { sessionStorage.clear(); window.location.href = "login.html"; }
+        document.addEventListener("DOMContentLoaded", initAdmin);
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            updateThemeIcon(next);
+        }
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('themeIcon');
+            if (theme === 'dark') {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
+            } else {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>';
+            }
+        }
+        window.addEventListener('DOMContentLoaded', () => {
+            updateThemeIcon(document.documentElement.getAttribute('data-theme'));
+            const email = sessionStorage.getItem("userEmail") || "admin@college.com";
+            document.getElementById("nav-email").innerText = email;
+            document.getElementById("nav-avatar").innerText = email.charAt(0).toUpperCase();
+        });
+    </script>
+</body>
+
+</html>

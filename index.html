@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Complaint System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        (function () {
+            const saved = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', saved);
+        })();
+    </script>
+</head>
+
+<body class="landing-body landing-page">
+
+    <!-- Desktop Size Header Container -->
+    <div style="min-height: 100vh; display: flex; flex-direction: column; width: 100%;">
+        <!-- Navbar -->
+        <nav class="landing-nav">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1200px; margin: 0 auto;">
+                <a href="index.html" class="logo">
+                    <div class="logo-icon">SC</div>
+                    Smart Complaint
+                </a>
+                <div class="nav-right">
+                    <button class="nav-icon-btn" onclick="toggleTheme()" id="themeToggleBtn"
+                        title="Toggle Dark/Light Mode">
+                        <svg id="themeIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9 0 008.354-5.646z">
+                            </path>
+                        </svg>
+                    </button>
+                    <a href="pages/login.html" class="btn-secondary">Login</a>
+                    <a href="pages/signup.html" class="btn-primary"
+                        style="width: auto; padding: 12px 24px; border-radius: var(--radius-full); margin-left: 10px;">Sign
+                        Up</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-badge animate-fade-in-up delay-100">🚀 Version 2.0 is Live</div>
+            <h1 class="hero-title animate-fade-in-up delay-200">
+                Resolve Campus Issues <br><span>Faster Than Ever</span>
+            </h1>
+            <p class="hero-subtitle animate-fade-in-up delay-300">
+                A modernized platform for students to report infrastructure issues, and for staff to track and resolve
+                them
+                in real-time. Transparent, elegant, and efficient.
+            </p>
+            <div class="hero-cta animate-fade-in-up delay-400">
+                <a href="pages/signup.html" class="btn-primary" style="width: auto;">
+                    Get Started Now
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </a>
+                <a href="#features" class="btn-secondary">Explore Features</a>
+            </div>
+        </section>
+    </div>
+
+    <!-- Features -->
+    <section id="features" class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="24" height="24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+            </div>
+            <h3>Lightning Fast Reporting</h3>
+            <p>Report issues instantly via our mobile-responsive dashboard. Attach evidence and specific location
+                details directly.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="24" height="24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3>Transparent Tracking</h3>
+            <p>Know exactly what is happening with your complaint. Track statuses like 'Open', 'In Progress', and
+                'Resolved' in real-time.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="24" height="24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                    </path>
+                </svg>
+            </div>
+            <h3>Role-Based Access</h3>
+            <p>Dedicated portals for Students, Staff, and Admins ensures the right person handles the right task with
+                the right privileges.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+        &copy; 2026 Smart Complaint System. All rights reserved.
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            updateThemeIcon(next);
+        }
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('themeIcon');
+            if (theme === 'dark') {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
+            } else {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>';
+            }
+        }
+        window.addEventListener('DOMContentLoaded', () => {
+            updateThemeIcon(document.documentElement.getAttribute('data-theme'));
+        });
+    </script>
+</body>
+
+</html>
