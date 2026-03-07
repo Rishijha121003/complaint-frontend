@@ -36,8 +36,19 @@
                 <a href="student_dashboard.html" class="nav-item active">Home</a>
                 <a href="raise_complaint.html" class="nav-item">Raise Complaint</a>
                 <a href="profile.html" class="nav-item">Profile</a>
-                <a href="#" class="nav-item">Notifications</a>
             </div>
+
+            <div class="search-container" style="flex: 1; max-width: 400px; margin: 0 20px; position: relative;">
+                <input type="text" id="global-search" onkeyup="filterComplaints()"
+                    placeholder="Search title, category, or room..."
+                    style="width: 100%; padding: 10px 16px 10px 40px; border-radius: 50px; background: rgba(0,0,0,0.05); border: 1px solid var(--border); font-size: 14px; transition: all 0.3s; color: var(--text-strong);">
+                <svg style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); width: 18px; height: 18px;"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+
             <div class="nav-actions">
                 <div class="user-profile" onclick="window.location.href='profile.html'">
                     <div class="user-avatar" id="nav-avatar" style="transition: all 0.3s;">U</div>
@@ -59,10 +70,17 @@
             </div>
         </div>
 
-        <div class="dashboard-header">
-            <h2>My Complaints</h2>
-            <h2>My Complaints</h2>
-            <div style="display: flex; align-items: center; gap: 15px;">
+        <div class="dashboard-header"
+            style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px;">
+            <h2 style="margin: 0;">My Complaints</h2>
+            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                <select id="statusFilter" onchange="filterComplaints()"
+                    style="padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-strong); outline: none;">
+                    <option value="">All Statuses</option>
+                    <option value="open">Open</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="resolved">Resolved</option>
+                </select>
                 <label
                     style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted); background: var(--surface); padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border);">
                     <input type="checkbox" id="historyToggle" onchange="toggleHistory()"
@@ -71,6 +89,21 @@
                 </label>
                 <a href="raise_complaint.html" class="btn-primary" style="width: auto; padding: 10px 20px;">+ New
                     Complaint</a>
+            </div>
+        </div>
+
+        <div class="admin-stats-grid" style="margin-top: -20px; margin-bottom: 30px;">
+            <div class="stat-card">
+                <h3 id="stat-total">0</h3>
+                <p>Total Complaints</p>
+            </div>
+            <div class="stat-card warning">
+                <h3 id="stat-active">0</h3>
+                <p>Active</p>
+            </div>
+            <div class="stat-card success">
+                <h3 id="stat-resolved">0</h3>
+                <p>Resolved / Closed</p>
             </div>
         </div>
 
@@ -122,7 +155,7 @@
             const email = sessionStorage.getItem("userEmail");
 
             if (!email) {
-                window.location.href = "login.html";
+                window.location.href = "login-v2.html";
                 return;
             }
 
@@ -153,6 +186,11 @@
                 return;
             }
 
+            // Update stats
+            document.getElementById("stat-total").innerText = allMyComplaints.length;
+            document.getElementById("stat-active").innerText = allMyComplaints.filter(c => ['OPEN', 'ASSIGNED', 'IN_PROGRESS'].includes(c.status)).length;
+            document.getElementById("stat-resolved").innerText = allMyComplaints.filter(c => ['RESOLVED', 'CLOSED'].includes(c.status)).length;
+
             allMyComplaints.forEach(c => {
                 const status = (c.status || "OPEN").toLowerCase().replace('_', '-');
 
@@ -170,8 +208,14 @@
 
                 visibleCount++;
 
+                const desc = c.description || "";
+                const safeDesc = desc.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+                const truncatedDesc = desc.length > 100
+                    ? desc.substring(0, 100) + '... <a href="#" style="color:var(--primary); font-weight:600; font-size:13px;" onclick="event.preventDefault(); this.parentElement.innerHTML=\'' + safeDesc + '\';">Read more</a>'
+                    : desc;
+
                 const card = `
-            <div class="complaint-box badge-${status}">
+            <div class="complaint-box badge-${status}" data-status="${status}">
                 <div class="card-header">
                     <h4 class="card-title">${c.title}</h4>
                     <span class="card-status-badge">${status.toUpperCase()}</span>
@@ -186,7 +230,7 @@
                         ${new Date(c.createdAt || Date.now()).toLocaleDateString()}
                     </div>
                 </div>
-                <p class="card-desc">${c.description}</p>
+                <p class="card-desc">${truncatedDesc}</p>
                 
                 <!-- Evidences -->
                 ${c.imageUrl ? `<div style="margin-top: 10px; margin-bottom: 10px;"><a href="https://complaint-backend-5rdk.onrender.com${c.imageUrl}" target="_blank"><img src="https://complaint-backend-5rdk.onrender.com${c.imageUrl}" style="max-width: 100%; border-radius: 8px; max-height: 200px; object-fit: cover; border: 1px solid var(--border);" alt="Evidence Image"></a></div>` : ""}
@@ -356,7 +400,7 @@
 
         function logout() {
             sessionStorage.clear();
-            window.location.href = "login.html";
+            window.location.href = "login-v2.html";
         }
 
         document.addEventListener("DOMContentLoaded", initDashboard);
@@ -384,6 +428,47 @@
                 document.getElementById("nav-avatar").innerText = email.charAt(0).toUpperCase();
             }
         });
+
+        // --- GLOBAL SEARCH LOGIC ---
+        function filterComplaints() {
+            const query = document.getElementById("global-search").value.toLowerCase();
+            const statusFilterInput = document.getElementById("statusFilter");
+            const statusFilter = statusFilterInput ? statusFilterInput.value.toLowerCase() : "";
+            const cards = document.querySelectorAll(".complaint-box");
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const textContent = card.innerText.toLowerCase();
+                const cardStatus = card.getAttribute("data-status") || "";
+                const matchesQuery = query === "" || textContent.includes(query);
+                const matchesStatus = statusFilter === "" || cardStatus === statusFilter;
+
+                if (matchesQuery && matchesStatus) {
+                    card.style.display = "flex";
+                    visibleCount++;
+                } else {
+                    card.style.display = "none";
+                }
+            });
+
+            const container = document.getElementById("complaint-container");
+            let noResultMsg = document.getElementById("no-search-result");
+
+            if (visibleCount === 0 && query !== "") {
+                if (!noResultMsg) {
+                    const msg = document.createElement('p');
+                    msg.id = "no-search-result";
+                    msg.style.cssText = "grid-column: 1/-1; text-align:center; color: var(--text-muted); padding: 40px; border: 1px dashed var(--border); border-radius: 12px;";
+                    msg.innerText = `No complaints found matching "${query}"`;
+                    container.appendChild(msg);
+                } else {
+                    noResultMsg.innerText = `No complaints found matching "${query}"`;
+                    noResultMsg.style.display = "block";
+                }
+            } else if (noResultMsg) {
+                noResultMsg.style.display = "none";
+            }
+        }
     </script>
 </body>
 

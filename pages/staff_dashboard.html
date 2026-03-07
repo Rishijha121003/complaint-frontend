@@ -28,9 +28,21 @@
         <div class="top-navbar">
             <div class="nav-links">
                 <a href="staff_dashboard.html" class="nav-item active">Home</a>
-                <a href="#" class="nav-item">Assigned Tasks</a>
+
                 <a href="profile.html" class="nav-item">Profile</a>
             </div>
+
+            <div class="search-container" style="flex: 1; max-width: 400px; margin: 0 20px; position: relative;">
+                <input type="text" id="global-search" onkeyup="filterComplaints()"
+                    placeholder="Search title, category, or room..."
+                    style="width: 100%; padding: 10px 16px 10px 40px; border-radius: 50px; background: rgba(0,0,0,0.05); border: 1px solid var(--border); font-size: 14px; transition: all 0.3s; color: var(--text-strong);">
+                <svg style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); width: 18px; height: 18px;"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+
             <div class="nav-actions">
                 <div class="user-profile" onclick="window.location.href='profile.html'">
                     <div class="user-avatar" id="nav-avatar" style="transition: all 0.3s;">U</div>
@@ -53,16 +65,30 @@
             </div>
         </div>
 
-        <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 style="margin: 0;">Assigned Complaints</h2>
-            <div
-                style="display: flex; align-items: center; padding: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;">
-                <label
-                    style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted);">
-                    <input type="checkbox" id="historyToggle" onchange="toggleHistory()"
-                        style="accent-color: var(--primary);">
-                    Show Past 24h Resolved
-                </label>
+        <div class="dashboard-header"
+            style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px;">
+            <div style="display: flex; flex-direction: column;">
+                <h2 style="margin: 0;">Assigned Complaints</h2>
+                <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Manage and update your assigned
+                    tasks</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                <select id="statusFilter" onchange="filterComplaints()"
+                    style="padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-strong); outline: none;">
+                    <option value="">All Statuses</option>
+                    <option value="assigned">Assigned</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="resolved">Resolved</option>
+                </select>
+                <div
+                    style="display: flex; align-items: center; padding: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;">
+                    <label
+                        style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted);">
+                        <input type="checkbox" id="historyToggle" onchange="toggleHistory()"
+                            style="accent-color: var(--primary);">
+                        Show Past 24h
+                    </label>
+                </div>
             </div>
         </div>
 
@@ -108,7 +134,7 @@
         async function initStaff() {
             const email = sessionStorage.getItem("userEmail");
             if (!email) {
-                window.location.href = "login.html";
+                window.location.href = "login-v2.html";
                 return;
             }
 
@@ -175,7 +201,7 @@
                 let badgeClass = status.replace('_', '-');
 
                 container.innerHTML += `
-            <div class="complaint-box badge-${badgeClass}">
+            <div class="complaint-box badge-${badgeClass}" data-status="${status}">
                 <div class="card-header">
                    <h4 class="card-title">${c.title}</h4>
                    <span class="card-status-badge">${c.status ? c.status.toUpperCase() : 'OPEN'}</span>
@@ -366,7 +392,7 @@
             }
         }
 
-        function logout() { sessionStorage.clear(); window.location.href = "login.html"; }
+        function logout() { sessionStorage.clear(); window.location.href = "login-v2.html"; }
         document.addEventListener("DOMContentLoaded", initStaff);
 
         function toggleTheme() {
@@ -392,6 +418,48 @@
                 document.getElementById("nav-avatar").innerText = email.charAt(0).toUpperCase();
             }
         });
+
+        // --- GLOBAL SEARCH LOGIC ---
+        function filterComplaints() {
+            const query = document.getElementById("global-search").value.toLowerCase();
+            const statusFilterInput = document.getElementById("statusFilter");
+            const statusFilter = statusFilterInput ? statusFilterInput.value.toLowerCase() : "";
+            const cards = document.querySelectorAll(".complaint-box");
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const textContent = card.innerText.toLowerCase();
+                const cardStatus = card.getAttribute("data-status") || "";
+
+                const matchesQuery = query === "" || textContent.includes(query);
+                const matchesStatus = statusFilter === "" || cardStatus === statusFilter;
+
+                if (matchesQuery && matchesStatus) {
+                    card.style.display = "flex";
+                    visibleCount++;
+                } else {
+                    card.style.display = "none";
+                }
+            });
+
+            const container = document.getElementById("staff-container");
+            let noResultMsg = document.getElementById("no-search-result");
+
+            if (visibleCount === 0 && query !== "") {
+                if (!noResultMsg) {
+                    const msg = document.createElement('p');
+                    msg.id = "no-search-result";
+                    msg.style.cssText = "grid-column: 1/-1; text-align:center; color: var(--text-muted); padding: 40px; border: 1px dashed var(--border); border-radius: 12px;";
+                    msg.innerText = `No complaints found matching "${query}"`;
+                    container.appendChild(msg);
+                } else {
+                    noResultMsg.innerText = `No complaints found matching "${query}"`;
+                    noResultMsg.style.display = "block";
+                }
+            } else if (noResultMsg) {
+                noResultMsg.style.display = "none";
+            }
+        }
     </script>
 </body>
 

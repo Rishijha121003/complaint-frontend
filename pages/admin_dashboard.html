@@ -28,9 +28,21 @@
         <div class="top-navbar">
             <div class="nav-links">
                 <a href="admin_dashboard.html" class="nav-item active">Home</a>
-                <a href="#" class="nav-item">System Logs</a>
+
                 <a href="profile.html" class="nav-item">Profile</a>
             </div>
+
+            <div class="search-container" style="flex: 1; max-width: 400px; margin: 0 20px; position: relative;">
+                <input type="text" id="global-search" onkeyup="filterComplaints()"
+                    placeholder="Search title, category, or room..."
+                    style="width: 100%; padding: 10px 16px 10px 40px; border-radius: 50px; background: rgba(0,0,0,0.05); border: 1px solid var(--border); font-size: 14px; transition: all 0.3s; color: var(--text-strong);">
+                <svg style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); width: 18px; height: 18px;"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+
             <div class="nav-actions">
                 <button class="nav-icon-btn" title="Refresh Live Data" onclick="initAdmin()">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,8 +104,6 @@
                     <option value="HOSTEL">Hostel</option>
                     <option value="OTHER">Other</option>
                 </select>
-                <input type="text" id="adminSearch" placeholder="Search text..."
-                    style="width: 200px; padding: 10px; border-radius: 8px; border: 1px solid var(--border); outline: none; background: var(--surface); color: var(--text-strong);">
                 <button onclick="filterComplaints()" class="btn-primary"
                     style="padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none; background: #2563eb; color: white;">Apply
                     Filter</button>
@@ -134,10 +144,29 @@
         <div id="status-message" style="text-align: center; padding: 20px; color: var(--text-muted);">
             Fetching records from server...
         </div>
-        <div class="complaint-grid" id="admin-container"></div>
+        <div class="table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Student / Title</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Assigned Staff</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-container">
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
+        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:8080'
+            : 'https://complaint-backend-5rdk.onrender.com';
+
         let staffList = [];
         let allComplaintsList = [];
         let showHistory = false;
@@ -181,7 +210,7 @@
         async function initAdmin() {
             const email = sessionStorage.getItem("userEmail");
             // Ab hume password/pass ki zarurat nahi hai header mein
-            if (!email) { window.location.href = "login.html"; return; }
+            if (!email) { window.location.href = "login-v2.html"; return; }
 
             const statusMsg = document.getElementById("status-message");
 
@@ -193,13 +222,13 @@
                 };
 
                 // Staff list fetch karein
-                const staffRes = await fetch("https://complaint-backend-5rdk.onrender.com/api/v1/complaints/admin/staff-list", {
+                const staffRes = await fetch(`${baseUrl}/api/v1/complaints/admin/staff-list`, {
                     headers: headers
                 });
                 staffList = await staffRes.json();
 
                 // Saari complaints fetch karein
-                const res = await fetch("https://complaint-backend-5rdk.onrender.com/api/v1/complaints/admin/all", {
+                const res = await fetch(`${baseUrl}/api/v1/complaints/admin/all`, {
                     headers: headers
                 });
 
@@ -218,6 +247,30 @@
             }
         }
 
+
+        // Auto Assign Function
+        async function autoAssign(complaintId) {
+            if (!confirm("Start AI Auto-Assign for Complaint #" + complaintId + "?")) return;
+            try {
+                const url = `${baseUrl}/api/v1/complaints/admin/auto-assign?complaintId=` + complaintId;
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "User-Email": sessionStorage.getItem("userEmail")
+                    }
+                });
+
+                if (response.ok) {
+                    alert(await response.text());
+                    initAdmin();
+                } else {
+                    alert("Auto-Assign failed! Server error.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Network error.");
+            }
+        }
         async function assignStaff(complaintId) {
             const staffId = document.getElementById(`staff-select-${complaintId}`).value;
             if (!staffId) return alert("Please select a staff member!");
@@ -225,7 +278,7 @@
             const email = sessionStorage.getItem("userEmail");
 
             try {
-                const res = await fetch(`https://complaint-backend-5rdk.onrender.com/api/v1/complaints/admin/assign?complaintId=${complaintId}&staffId=${staffId}`, {
+                const res = await fetch(`${baseUrl}/api/v1/complaints/admin/assign?complaintId=${complaintId}&staffId=${staffId}`, {
                     method: "POST",
                     headers: {
                         "User-Email": email // Backend identity isi se verify karega
@@ -280,100 +333,51 @@
 
                 // Filter staff based on complaint category
                 const relevantStaff = staffList.filter(s => s.department === c.category);
-                let staffOptions = relevantStaff.map(s => `<option value="${s.id}">${s.name} (${s.department || 'General'})</option>`).join('');
-
-                // Fallback to all staff if no specific staff exists for this category
+                let staffOptions = relevantStaff.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
                 if (relevantStaff.length === 0) {
-                    staffOptions = staffList.map(s => `<option value="${s.id}">${s.name} (${s.department || 'General'})</option>`).join('');
+                    staffOptions = staffList.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
                 }
 
                 const statusClass = (c.status || 'open').toLowerCase().replace('_', '-');
 
-                let actionHtml = '';
+                let staffAction = '';
                 if (c.status === 'OPEN') {
-                    actionHtml = `
-                    <span class="card-footer-label">Assign Staff</span>
-                    <select id="staff-select-${c.id}" style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #cbd5e1; background: var(--surface); color: var(--text-strong); outline:none;">
-                        <option value="">-- Choose Staff --</option>
+                    staffAction = `
+                    <select id="staff-select-${c.id}" style="padding:6px; font-size:12px; border-radius:6px; border:1px solid var(--border); background:var(--bg-body); color:var(--text-strong); width:100%; margin-bottom: 6px; outline:none;">
+                        <option value="">-- Assign --</option>
                         ${staffOptions}
                     </select>
-                    <button onclick="assignStaff(${c.id})" class="btn-primary" style="margin-top:10px; padding:10px; font-size:13px; width:100%; border-radius:8px;">Assign Now</button>`;
-                } else if (c.status === 'ASSIGNED') {
-                    actionHtml = `
-                    <span class="card-footer-label">Assigned To</span>
-                    <div class="card-footer-text" style="color: #4338ca;">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                        ${c.assignedStaff ? c.assignedStaff.name : 'Staff'}
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="assignStaff(${c.id})" class="btn-primary" style="padding:4px 8px; font-size:11px; flex:1; border-radius:6px;">Assign</button>
+                        <button onclick="autoAssign(${c.id})" title="Auto-Assign" class="btn-secondary" style="padding:4px 8px; font-size:11px; flex:1; border-radius:6px; color:#10b981; border-color:#10b981;">Auto</button>
                     </div>`;
-                } else if (c.status === 'IN_PROGRESS') {
-                    actionHtml = `
-                    <span class="card-footer-label">Current Status</span>
-                    <div class="card-footer-text" style="color: #1d4ed8;">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Staff (${c.assignedStaff ? c.assignedStaff.name : 'Unknown'}) is working on this
-                    </div>`;
-                } else if (c.status === 'RESOLVED') {
-                    actionHtml = `
-                    <span class="card-footer-label">Current Status</span>
-                    <div class="card-footer-text" style="color: #047857;">
-                        ✅ Resolved by staff. Pending student confirmation.
-                    </div>`;
-                } else if (c.status === 'CLOSED') {
-                    actionHtml = `
-                    <span class="card-footer-label">Status</span>
-                    <div class="card-footer-text" style="color: #4b5563;">
-                        🔒 Closed
-                    </div>`;
+                } else {
+                    staffAction = c.assignedStaff ? `<div style="font-weight:600; color:var(--text-strong);"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px; display:inline; margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>${c.assignedStaff.name}</div>` : '<span style="color:var(--text-muted)">Unassigned</span>';
                 }
 
                 const categoryVal = c.category ? c.category.toUpperCase() : "OTHER";
                 const statusVal = c.status ? c.status.toUpperCase() : "OPEN";
+                const dateVal = new Date(c.createdAt || Date.now()).toLocaleDateString();
 
+                const studentName = c.student && c.student.name ? c.student.name : "Unknown Student";
+
+                // We keep data-category and data-status on tr for filtering
                 container.innerHTML += `
-            <div class="complaint-box badge-${statusClass}" data-category="${categoryVal}" data-status="${statusVal}">
-                <div class="card-header">
-                    <h4 class="card-title">${c.title}</h4>
-                    <span class="card-status-badge">${c.status}</span>
-                </div>
-                <div class="card-meta-container">
-                    <div class="card-meta-item">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
-                        ${c.category || 'N/A'}
+            <tr class="complaint-box" data-category="${categoryVal}" data-status="${statusVal}">
+                <td style="font-weight:700; color:var(--text-muted);">#${c.id}</td>
+                <td>
+                    <div style="font-weight: 700; color: var(--text-strong); margin-bottom: 4px;">${studentName}</div>
+                    <div style="font-size: 13px; color: var(--text-muted);">${c.title}</div>
+                </td>
+                <td><span style="font-weight:600; font-size:13px; color:var(--text-muted);">${categoryVal}</span></td>
+                <td>
+                    <div class="badge-${statusClass}" style="display:inline-block;">
+                        <span class="card-status-badge">${statusVal}</span>
                     </div>
-                    <div class="card-meta-item">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        ${new Date(c.createdAt || Date.now()).toLocaleDateString()}
-                    </div>
-                </div>
-                <p class="card-desc">${c.description}</p>
-                
-                <!-- Evidences -->
-                ${c.imageUrl ? `<div style="margin-top: 10px; margin-bottom: 10px;"><a href="https://complaint-backend-5rdk.onrender.com${c.imageUrl}" target="_blank"><img src="https://complaint-backend-5rdk.onrender.com${c.imageUrl}" style="max-width: 100%; border-radius: 8px; max-height: 200px; object-fit: cover; border: 1px solid var(--border);" alt="Evidence Image"></a></div>` : ""}
-                ${c.resolvedImageUrl ? `<div style="margin-top: 10px; margin-bottom: 10px; padding: 10px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border: 1px solid #10b981;"><p style="font-size: 12px; color: #047857; margin-bottom: 5px;"><strong>Staff Proof of Resolution:</strong></p><a href="https://complaint-backend-5rdk.onrender.com${c.resolvedImageUrl}" target="_blank"><img src="https://complaint-backend-5rdk.onrender.com${c.resolvedImageUrl}" style="max-width: 100%; border-radius: 8px; max-height: 200px; object-fit: cover; border: 1px solid #a7f3d0;" alt="Staff Proof"></a></div>` : ""}
-                ${c.staffRemark ? `<div style="margin-top: 10px; margin-bottom: 15px; padding: 10px; background: var(--surface); border-left: 3px solid var(--primary); font-size: 13px;"><strong>Staff Remark:</strong> ${c.staffRemark}</div>` : ""}
-
-                <div class="card-footer">
-                    ${actionHtml}
-                </div>
-
-                <!-- COMMENTS SECTION (Admin View Only) -->
-                <div class="card-footer" style="padding-top: 10px; border-top: 1px dotted var(--border);">
-                    <button class="btn-secondary" style="width: 100%; padding: 8px; font-size: 13px; font-weight: 600;" onclick="toggleComments(${c.id})">💬 View Discussion / Comments</button>
-                    
-                    <div id="chatbox-${c.id}" class="chat-container">
-                        <div id="chat-messages-${c.id}" class="chat-messages">
-                            <div style="text-align: center; color: var(--text-muted); font-size: 12px;">Loading comments...</div>
-                        </div>
-                        <div class="chat-input-area">
-                            <input type="text" id="chat-input-${c.id}" class="chat-input" placeholder="Type a message as Admin..." onkeypress="handleChatKeypress(event, ${c.id})">
-                            <button class="chat-send-btn" onclick="postComment(${c.id})">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; margin-left: 2px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+                </td>
+                <td>${staffAction}</td>
+                <td style="color:var(--text-muted); font-size:13px;">${dateVal}</td>
+            </tr>
         `;
             });
         }
@@ -391,7 +395,7 @@
         async function fetchComments(complaintId) {
             const container = document.getElementById(`chat-messages-${complaintId}`);
             try {
-                const res = await fetch(`https://complaint-backend-5rdk.onrender.com/api/v1/comments/${complaintId}`);
+                const res = await fetch(`${baseUrl}/api/v1/comments/${complaintId}`);
                 if (!res.ok) throw new Error("Failed to fetch comments");
                 const comments = await res.json();
 
@@ -402,7 +406,7 @@
                 }
 
                 comments.forEach(c => {
-                    const picUrl = c.senderProfilePic ? `https://complaint-backend-5rdk.onrender.com${c.senderProfilePic}` : '';
+                    const picUrl = c.senderProfilePic ? `${baseUrl}${c.senderProfilePic}` : '';
                     const initial = c.senderName ? c.senderName.charAt(0).toUpperCase() : 'U';
                     const isStaff = c.senderRole === 'STAFF';
                     const isAdmin = c.senderRole === 'ADMIN';
@@ -445,7 +449,7 @@
 
             try {
                 input.disabled = true;
-                const res = await fetch(`https://complaint-backend-5rdk.onrender.com/api/v1/comments/${complaintId}`, {
+                const res = await fetch(`${baseUrl}/api/v1/comments/${complaintId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -568,11 +572,13 @@
         }
 
         function filterComplaints() {
-            const term = document.getElementById("adminSearch").value.toLowerCase();
+            const term = document.getElementById("global-search").value.toLowerCase();
             const categoryFilter = document.getElementById("filterCategory").value;
             const statusFilter = document.getElementById("filterStatus").value;
 
             const boxes = document.querySelectorAll(".complaint-box");
+            let visibleCount = 0;
+
             boxes.forEach(box => {
                 const text = box.innerText.toLowerCase();
                 const boxCategory = box.getAttribute("data-category") || "";
@@ -583,16 +589,34 @@
                 const matchesStatus = statusFilter === "" || boxStatus === statusFilter;
 
                 if (matchesSearch && matchesCategory && matchesStatus) {
-                    box.style.display = "block";
+                    box.style.display = "table-row";
+                    visibleCount++;
                 } else {
                     box.style.display = "none";
                 }
             });
+
+            const container = document.getElementById("admin-container");
+            let noResultMsg = document.getElementById("no-search-result");
+
+            if (visibleCount === 0 && (term !== "" || categoryFilter !== "" || statusFilter !== "")) {
+                if (!noResultMsg) {
+                    const msg = document.createElement('p');
+                    msg.id = "no-search-result";
+                    msg.style.cssText = "grid-column: 1/-1; text-align:center; color: var(--text-muted); padding: 40px; border: 1px dashed var(--border); border-radius: 12px;";
+                    msg.innerText = `No complaints found matching criteria.`;
+                    container.appendChild(msg);
+                } else {
+                    noResultMsg.style.display = "block";
+                }
+            } else if (noResultMsg) {
+                noResultMsg.style.display = "none";
+            }
         }
 
 
 
-        function logout() { sessionStorage.clear(); window.location.href = "login.html"; }
+        function logout() { sessionStorage.clear(); window.location.href = "login-v2.html"; }
         document.addEventListener("DOMContentLoaded", initAdmin);
 
         function toggleTheme() {
