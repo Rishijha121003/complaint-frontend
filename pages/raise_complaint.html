@@ -12,6 +12,76 @@
             document.documentElement.setAttribute('data-theme', saved);
         })();
     </script>
+    <style>
+        /* Modern Priority Radio Buttons Styles */
+        input[type="radio"]:checked+.priority-low {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: #10B981 !important;
+            color: #047857 !important;
+        }
+
+        [data-theme="dark"] input[type="radio"]:checked+.priority-low {
+            color: #34D399 !important;
+        }
+
+        input[type="radio"]:checked+.priority-medium {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: #F59E0B !important;
+            color: #b45309 !important;
+        }
+
+        [data-theme="dark"] input[type="radio"]:checked+.priority-medium {
+            color: #FBBF24 !important;
+        }
+
+        input[type="radio"]:checked+.priority-high {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #EF4444 !important;
+            color: #b91c1c !important;
+        }
+
+        [data-theme="dark"] input[type="radio"]:checked+.priority-high {
+            color: #F87171 !important;
+        }
+
+        .priority-pill:hover {
+            background: var(--bg-hover);
+            transform: translateY(-1px);
+        }
+
+        /* Drag & Drop Hover glow */
+        #dragDropArea {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #dragDropArea:hover {
+            border-color: var(--primary) !important;
+            background: rgba(79, 70, 229, 0.06) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px -8px rgba(79, 70, 229, 0.15);
+        }
+
+        #dragDropArea svg {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #dragDropArea:hover svg {
+            transform: scale(1.1) translateY(-2px);
+        }
+
+        .auth-submit-btn {
+            background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%) !important;
+            border: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            color: white !important;
+        }
+
+        .auth-submit-btn:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4) !important;
+            background: linear-gradient(135deg, #4338CA 0%, #3730A3 100%) !important;
+        }
+    </style>
 </head>
 
 <body class="dashboard-body">
@@ -66,61 +136,211 @@
             </div>
         </div>
 
-        <div class="dashboard-header">
-            <h2>Raise New Complaint</h2>
-            <p style="color: var(--text-muted);">Fill all details to resolve the issue quickly</p>
+        <div class="dashboard-header" style="margin-bottom: 30px;">
+            <h2 style="font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px;">Raise New
+                Complaint</h2>
+            <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 8px;">Fill in the details below to log a
+                new issue and we'll
+                resolve it quickly.</p>
+            <p
+                style="color: var(--primary); font-size: 13.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; background: rgba(79, 70, 229, 0.1); padding: 6px 12px; border-radius: 6px;">
+                <svg fill="currentColor" viewBox="0 0 20 20" style="width: 14px; height: 14px;">
+                    <path fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                        clip-rule="evenodd"></path>
+                </svg>
+                Submitting detailed complaints helps staff resolve issues faster.
+            </p>
         </div>
 
-        <div class="login-card"
-            style="margin-top: 20px; width: 100%; max-width: 100%; padding: 30px; box-sizing: border-box; text-align: left;">
-            <form id="complaintForm">
-                <div class="form-group">
-                    <label>Complaint Title</label>
-                    <input type="text" id="title" placeholder="e.g., Water leakage in washroom" required>
-                </div>
+        <div class="saas-card"
+            style="max-width: 800px; margin: 0 auto; padding: 48px; border-radius: 16px; background: var(--surface); box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.08); border: 1px solid var(--border);">
+            <form id="complaintForm" style="display: flex; flex-direction: column; gap: 24px;">
+                <!-- SECTION 1: Complaint Details -->
+                <div style="margin-bottom: 20px;">
+                    <h3
+                        style="font-size: 18px; font-weight: 700; color: var(--text-strong); margin-bottom: 24px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(148, 163, 184, 0.15); padding-bottom: 12px;">
+                        <span
+                            style="background: var(--primary); color: white; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 13px;">1</span>
+                        Complaint Details
+                    </h3>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="form-group">
-                        <label>Category</label>
-                        <select id="category" required>
-                            <option value="">-- Select Category --</option>
-                            <option value="ELECTRICAL">Electricity</option>
-                            <option value="PLUMBING">Plumbing</option>
-                            <option value="CLEANING">Cleaning</option>
-                            <option value="ACADEMIC">Academic</option>
-                            <option value="HOSTEL">Hostel</option>
-                            <option value="OTHER">Other</option>
-                        </select>
+                    <div style="display: flex; flex-direction: column; gap: 24px;">
+                        <div class="form-group" style="margin: 0; position: relative;">
+                            <label
+                                style="font-weight: 600; font-size: 14.5px; margin-bottom: 8px; display: block;">Complaint
+                                Title</label>
+                            <svg style="position: absolute; left: 16px; top: 43px; color: var(--text-muted); width: 18px; height: 18px;"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                </path>
+                            </svg>
+                            <input type="text" id="title" class="auth-input"
+                                placeholder="e.g., Water leakage in washroom" required
+                                style="padding-left: 44px; padding-top: 15px; padding-bottom: 15px;">
+                        </div>
+
+                        <!-- Priority Selector -->
+                        <div class="form-group" style="margin: 0;">
+                            <label
+                                style="font-weight: 600; font-size: 14.5px; margin-bottom: 8px; display: block;">Priority
+                                Level</label>
+                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                <label class="priority-radio">
+                                    <input type="radio" name="priority" value="LOW" id="priorityLow" checked
+                                        style="display: none;">
+                                    <div class="priority-pill priority-low"
+                                        style="padding: 10px 20px; border-radius: 50px; border: 1.5px solid var(--border); font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; color: var(--text-muted);">
+                                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #10B981;">
+                                        </div> Low
+                                    </div>
+                                </label>
+                                <label class="priority-radio">
+                                    <input type="radio" name="priority" value="MEDIUM" id="priorityMedium"
+                                        style="display: none;">
+                                    <div class="priority-pill priority-medium"
+                                        style="padding: 10px 20px; border-radius: 50px; border: 1.5px solid var(--border); font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; color: var(--text-muted);">
+                                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #F59E0B;">
+                                        </div> Medium
+                                    </div>
+                                </label>
+                                <label class="priority-radio">
+                                    <input type="radio" name="priority" value="HIGH" id="priorityHigh"
+                                        style="display: none;">
+                                    <div class="priority-pill priority-high"
+                                        style="padding: 10px 20px; border-radius: 50px; border: 1.5px solid var(--border); font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; color: var(--text-muted);">
+                                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #EF4444;">
+                                        </div> High
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+                            <div class="form-group" style="margin: 0; position: relative;">
+                                <label
+                                    style="font-weight: 600; font-size: 14.5px; margin-bottom: 8px; display: block;">Category</label>
+                                <svg style="position: absolute; left: 16px; top: 43px; color: var(--text-muted); width: 18px; height: 18px; z-index: 10;"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
+                                    </path>
+                                </svg>
+                                <select id="category" class="auth-input" required
+                                    style="padding-left: 44px; padding-top: 15px; padding-bottom: 15px; appearance: auto;">
+                                    <option value="">-- Select Category --</option>
+                                    <option value="PLUMBING">🔧 Plumbing</option>
+                                    <option value="ELECTRICAL">⚡ Electricity</option>
+                                    <option value="INTERNET">🌐 Internet</option>
+                                    <option value="CLEANING">🧹 Cleanliness</option>
+                                    <option value="ACADEMIC">📚 Academic</option>
+                                    <option value="HOSTEL">🛏️ Hostel</option>
+                                    <option value="OTHER">📌 Other</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="margin: 0; position: relative;">
+                                <label
+                                    style="font-weight: 600; font-size: 14.5px; margin-bottom: 8px; display: block;">Location
+                                    (Room/Block)</label>
+                                <svg style="position: absolute; left: 16px; top: 43px; color: var(--text-muted); width: 18px; height: 18px;"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                    </path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <input type="text" id="location" class="auth-input" placeholder="e.g., Room 408"
+                                    required style="padding-left: 44px; padding-top: 15px; padding-bottom: 15px;">
+                            </div>
+                        </div>
                     </div>
+                </div>
 
-                    <div class="form-group">
-                        <label>Location (Room/Block)</label>
-                        <input type="text" id="location" placeholder="e.g., Room 408" required>
+                <!-- SECTION 2: Description -->
+                <div style="margin-bottom: 20px;">
+                    <h3
+                        style="font-size: 18px; font-weight: 700; color: var(--text-strong); margin-bottom: 24px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(148, 163, 184, 0.15); padding-bottom: 12px;">
+                        <span
+                            style="background: var(--primary); color: white; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 13px;">2</span>
+                        Detailed Description
+                    </h3>
+                    <div class="form-group" style="margin: 0; position: relative;">
+                        <svg style="position: absolute; left: 16px; top: 15px; color: var(--text-muted); width: 18px; height: 18px;"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h7"></path>
+                        </svg>
+                        <textarea id="description" class="auth-input" rows="5"
+                            placeholder="Describe your problem in detail... (Ex: Pipe is leaking since morning...)"
+                            required onkeyup="document.getElementById('char-count').innerText = this.value.length"
+                            style="padding-left: 44px; padding-top: 15px; resize: vertical; min-height: 140px;"></textarea>
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 8px;">
+                            <div style="font-size: 12.5px; color: var(--text-muted);">Please provide as much relevant
+                                detail as possible (e.g. time, exact spot).</div>
+                            <div
+                                style="font-size: 12px; color: var(--text-muted); font-weight: 500; white-space: nowrap;">
+                                <span id="char-count">0</span> / 500 characters
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="form-group" style="width: 100%;">
-                    <label>Description</label>
-                    <textarea id="description" rows="4" placeholder="Describe your problem in detail..." required
-                        style="width: 100%; box-sizing: border-box;"></textarea>
+                <!-- SECTION 3: Evidence -->
+                <div style="margin-bottom: 0px;">
+                    <h3
+                        style="font-size: 18px; font-weight: 700; color: var(--text-strong); margin-bottom: 24px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(148, 163, 184, 0.15); padding-bottom: 12px;">
+                        <span
+                            style="background: var(--primary); color: white; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 13px;">3</span>
+                        Evidence (Optional)
+                    </h3>
+                    <div class="form-group" style="margin: 0;">
+                        <label style="cursor: pointer; display: block;" for="image">
+                            <div id="dragDropArea"
+                                style="position: relative; border: 2px dashed rgba(79, 70, 229, 0.4); padding: 40px 20px; border-radius: 16px; text-align: center; background: rgba(79, 70, 229, 0.03); transition: all 0.3s ease;">
+                                <svg style="color: var(--primary); width: 40px; height: 40px; margin-bottom: 12px; opacity: 0.9;"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12">
+                                    </path>
+                                </svg>
+                                <h4 id="uploadText"
+                                    style="font-size: 16px; font-weight: 600; color: var(--text-strong); margin-bottom: 8px;">
+                                    Drag and drop files here or click to browse
+                                </h4>
+                                <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 0;">Supports PNG,
+                                    JPG
+                                    up to 5MB</p>
+                                <input type="file" id="image" accept="image/*"
+                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;"
+                                    onchange="document.getElementById('uploadText').innerText = this.files.length > 0 ? this.files[0].name : 'Drag and drop files here or click to browse';">
+                            </div>
+                        </label>
+                    </div>
                 </div>
 
-                <div class="form-group" style="width: 100%;">
-                    <label>Attach Evidence (Optional)</label>
-                    <input type="file" id="image" accept="image/*"
-                        style="width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface);">
-                </div>
-
-                <div style="width: 100%;">
-                    <button type="submit" class="btn-primary"
-                        style="width: 100%; padding: 15px; margin-top: 10px; box-sizing: border-box;">SUBMIT
-                        COMPLAINT</button>
-                </div>
+                <button type="submit" class="auth-submit-btn"
+                    style="margin-top: 5px; padding: 18px; font-size: 16.5px; display: flex; align-items: center; justify-content: center; border-radius: 14px;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20"
+                        style="margin-right: 8px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                    Submit Complaint &rarr;
+                </button>
             </form>
         </div>
     </div>
 
     <script>
+        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
+            ? 'http://localhost:8080'
+            : 'https://complaint-backend-5rdk.onrender.com';
+
         // --- MOBILE MENU LOGIC ---
         const menuBtn = document.getElementById("menu-toggle");
         const sidebar = document.getElementById("sidebar");
@@ -152,6 +372,11 @@
             formData.append("description", document.getElementById("description").value);
             formData.append("location", document.getElementById("location").value);
 
+            const priorityInput = document.querySelector('input[name="priority"]:checked');
+            if (priorityInput) {
+                formData.append("priority", priorityInput.value);
+            }
+
             const imageEl = document.getElementById("image");
             if (imageEl && imageEl.files.length > 0) {
                 formData.append("image", imageEl.files[0]);
@@ -159,7 +384,7 @@
 
             try {
                 // Path matches @RequestMapping("/api/student") in StudentController
-                const res = await fetch("https://complaint-backend-5rdk.onrender.com/api/student/raise", {
+                const res = await fetch(`${baseUrl}/api/student/raise`, {
                     method: "POST",
                     headers: {
                         "User-Email": email // Changed to match backend explicitly

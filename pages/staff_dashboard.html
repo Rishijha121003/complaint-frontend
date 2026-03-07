@@ -66,26 +66,28 @@
         </div>
 
         <div class="dashboard-header"
-            style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px;">
+            style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px;">
             <div style="display: flex; flex-direction: column;">
-                <h2 style="margin: 0;">Assigned Complaints</h2>
+                <h2 style="margin: 0;">Assigned Tasks</h2>
                 <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Manage and update your assigned
                     tasks</p>
             </div>
-            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                <select id="statusFilter" onchange="filterComplaints()"
-                    style="padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-strong); outline: none;">
+
+            <div class="filters" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+                <select id="statusFilter" class="saas-input" onchange="filterComplaints()"
+                    style="width: auto; margin: 0; padding: 10px 16px; border-radius: 12px;">
                     <option value="">All Statuses</option>
                     <option value="assigned">Assigned</option>
                     <option value="in_progress">In Progress</option>
                     <option value="resolved">Resolved</option>
                 </select>
+
                 <div
-                    style="display: flex; align-items: center; padding: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;">
+                    style="display: flex; align-items: center; padding: 10px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; height: 100%;">
                     <label
-                        style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted);">
+                        style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted); margin: 0;">
                         <input type="checkbox" id="historyToggle" onchange="toggleHistory()"
-                            style="accent-color: var(--primary);">
+                            style="accent-color: var(--primary); width: 16px; height: 16px; margin: 0;">
                         Show Past 24h
                     </label>
                 </div>

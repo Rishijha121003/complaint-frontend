@@ -75,9 +75,9 @@
         <div class="dashboard-header"
             style="display: flex; flex-wrap: wrap; gap: 15px; align-items: center; justify-content: space-between;">
             <h2 style="margin: 0;">System Overview</h2>
-            <div class="filters" style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <select id="filterStatus"
-                    style="padding: 10px; border-radius: 8px; border: 1px solid #ddd; outline: none; background: var(--surface); color: var(--text-strong);">
+            <div class="filters" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+                <select id="filterStatus" class="saas-input"
+                    style="width: auto; margin: 0; padding: 10px 16px; border-radius: 12px;">
                     <option value="">All Statuses</option>
                     <option value="OPEN">Open</option>
                     <option value="ASSIGNED">Assigned</option>
@@ -85,17 +85,19 @@
                     <option value="RESOLVED">Resolved</option>
                     <option value="CLOSED">Closed</option>
                 </select>
+
                 <div
-                    style="display: flex; align-items: center; padding: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;">
+                    style="display: flex; align-items: center; padding: 10px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; height: 100%;">
                     <label
-                        style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted);">
+                        style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted); margin: 0;">
                         <input type="checkbox" id="historyToggle" onchange="toggleAdminHistory()"
-                            style="accent-color: var(--primary);">
+                            style="accent-color: var(--primary); width: 16px; height: 16px; margin: 0;">
                         Show Hidden Records (>24h)
                     </label>
                 </div>
-                <select id="filterCategory"
-                    style="padding: 10px; border-radius: 8px; border: 1px solid #ddd; outline: none; background: var(--surface); color: var(--text-strong);">
+
+                <select id="filterCategory" class="saas-input"
+                    style="width: auto; margin: 0; padding: 10px 16px; border-radius: 12px;">
                     <option value="">All Categories</option>
                     <option value="ELECTRICAL">Electrical</option>
                     <option value="PLUMBING">Plumbing</option>
@@ -104,12 +106,13 @@
                     <option value="HOSTEL">Hostel</option>
                     <option value="OTHER">Other</option>
                 </select>
-                <button onclick="filterComplaints()" class="btn-primary"
-                    style="padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none; background: #2563eb; color: white;">Apply
-                    Filter</button>
+
+                <button onclick="filterComplaints()" class="btn-primary" style="padding: 10px 20px;">
+                    Apply Filter
+                </button>
                 <button onclick="exportCSV()" class="btn-primary" title="Download Report as CSV"
-                    style="padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none; background: #10b981; color: white; display: flex; align-items: center; gap: 8px;">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                    style="padding: 10px 20px; background: linear-gradient(135deg, var(--success), #059669);">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                     </svg>
@@ -363,7 +366,7 @@
 
                 // We keep data-category and data-status on tr for filtering
                 container.innerHTML += `
-            <tr class="complaint-box" data-category="${categoryVal}" data-status="${statusVal}">
+            <tr class="complaint-row" data-category="${categoryVal}" data-status="${statusVal}">
                 <td style="font-weight:700; color:var(--text-muted);">#${c.id}</td>
                 <td>
                     <div style="font-weight: 700; color: var(--text-strong); margin-bottom: 4px;">${studentName}</div>
@@ -576,7 +579,7 @@
             const categoryFilter = document.getElementById("filterCategory").value;
             const statusFilter = document.getElementById("filterStatus").value;
 
-            const boxes = document.querySelectorAll(".complaint-box");
+            const boxes = document.querySelectorAll(".complaint-row");
             let visibleCount = 0;
 
             boxes.forEach(box => {
