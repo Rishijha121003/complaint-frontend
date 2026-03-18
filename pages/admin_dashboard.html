@@ -154,6 +154,7 @@
                         <th>ID</th>
                         <th>Student / Title</th>
                         <th>Category</th>
+                        <th>Priority</th>
                         <th>Status</th>
                         <th>Assigned Staff</th>
                         <th>Date</th>
@@ -314,8 +315,14 @@
                 return;
             }
 
-            // Sort by newest first
+            // Sort by priority (HIGH > MEDIUM > LOW), then newest first
+            const priorityWeight = { 'HIGH': 3, 'MEDIUM': 2, 'LOW': 1 };
             complaints.sort((a, b) => {
+                const pA = priorityWeight[a.priority] || 1;
+                const pB = priorityWeight[b.priority] || 1;
+                if (pB !== pA) {
+                    return pB - pA;
+                }
                 const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
                 const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
                 return dateB - dateA;
@@ -373,6 +380,14 @@
                     <div style="font-size: 13px; color: var(--text-muted);">${c.title}</div>
                 </td>
                 <td><span style="font-weight:600; font-size:13px; color:var(--text-muted);">${categoryVal}</span></td>
+                <td>
+                    <span style="font-size:11px; font-weight:700; padding:4px 8px; border-radius:4px; 
+                         ${c.priority === 'HIGH' ? 'background: #fee2e2; color: #b91c1c;' :
+                        c.priority === 'MEDIUM' ? 'background: #fef3c7; color: #b45309;' :
+                            'background: #d1fae5; color: #047857;'}">
+                        ${c.priority || 'LOW'}
+                    </span>
+                </td>
                 <td>
                     <div class="badge-${statusClass}" style="display:inline-block;">
                         <span class="card-status-badge">${statusVal}</span>
