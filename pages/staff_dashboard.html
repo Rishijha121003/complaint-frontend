@@ -4,8 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff Dashboard | Smart Complaint</title>
+    <title>Operations Hub | Smart Complaint</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap"
+        rel="stylesheet">
     <script>
         (function () {
             const saved = localStorage.getItem('theme') || 'light';
@@ -15,451 +19,223 @@
 </head>
 
 <body class="dashboard-body">
-    <button class="menu-toggle" id="menu-toggle">☰</button>
+    <button class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
 
     <div class="sidebar" id="sidebar">
-        <h3>Staff Panel</h3>
-        <a href="staff_dashboard.html" class="active">My Tasks</a>
-        <a href="profile.html">Profile</a>
-        <a href="#" onclick="logout()">Logout</a>
-    </div>
-
-    <div class="main-content">
-        <div class="top-navbar">
-            <div class="nav-links">
-                <a href="staff_dashboard.html" class="nav-item active">Home</a>
-
-                <a href="profile.html" class="nav-item">Profile</a>
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+                <span>Staff Portal</span>
             </div>
+        </div>
 
-            <div class="search-container" style="flex: 1; max-width: 400px; margin: 0 20px; position: relative;">
-                <input type="text" id="global-search" onkeyup="filterComplaints()"
-                    placeholder="Search title, category, or room..."
-                    style="width: 100%; padding: 10px 16px 10px 40px; border-radius: 50px; background: rgba(0,0,0,0.05); border: 1px solid var(--border); font-size: 14px; transition: all 0.3s; color: var(--text-strong);">
-                <svg style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); width: 18px; height: 18px;"
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-            </div>
+        <nav id="sidebar-nav">
+            <a href="#" class="nav-item active" onclick="switchView('tasks', this)" id="nav-tasks">
+                <i class="fa-solid fa-clipboard-list"></i>
+                <span>Tasks View</span>
+            </a>
+            <a href="#" class="nav-item" onclick="switchView('profile', this)" id="nav-profile">
+                <i class="fa-solid fa-user-circle"></i>
+                <span>Profile Hub</span>
+            </a>
+        </nav>
 
-            <div class="nav-actions">
-                <div class="user-profile" onclick="window.location.href='profile.html'">
-                    <div class="user-avatar" id="nav-avatar" style="transition: all 0.3s;">U</div>
-                    <div
-                        style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding-right: 5px;">
-                        <span
-                            style="font-size: 10px; color: var(--text-muted); line-height: 1; margin-bottom: 3px;">Welcome,
-                            Staff</span>
-                        <span id="nav-email"
-                            style="font-size: 13px; font-weight: 700; line-height: 1;">Loading...</span>
+        <div class="sidebar-footer">
+            <div class="profile-card">
+                <div class="profile-main">
+                    <div class="profile-avatar" id="sidebar-avatar">S</div>
+                    <div class="profile-info">
+                        <span class="profile-name" id="sidebar-name">Staff Member</span>
+                        <span class="profile-email" id="sidebar-email">staff@system.com</span>
                     </div>
                 </div>
-                <button class="nav-icon-btn" onclick="toggleTheme()" id="themeToggleBtn" title="Toggle Dark/Light Mode">
-                    <svg id="themeIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
-                        </path>
-                    </svg>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Log Out</span>
                 </button>
             </div>
         </div>
+    </div>
 
-        <div class="dashboard-header"
-            style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px;">
-            <div style="display: flex; flex-direction: column;">
-                <h2 style="margin: 0;">Assigned Tasks</h2>
-                <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Manage and update your assigned
-                    tasks</p>
+    <div class="main-content">
+        <header class="top-nav">
+            <div class="header-left">
+                <h1 class="view-title">Service Desk</h1>
+                <p class="view-subtitle" id="current-date">Fulfilling assigned laboratory and campus requests</p>
             </div>
 
-            <div class="filters" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
-                <select id="statusFilter" class="saas-input" onchange="filterComplaints()"
-                    style="width: auto; margin: 0; padding: 10px 16px; border-radius: 12px;">
-                    <option value="">All Statuses</option>
-                    <option value="assigned">Assigned</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="resolved">Resolved</option>
-                </select>
-
-                <div
-                    style="display: flex; align-items: center; padding: 10px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; height: 100%;">
-                    <label
-                        style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted); margin: 0;">
-                        <input type="checkbox" id="historyToggle" onchange="toggleHistory()"
-                            style="accent-color: var(--primary); width: 16px; height: 16px; margin: 0;">
-                        Show Past 24h
-                    </label>
+            <div class="header-right">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Filter tasks by title or ID..." onkeyup="filterComplaints()">
                 </div>
+                <button class="theme-toggle" onclick="toggleTheme()"><i
+                        class="fa-solid fa-circle-half-stroke"></i></button>
+            </div>
+        </header>
+
+        <!-- TASKS VIEW (DEFAULT) -->
+        <div id="tasks-view">
+            <!-- Global Performance Stats -->
+            <div class="admin-stats-grid"
+                style="margin-top: 32px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+                <div class="premium-stat-card">
+                    <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);"><i
+                            class="fa-solid fa-list-check"></i></div>
+                    <div class="stat-info">
+                        <label
+                            style="text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; font-weight: 800; opacity: 0.7;">Assigned
+                            Tasks</label>
+                        <h2 id="stat-total"
+                            style="font-size: 28px; font-weight: 800; font-family: 'Outfit'; margin-top: 4px;">0</h2>
+                    </div>
+                </div>
+
+                <div class="premium-stat-card">
+                    <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;"><i
+                            class="fa-solid fa-person-digging"></i></div>
+                    <div class="stat-info">
+                        <label
+                            style="text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; font-weight: 800; opacity: 0.7;">Active
+                            Work</label>
+                        <h2 id="stat-progress"
+                            style="font-size: 28px; font-weight: 800; font-family: 'Outfit'; margin-top: 4px;">0</h2>
+                    </div>
+                </div>
+
+                <div class="premium-stat-card" style="border-right: none;">
+                    <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;"><i
+                            class="fa-solid fa-calendar-check"></i></div>
+                    <div class="stat-info">
+                        <label
+                            style="text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; font-weight: 800; opacity: 0.7;">Resolved
+                            Today</label>
+                        <h2 id="stat-completed"
+                            style="font-size: 28px; font-weight: 800; font-family: 'Outfit'; margin-top: 4px;">0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task Table Section -->
+            <div class="table-container" style="margin-top: 40px; padding-bottom: 40px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 24px;">
+                    <h3 id="table-title"
+                        style="font-family: 'Outfit'; font-size: 20px; font-weight: 800; color: var(--text-strong);">
+                        Priority Task Queue</h3>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <span style="font-size: 13px; font-weight: 700; color: var(--text-muted); opacity: 0.7;">
+                            <i class="fa-solid fa-clock-rotate-left" style="margin-right: 6px;"></i> Live Updates
+                        </span>
+                    </div>
+                </div>
+
+                <table class="complaints-table" style="width: 100%; border-collapse: separate; border-spacing: 0;">
+                    <thead>
+                        <tr id="table-header-row">
+                            <th
+                                style="padding: 20px 24px; width: 100px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em;">
+                                Ref ID</th>
+                            <th
+                                style="padding: 20px 10px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em;">
+                                Task Details</th>
+                            <th
+                                style="padding: 20px 10px; width: 180px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em;">
+                                Vertical</th>
+                            <th
+                                style="padding: 20px 10px; width: 150px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em;">
+                                Stage</th>
+                            <th
+                                style="padding: 20px 24px; text-align: right; width: 250px; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em;">
+                                Operations</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staff-container">
+                        <!-- Tasks injected via JS -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <div id="loading" style="text-align: center; margin-top: 20px;">Fetching tasks...</div>
+        <!-- PROFILE VIEW (HIDDEN BY DEFAULT) -->
+        <div id="profile-view" style="display: none; margin-top: 40px;">
+            <div class="profile-container" style="max-width: 800px; margin: 0 auto;">
+                <div class="saas-card"
+                    style="border-top: 4px solid var(--primary); text-align: center; padding: 60px 40px;">
+                    <div id="ident-avatar-large"
+                        style="width: 120px; height: 120px; background: var(--primary); border-radius: 30px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: 800; color: white; box-shadow: var(--shadow-lg);">
+                        S</div>
+                    <h1 id="ident-name"
+                        style="font-size: 32px; font-weight: 800; color: var(--text-strong); margin-bottom: 8px;">Staff
+                        Member</h1>
+                    <p id="ident-email" style="font-size: 16px; color: var(--text-muted); margin-bottom: 32px;">
+                        staff@system.com</p>
 
-        <div class="complaint-grid" id="staff-container"></div>
-    </div>
-
-    <script>
-        const menuBtn = document.getElementById("menu-toggle");
-        const sidebar = document.getElementById("sidebar");
-
-        menuBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            sidebar.classList.toggle("active");
-
-            // Icon Change (☰ to ✕)
-            menuBtn.innerText = sidebar.classList.contains("active") ? "✕" : "☰";
-
-            // Staggered Animation for Links
-            const links = sidebar.querySelectorAll("a");
-            links.forEach((link, index) => {
-                link.style.transitionDelay = sidebar.classList.contains("active") ? `${(index + 1) * 0.1}s` : "0s";
-            });
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener("click", (e) => {
-            if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
-                sidebar.classList.remove("active");
-                menuBtn.innerText = "☰";
-            }
-        });
-
-        let allStaffComplaints = [];
-        let showHistory = false;
-
-        function toggleHistory() {
-            showHistory = document.getElementById("historyToggle").checked;
-            displayStaffTasks(allStaffComplaints);
-        }
-
-        async function initStaff() {
-            const email = sessionStorage.getItem("userEmail");
-            if (!email) {
-                window.location.href = "login-v2.html";
-                return;
-            }
-
-            try {
-                const res = await fetch("https://complaint-backend-5rdk.onrender.com/api/v1/complaints/staff/assigned", {
-                    headers: { "User-Email": email }
-                });
-
-                if (!res.ok) throw new Error("Server Error: " + res.status);
-
-                allStaffComplaints = await res.json();
-                displayStaffTasks(allStaffComplaints);
-            } catch (err) {
-                console.error(err);
-                document.getElementById("loading").innerText = "Error loading tasks! Is Backend running?";
-            }
-        }
-
-        function displayStaffTasks(complaints) {
-            const container = document.getElementById("staff-container");
-            const loading = document.getElementById("loading");
-            loading.style.display = "none";
-            container.innerHTML = "";
-
-            if (complaints.length === 0) {
-                container.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>No tasks assigned.</p>";
-                return;
-            }
-
-            complaints.forEach(c => {
-                const status = c.status ? c.status.toLowerCase() : 'open';
-
-                // Logic for hiding CLOSED complaints after 24 hours
-                if (c.status === 'CLOSED') {
-                    const actionDate = c.updatedAt ? new Date(c.updatedAt) : (c.createdAt ? new Date(c.createdAt) : new Date());
-                    const today = new Date();
-                    const diffInHours = (today - actionDate) / (1000 * 60 * 60);
-
-                    // Allow skipping only if we don't want to show history
-                    if (diffInHours >= 24 && !showHistory) {
-                        return;
-                    }
-                }
-
-                let buttonsHtml = '';
-                if (c.status !== 'RESOLVED' && c.status !== 'CLOSED') {
-                    if (c.status !== 'IN_PROGRESS') {
-                        buttonsHtml += `<button onclick="updateStatus(${c.id}, 'IN_PROGRESS')" class="btn-primary" style="background:#1d4ed8; padding:10px; font-size:13px; flex:1;">Start Work</button>`;
-                    } else {
-                        buttonsHtml += `
-                        <div style="width: 100%; display: flex; flex-direction: column; gap: 10px; background: var(--surface); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
-                            <label style="font-weight: 500; font-size: 13px;">Proof of Resolution</label>
-                            <input type="text" id="remark-${c.id}" placeholder="What did you fix?" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-strong);">
-                            <input type="file" id="evidence-${c.id}" accept="image/*" style="font-size: 12px; padding: 5px;">
-                            <button onclick="resolveWithEvidence(${c.id})" class="btn-primary" style="background:#059669; padding:10px; width: 100%; cursor: pointer;">Mark Resolved</button>
-                        </div>`;
-                    }
-                } else if (c.status === 'RESOLVED') {
-                    buttonsHtml += `<div class="card-footer-text" style="color: var(--success);">✅ Resolved (Awaiting confirmation)</div>`;
-                } else if (c.status === 'CLOSED') {
-                    buttonsHtml += `<div class="card-footer-text" style="color: var(--text-muted);">🔒 Closed (Confirmed by student)</div>`;
-                }
-
-                let badgeClass = status.replace('_', '-');
-
-                container.innerHTML += `
-            <div class="complaint-box badge-${badgeClass}" data-status="${status}">
-                <div class="card-header">
-                   <h4 class="card-title">${c.title}</h4>
-                   <span class="card-status-badge">${c.status ? c.status.toUpperCase() : 'OPEN'}</span>
-                </div>
-                <div class="card-meta-container">
-                    <div class="card-meta-item">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
-                        ${c.category || 'Maintenance'}
-                    </div>
-                    <div class="card-meta-item">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        ${new Date(c.createdAt || Date.now()).toLocaleDateString()}
-                    </div>
-                </div>
-                <p class="card-desc">${c.description}</p>
-                <!-- Show Evidences if present -->
-                ${c.imageUrl ? `<div style="margin-top: 10px;"><a href="https://complaint-backend-5rdk.onrender.com${c.imageUrl}" target="_blank"><img src="https://complaint-backend-5rdk.onrender.com${c.imageUrl}" style="max-width: 100%; border-radius: 8px; max-height: 200px; object-fit: cover; border: 1px solid var(--border);" alt="Student Image"></a></div>` : ""}
-                ${c.resolvedImageUrl ? `<div style="margin-top: 10px; padding: 10px; background: #ecfdf5; border-radius: 8px; border: 1px solid #10b981;"><p style="font-size: 12px; color: #047857; margin-bottom: 5px;"><strong>Staff Proof:</strong></p><a href="https://complaint-backend-5rdk.onrender.com${c.resolvedImageUrl}" target="_blank"><img src="https://complaint-backend-5rdk.onrender.com${c.resolvedImageUrl}" style="max-width: 100%; border-radius: 8px; max-height: 200px; object-fit: cover; border: 1px solid #a7f3d0;" alt="Staff Proof"></a></div>` : ""}
-                ${c.staffRemark ? `<div style="margin-top: 10px; padding: 10px; background: #f3f4f6; border-left: 3px solid #6b7280; font-size: 13px;"><strong>Staff Remark:</strong> ${c.staffRemark}</div>` : ""}
-                
-                <div class="card-footer" style="display:flex; flex-direction:row; justify-content:space-between; align-items:center; width: 100%;">
-                    ${buttonsHtml}
-                </div>
-                
-                <!-- COMMENTS SECTION -->
-                <div class="card-footer" style="padding-top: 10px; border-top: 1px dotted var(--border);">
-                    <button class="btn-secondary" style="width: 100%; padding: 8px; font-size: 13px; font-weight: 600;" onclick="toggleComments(${c.id})">💬 Discussion / Comments</button>
-                    
-                    <div id="chatbox-${c.id}" class="chat-container">
-                        <div id="chat-messages-${c.id}" class="chat-messages">
-                            <!-- Messages will load here -->
-                            <div style="text-align: center; color: var(--text-muted); font-size: 12px;">Loading comments...</div>
-                        </div>
-                        <div class="chat-input-area">
-                            <input type="text" id="chat-input-${c.id}" class="chat-input" placeholder="Type a message..." onkeypress="handleChatKeypress(event, ${c.id})">
-                            <button class="chat-send-btn" onclick="postComment(${c.id})">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; margin-left: 2px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>`;
-            });
-        }
-
-        async function toggleComments(complaintId) {
-            const chatbox = document.getElementById(`chatbox-${complaintId}`);
-            if (chatbox.style.display === "flex") {
-                chatbox.style.display = "none";
-            } else {
-                chatbox.style.display = "flex";
-                await fetchComments(complaintId);
-            }
-        }
-
-        async function fetchComments(complaintId) {
-            const container = document.getElementById(`chat-messages-${complaintId}`);
-            try {
-                const res = await fetch(`https://complaint-backend-5rdk.onrender.com/api/v1/comments/${complaintId}`);
-                if (!res.ok) throw new Error("Failed to fetch comments");
-                const comments = await res.json();
-
-                container.innerHTML = "";
-                if (comments.length === 0) {
-                    container.innerHTML = "<div style='text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 10px;'>No comments yet. Start the discussion!</div>";
-                    return;
-                }
-
-                comments.forEach(c => {
-                    const picUrl = c.senderProfilePic ? `https://complaint-backend-5rdk.onrender.com${c.senderProfilePic}` : '';
-                    const initial = c.senderName ? c.senderName.charAt(0).toUpperCase() : 'U';
-                    const isStaff = c.senderRole === 'STAFF';
-                    const isAdmin = c.senderRole === 'ADMIN';
-
-                    let roleBadge = "Student";
-                    let roleColor = "var(--primary)";
-                    let roleBg = "var(--primary-light)";
-                    if (isStaff) { roleBadge = "Staff"; roleColor = "#047857"; roleBg = "#d1fae5"; }
-                    if (isAdmin) { roleBadge = "Admin"; roleColor = "#b91c1c"; roleBg = "#fee2e2"; }
-
-                    const avatarStyle = picUrl ? `background-image: url('${picUrl}');` : '';
-                    const avatarContent = picUrl ? '' : initial;
-
-                    container.innerHTML += `
-                        <div class="chat-message">
-                            <div class="chat-message-avatar" style="${avatarStyle}">${avatarContent}</div>
-                            <div class="chat-bubble">
-                                <div class="chat-bubble-header">
-                                    <span class="chat-sender-name">${c.senderName} <span class="chat-sender-role" style="color:${roleColor}; background:${roleBg}">${roleBadge}</span></span>
-                                    <span class="chat-time">${new Date(c.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                </div>
-                                <div style="color: var(--text-strong);">${c.text}</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left;">
+                        <div class="premium-stat-card"
+                            style="height: auto; padding: 20px; background: var(--bg-hover);">
+                            <div class="stat-info">
+                                <label>Employment Role</label>
+                                <h3 id="ident-role" style="font-size: 18px; font-weight: 700; color: var(--primary);">
+                                    OFFICIAL STAFF</h3>
                             </div>
                         </div>
-                    `;
-                });
-                container.scrollTop = container.scrollHeight;
-            } catch (err) {
-                console.error(err);
-                container.innerHTML = "<div style='color: red; font-size: 12px;'>Error loading comments</div>";
-            }
-        }
+                        <div class="premium-stat-card"
+                            style="height: auto; padding: 20px; background: var(--bg-hover);">
+                            <div class="stat-info">
+                                <label>Department Unit</label>
+                                <h3 id="ident-dept" style="font-size: 18px; font-weight: 700; color: var(--warning);">
+                                    GENERAL MAINTENANCE</h3>
+                            </div>
+                        </div>
+                    </div>
 
-        async function postComment(complaintId) {
-            const input = document.getElementById(`chat-input-${complaintId}`);
-            const text = input.value.trim();
-            if (!text) return;
+                    <div
+                        style="margin-top: 40px; padding: 24px; border-radius: 16px; background: rgba(99, 102, 241, 0.03); border: 1.5px dashed var(--border); display: flex; align-items: center; gap: 16px; justify-content: space-between;">
+                        <span style="font-size: 13px; color: var(--text-muted); text-align: left;">
+                            <i class="fa-solid fa-shield-halved" style="color: var(--primary); margin-right: 8px;"></i>
+                            Verified Personnel Identity. To update password or avatar, please visit global account
+                            settings.
+                        </span>
+                        <a href="profile.html" class="btn-primary"
+                            style="height:36px; padding:0 20px; font-size: 12px; width: auto; border-radius: 10px;">Edit
+                            Account</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            const email = sessionStorage.getItem("userEmail");
-
-            try {
-                input.disabled = true;
-                const res = await fetch(`https://complaint-backend-5rdk.onrender.com/api/v1/comments/${complaintId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'User-Email': email
-                    },
-                    body: JSON.stringify({ text: text })
-                });
-
-                if (res.ok) {
-                    input.value = "";
-                    await fetchComments(complaintId);
-                } else {
-                    alert("Failed to post comment");
-                }
-            } catch (e) { console.error(e); }
-            finally {
-                input.disabled = false;
-                input.focus();
-            }
-        }
-
-        function handleChatKeypress(event, complaintId) {
-            if (event.key === 'Enter') {
-                postComment(complaintId);
-            }
-        }
-
-        // Handle standard status update (For IN_PROGRESS)
-        async function updateStatus(id, newStatus) {
-            const email = sessionStorage.getItem("userEmail");
-
-            try {
-                const res = await fetch(`https://complaint-backend-5rdk.onrender.com/api/v1/complaints/staff/update-status/${id}?status=${newStatus}`, {
-                    method: "PATCH",
-                    headers: { "User-Email": email }
-                });
-
-                if (res.ok) {
-                    alert("Status Updated! ✅");
-                    initStaff();
-                } else {
-                    const errorText = await res.text();
-                    alert("Update Failed: " + errorText);
-                }
-            } catch (err) { console.error(err); }
-        }
-
-        async function resolveWithEvidence(id) {
-            const email = sessionStorage.getItem("userEmail");
-            const remark = document.getElementById(`remark-${id}`).value;
-            const fileInput = document.getElementById(`evidence-${id}`);
-
-            const formData = new FormData();
-            if (remark) formData.append("remark", remark);
-            if (fileInput.files[0]) formData.append("image", fileInput.files[0]);
-
-            try {
-                const res = await fetch(`https://complaint-backend-5rdk.onrender.com/api/v1/complaints/staff/resolve/${id}`, {
-                    method: "POST",
-                    headers: { "User-Email": email },
-                    body: formData
-                });
-
-                if (res.ok) {
-                    alert("Ticket Resolved with Proof! ✅");
-                    initStaff();
-                } else {
-                    const errorText = await res.text();
-                    alert("Update Failed: " + errorText);
-                }
-            } catch (err) {
-                console.error(err);
-                alert("Server error during upload");
-            }
-        }
-
-        function logout() { sessionStorage.clear(); window.location.href = "login-v2.html"; }
-        document.addEventListener("DOMContentLoaded", initStaff);
-
+    <script src="../js/staff-v1.js"></script>
+    <script>
         function toggleTheme() {
             const current = document.documentElement.getAttribute('data-theme');
             const next = current === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', next);
             localStorage.setItem('theme', next);
-            updateThemeIcon(next);
         }
-        function updateThemeIcon(theme) {
-            const icon = document.getElementById('themeIcon');
-            if (theme === 'dark') {
-                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
+
+        function switchView(view, element) {
+            if (view === 'profile') {
+                document.getElementById('tasks-view').style.display = 'none';
+                document.getElementById('profile-view').style.display = 'block';
             } else {
-                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9 0 0012 21a9.003 9 0 008.354-5.646z"></path>';
+                document.getElementById('tasks-view').style.display = 'block';
+                document.getElementById('profile-view').style.display = 'none';
             }
-        }
-        window.addEventListener('DOMContentLoaded', () => {
-            updateThemeIcon(document.documentElement.getAttribute('data-theme'));
-            const email = sessionStorage.getItem("userEmail");
-            if (email) {
-                document.getElementById("nav-email").innerText = email;
-                document.getElementById("nav-avatar").innerText = email.charAt(0).toUpperCase();
-            }
-        });
 
-        // --- GLOBAL SEARCH LOGIC ---
-        function filterComplaints() {
-            const query = document.getElementById("global-search").value.toLowerCase();
-            const statusFilterInput = document.getElementById("statusFilter");
-            const statusFilter = statusFilterInput ? statusFilterInput.value.toLowerCase() : "";
-            const cards = document.querySelectorAll(".complaint-box");
-            let visibleCount = 0;
+            // Update Active Class
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            element.classList.add('active');
 
-            cards.forEach(card => {
-                const textContent = card.innerText.toLowerCase();
-                const cardStatus = card.getAttribute("data-status") || "";
-
-                const matchesQuery = query === "" || textContent.includes(query);
-                const matchesStatus = statusFilter === "" || cardStatus === statusFilter;
-
-                if (matchesQuery && matchesStatus) {
-                    card.style.display = "flex";
-                    visibleCount++;
-                } else {
-                    card.style.display = "none";
-                }
-            });
-
-            const container = document.getElementById("staff-container");
-            let noResultMsg = document.getElementById("no-search-result");
-
-            if (visibleCount === 0 && query !== "") {
-                if (!noResultMsg) {
-                    const msg = document.createElement('p');
-                    msg.id = "no-search-result";
-                    msg.style.cssText = "grid-column: 1/-1; text-align:center; color: var(--text-muted); padding: 40px; border: 1px dashed var(--border); border-radius: 12px;";
-                    msg.innerText = `No complaints found matching "${query}"`;
-                    container.appendChild(msg);
-                } else {
-                    noResultMsg.innerText = `No complaints found matching "${query}"`;
-                    noResultMsg.style.display = "block";
-                }
-            } else if (noResultMsg) {
-                noResultMsg.style.display = "none";
+            // Update Header Title
+            const title = document.querySelector('.view-title');
+            const subtitle = document.querySelector('.view-subtitle');
+            if (view === 'profile') {
+                title.innerText = "Account Profile";
+                subtitle.innerText = "Verified system credentials and personnel details";
+            } else {
+                title.innerText = "Service Desk";
+                subtitle.innerText = "Fulfilling assigned laboratory and campus requests";
             }
         }
     </script>

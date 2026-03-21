@@ -4,8 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard | Smart Complaint</title>
+    <title>Student Center | Smart Complaint</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap"
+        rel="stylesheet">
     <script>
         (function () {
             const saved = localStorage.getItem('theme') || 'light';
@@ -15,537 +19,134 @@
 </head>
 
 <body class="dashboard-body">
-
-    <button class="menu-toggle" id="menu-toggle">☰</button>
+    <button class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <h3>Student Panel</h3>
+            <div class="logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>Student Hub</span>
+            </div>
         </div>
-        <nav style="display: flex; flex-direction: column; width: 100%;">
-            <a href="student_dashboard.html" class="active">Dashboard</a>
-            <a href="raise_complaint.html">📝 Raise Complaint</a>
-            <a href="profile.html">👤 My Profile</a>
-            <a href="#" onclick="logout()">🚪 Logout</a>
+
+        <nav>
+            <a href="student_dashboard.html" class="nav-item active">
+                <i class="fa-solid fa-house-user"></i>
+                <span>Summary View</span>
+            </a>
+            <a href="raise_complaint.html" class="nav-item">
+                <i class="fa-solid fa-circle-plus"></i>
+                <span>Report Issue</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <i class="fa-solid fa-id-badge"></i>
+                <span>My Profile</span>
+            </a>
         </nav>
-    </div>
 
-    <div class="main-content">
-        <div class="top-navbar">
-            <div class="nav-links">
-                <a href="student_dashboard.html" class="nav-item active">Home</a>
-                <a href="raise_complaint.html" class="nav-item">Raise Complaint</a>
-                <a href="profile.html" class="nav-item">Profile</a>
-            </div>
-
-            <div class="search-container" style="flex: 1; max-width: 450px; margin: 0 20px; position: relative;">
-                <input type="text" id="global-search" onkeyup="filterComplaints()"
-                    placeholder="Search complaints by title, category..." class="saas-input"
-                    style="width: 100%; padding: 12px 16px 12px 42px; border-radius: var(--radius-full); font-size: 14.5px; border: 1.5px solid var(--border); box-shadow: none;">
-                <svg style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); width: 18px; height: 18px;"
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-            </div>
-
-            <div class="nav-actions">
-                <div class="user-profile" onclick="window.location.href='profile.html'">
-                    <div class="user-avatar" id="nav-avatar" style="transition: all 0.3s;">U</div>
-                    <div
-                        style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding-right: 5px;">
-                        <span
-                            style="font-size: 10px; color: var(--text-muted); line-height: 1; margin-bottom: 3px;">Welcome,</span>
-                        <span id="nav-email"
-                            style="font-size: 13px; font-weight: 700; line-height: 1;">Loading...</span>
+        <div class="sidebar-footer">
+            <div class="profile-card">
+                <div class="profile-main">
+                    <div class="profile-avatar" id="sidebar-avatar">S</div>
+                    <div class="profile-info">
+                        <span class="profile-name" id="sidebar-name">Student</span>
+                        <span class="profile-email" id="sidebar-email">student@system.com</span>
                     </div>
                 </div>
-                <button class="nav-icon-btn" onclick="toggleTheme()" id="themeToggleBtn" title="Toggle Dark/Light Mode">
-                    <svg id="themeIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
-                        </path>
-                    </svg>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fa-solid fa-power-off"></i>
+                    <span>Log Out</span>
                 </button>
             </div>
         </div>
-
-        <div class="dashboard-header"
-            style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px;">
-            <h2 style="margin: 0;">My Complaints</h2>
-
-            <div class="filters" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
-                <select id="statusFilter" class="saas-input" onchange="filterComplaints()"
-                    style="width: auto; margin: 0; padding: 10px 16px; border-radius: 12px;">
-                    <option value="">All Statuses</option>
-                    <option value="open">Open</option>
-                    <option value="in-progress">In Progress</option>
-                    <option value="resolved">Resolved</option>
-                </select>
-
-                <div
-                    style="display: flex; align-items: center; padding: 10px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; height: 100%;">
-                    <label
-                        style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted); margin: 0;">
-                        <input type="checkbox" id="historyToggle" onchange="toggleHistory()"
-                            style="accent-color: var(--primary); width: 16px; height: 16px; margin: 0;">
-                        Show Past History
-                    </label>
-                </div>
-
-                <a href="raise_complaint.html" class="btn-primary">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                    New Complaint
-                </a>
-            </div>
-        </div>
-
-        <div class="admin-stats-grid" style="margin-top: -10px; margin-bottom: 35px; gap: 20px;">
-            <div class="stat-card" style="position: relative; overflow: hidden;">
-                <svg style="position: absolute; right: -15px; top: -15px; width: 100px; height: 100px; opacity: 0.04; color: var(--text-strong);"
-                    fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                        d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z">
-                    </path>
-                </svg>
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
-                    <div
-                        style="background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 10px; border-radius: 12px;">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="24" height="24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                            </path>
-                        </svg>
-                    </div>
-                </div>
-                <h3 id="stat-total" style="font-size: 38px; line-height: 1;">0</h3>
-                <p style="font-size: 14.5px; opacity: 0.8; margin-top: 5px; font-weight: 500;">Total Complaints</p>
-            </div>
-
-            <div class="stat-card warning" style="position: relative; overflow: hidden; border-top-color: #F59E0B;">
-                <svg style="position: absolute; right: -15px; top: -15px; width: 100px; height: 100px; opacity: 0.04; color: var(--text-strong);"
-                    fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                        clip-rule="evenodd"></path>
-                </svg>
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
-                    <div
-                        style="background: rgba(245, 158, 11, 0.1); color: #F59E0B; padding: 10px; border-radius: 12px;">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="24" height="24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                </div>
-                <h3 id="stat-active" style="font-size: 38px; line-height: 1;">0</h3>
-                <p style="font-size: 14.5px; opacity: 0.8; margin-top: 5px; font-weight: 500;">Active & In Progress</p>
-            </div>
-
-            <div class="stat-card success" style="position: relative; overflow: hidden; border-top-color: #10B981;">
-                <svg style="position: absolute; right: -15px; top: -15px; width: 100px; height: 100px; opacity: 0.04; color: var(--text-strong);"
-                    fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                        d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clip-rule="evenodd"></path>
-                </svg>
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
-                    <div
-                        style="background: rgba(16, 185, 129, 0.1); color: #10B981; padding: 10px; border-radius: 12px;">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="24" height="24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                </div>
-                <h3 id="stat-resolved" style="font-size: 38px; line-height: 1;">0</h3>
-                <p style="font-size: 14.5px; opacity: 0.8; margin-top: 5px; font-weight: 500;">Closed / Resolved</p>
-            </div>
-        </div>
-
-        <div id="status-message" class="stat-card" style="margin-top: 20px; text-align: center;">
-            Connecting to backend...
-        </div>
-
-        <div class="complaint-grid" id="complaint-container"></div>
     </div>
 
+    <div class="main-content">
+        <header class="top-nav">
+            <div class="header-left">
+                <h1 class="view-title">My Tickets</h1>
+                <p class="view-subtitle" id="current-date">Track and manage your submitted concerns</p>
+            </div>
+
+            <div class="header-right">
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Find ticket by title or ID..." onkeyup="filterComplaints()">
+                </div>
+                <button class="theme-toggle" onclick="toggleTheme()"><i
+                        class="fa-solid fa-circle-half-stroke"></i></button>
+            </div>
+        </header>
+
+        <!-- Premium Stats Section -->
+        <div class="admin-stats-grid"
+            style="margin-top: 32px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+            <div class="premium-stat-card">
+                <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);"><i
+                        class="fa-solid fa-paper-plane"></i></div>
+                <div class="stat-info">
+                    <label>Total Raised</label>
+                    <h2 id="stat-total">0</h2>
+                </div>
+            </div>
+
+            <div class="premium-stat-card">
+                <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;"><i
+                        class="fa-solid fa-hourglass-start"></i></div>
+                <div class="stat-info">
+                    <label>In Process</label>
+                    <h2 id="stat-active">0</h2>
+                </div>
+            </div>
+
+            <div class="premium-stat-card">
+                <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;"><i
+                        class="fa-solid fa-check-double"></i></div>
+                <div class="stat-info">
+                    <label>Resolved</label>
+                    <h2 id="stat-resolved">0</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Complaints Table Section -->
+        <div class="table-container" style="margin-top: 40px; padding-bottom: 40px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 24px;">
+                <h3 style="font-family: 'Outfit'; font-size: 20px; font-weight: 800; color: var(--text-strong);">
+                    Tracking Registry</h3>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <label
+                        style="font-size: 13px; font-weight: 700; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="historyToggle" onchange="toggleHistory()"
+                            style="accent-color: var(--primary);"> Show Historical Archive
+                    </label>
+                </div>
+            </div>
+
+            <table class="complaints-table">
+                <thead>
+                    <tr id="table-header-row">
+                        <th style="padding-left: 24px; width: 80px;">ID</th>
+                        <th>Subject & Issue Detail</th>
+                        <th style="width: 150px;">Category</th>
+                        <th style="width: 150px;">Status</th>
+                        <th style="padding-right: 24px; text-align: right; width: 220px;">Support & Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="complaint-container">
+                    <!-- Tickets injected via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../js/student-v1.js"></script>
     <script>
-        // --- MOBILE MENU TOGGLE LOGIC ---
-        const menuBtn = document.getElementById("menu-toggle");
-        const sidebar = document.getElementById("sidebar");
-
-        menuBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            sidebar.classList.toggle("active");
-
-            // Icon Change (☰ to ✕)
-            menuBtn.innerText = sidebar.classList.contains("active") ? "✕" : "☰";
-
-            // Staggered Animation for Links
-            const links = sidebar.querySelectorAll("a");
-            links.forEach((link, index) => {
-                link.style.transitionDelay = sidebar.classList.contains("active") ? `${(index + 1) * 0.1}s` : "0s";
-            });
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener("click", (e) => {
-            if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
-                sidebar.classList.remove("active");
-                menuBtn.innerText = "☰";
-            }
-        });
-
-        let allMyComplaints = [];
-        let showHistory = false;
-
-        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
-            ? 'http://localhost:8080'
-            : 'https://complaint-backend-5rdk.onrender.com';
-
-        function toggleHistory() {
-            showHistory = document.getElementById("historyToggle").checked;
-            renderComplaints();
-        }
-
-        // --- BACKEND FETCH LOGIC ---
-        async function initDashboard() {
-            const statusMsg = document.getElementById("status-message");
-            const email = sessionStorage.getItem("userEmail");
-
-            if (!email) {
-                window.location.href = "login-v2.html";
-                return;
-            }
-
-            try {
-                const res = await fetch(`${baseUrl}/api/v1/complaints/student/my-complaints`, {
-                    headers: { "User-Email": email }
-                });
-
-                if (!res.ok) throw new Error("Server error: " + res.status);
-
-                allMyComplaints = await res.json();
-                statusMsg.style.display = "none";
-                renderComplaints();
-
-            } catch (err) {
-                statusMsg.innerHTML = "<span style='color:red;'>Backend Error: Is your Spring Boot app running?</span>";
-                console.error(err);
-            }
-        }
-
-        function renderComplaints() {
-            const container = document.getElementById("complaint-container");
-            container.innerHTML = "";
-            let visibleCount = 0;
-
-            if (allMyComplaints.length === 0) {
-                container.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color: #666;'>No complaints raised yet.</p>";
-                return;
-            }
-
-            // Update stats
-            document.getElementById("stat-total").innerText = allMyComplaints.length;
-            document.getElementById("stat-active").innerText = allMyComplaints.filter(c => ['OPEN', 'ASSIGNED', 'IN_PROGRESS'].includes(c.status)).length;
-            document.getElementById("stat-resolved").innerText = allMyComplaints.filter(c => ['RESOLVED', 'CLOSED'].includes(c.status)).length;
-
-            // Sort by priority (HIGH > MEDIUM > LOW), then newest first
-            const priorityWeight = { 'HIGH': 3, 'MEDIUM': 2, 'LOW': 1 };
-            allMyComplaints.sort((a, b) => {
-                const pA = priorityWeight[a.priority] || 1;
-                const pB = priorityWeight[b.priority] || 1;
-                if (pB !== pA) {
-                    return pB - pA;
-                }
-                const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
-                const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
-                return dateB - dateA;
-            });
-
-            allMyComplaints.forEach(c => {
-                const status = (c.status || "OPEN").toLowerCase().replace('_', '-');
-
-                // Logic for hiding CLOSED complaints after 24 hours
-                if (c.status === 'CLOSED') {
-                    const actionDate = c.updatedAt ? new Date(c.updatedAt) : (c.createdAt ? new Date(c.createdAt) : new Date());
-                    const today = new Date();
-                    const diffInHours = (today - actionDate) / (1000 * 60 * 60);
-
-                    // Skip rendering only if it's older than 24h AND we are NOT showing history
-                    if (diffInHours >= 24 && !showHistory) {
-                        return;
-                    }
-                }
-
-                visibleCount++;
-
-                const desc = c.description || "";
-                const safeDesc = desc.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
-                const truncatedDesc = desc.length > 100
-                    ? desc.substring(0, 100) + '... <a href="#" style="color:var(--primary); font-weight:600; font-size:13px;" onclick="event.preventDefault(); this.parentElement.innerHTML=\'' + safeDesc + '\';">Read more</a>'
-                    : desc;
-
-                const card = `
-            <div class="complaint-box badge-${status}" data-status="${status}" style="border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);">
-                <div class="card-header" style="align-items: center; margin-bottom: 20px;">
-                    <h4 class="card-title" style="font-size: 20px; font-weight: 700;">${c.title}</h4>
-                    <span class="card-status-badge">${status.toUpperCase()}</span>
-                </div>
-                <div class="card-meta-container">
-                    <div class="card-meta-item" style="display: inline-flex; align-items: center; background: rgba(0,0,0,0.04); padding: 4px 8px; border-radius: 6px; font-weight: 600;">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: 4px; width: 16px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
-                        ${c.category}
-                    </div>
-                    <div class="card-meta-item" style="display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 6px; font-weight: 700; ${c.priority === 'HIGH' ? 'background: #fee2e2; color: #b91c1c;' : c.priority === 'MEDIUM' ? 'background: #fef3c7; color: #b45309;' : 'background: #d1fae5; color: #047857;'}">
-                        ${c.priority || 'LOW'}
-                    </div>
-                    <div class="card-meta-item" style="display: inline-flex; align-items: center; background: rgba(0,0,0,0.04); padding: 4px 8px; border-radius: 6px; font-weight: 500;">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: 4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        ${new Date(c.createdAt || Date.now()).toLocaleDateString()}
-                    </div>
-                </div>
-                <p class="card-desc" style="font-size: 14.5px; opacity: 0.85; line-height: 1.6; margin-top: 10px;">${truncatedDesc}</p>
-                
-                <!-- Evidences -->
-                ${c.imageUrl ? `<div style="margin-top: 10px; margin-bottom: 10px;"><a href="${baseUrl}${c.imageUrl}" target="_blank"><img src="${baseUrl}${c.imageUrl}" style="max-width: 100%; border-radius: 8px; max-height: 200px; object-fit: cover; border: 1px solid var(--border);" alt="Evidence Image"></a></div>` : ""}
-                ${c.resolvedImageUrl ? `<div style="margin-top: 10px; margin-bottom: 10px; padding: 10px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border: 1px solid #10b981;"><p style="font-size: 12px; color: #047857; margin-bottom: 5px;"><strong>Staff Proof of Resolution:</strong></p><a href="${baseUrl}${c.resolvedImageUrl}" target="_blank"><img src="${baseUrl}${c.resolvedImageUrl}" style="max-width: 100%; border-radius: 8px; max-height: 200px; object-fit: cover; border: 1px solid #a7f3d0;" alt="Staff Proof"></a></div>` : ""}
-                ${c.staffRemark ? `<div style="margin-top: 10px; margin-bottom: 15px; padding: 10px; background: var(--surface); border-left: 3px solid var(--primary); font-size: 13px;"><strong>Staff Remark:</strong> ${c.staffRemark}</div>` : ""}
-
-                ${c.status === 'RESOLVED' ? `
-                <div class="card-footer resolved-footer">
-                    <span class="card-footer-label" style="color: #047857;">Action Required</span>
-                    <div class="card-footer-text">
-                        Staff has resolved this issue.
-                    </div>
-                    <button onclick="closeComplaint(${c.id})" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 12px 15px; font-size: 14px; font-weight: 600; margin-top: 10px; width: 100%; border: none; border-radius: var(--radius-md); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">✅ Confirm Resolution & Close</button>
-                </div>
-                ` : ""}
-                ${c.status === 'CLOSED' ? `
-                <div class="card-footer closed-footer">
-                    <span class="card-footer-label">Status</span>
-                    <div class="card-footer-text">
-                        🔒 This complaint is closed.
-                    </div>
-                </div>
-                ` : ""}
-
-                <!-- COMMENTS SECTION -->
-                <div class="card-footer" style="padding-top: 15px; border-top: 1px solid var(--border); margin-top: auto;">
-                    <button style="width: 100%; padding: 10px; font-size: 13.5px; font-weight: 600; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-md); color: var(--text-strong); cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)'" onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--text-strong)'" onclick="toggleComments(${c.id})">💬 Discussion / Comments</button>
-                    
-                    <div id="chatbox-${c.id}" class="chat-container">
-                        <div id="chat-messages-${c.id}" class="chat-messages">
-                            <!-- Messages will load here -->
-                            <div style="text-align: center; color: var(--text-muted); font-size: 12px;">Loading comments...</div>
-                        </div>
-                        <div class="chat-input-area">
-                            <input type="text" id="chat-input-${c.id}" class="chat-input" placeholder="Type a message..." onkeypress="handleChatKeypress(event, ${c.id})">
-                            <button class="chat-send-btn" onclick="postComment(${c.id})">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; margin-left: 2px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>`;
-                container.innerHTML += card;
-            });
-
-            if (visibleCount === 0) {
-                container.innerHTML = "<p style='grid-column: 1/-1; text-align:center; color: #666;'>No active complaints right now. Check history for older items.</p>";
-            }
-        }
-
-        async function toggleComments(complaintId) {
-            const chatbox = document.getElementById(`chatbox-${complaintId}`);
-            if (chatbox.style.display === "flex") {
-                chatbox.style.display = "none";
-            } else {
-                chatbox.style.display = "flex";
-                await fetchComments(complaintId);
-            }
-        }
-
-        async function fetchComments(complaintId) {
-            const container = document.getElementById(`chat-messages-${complaintId}`);
-            try {
-                const res = await fetch(`${baseUrl}/api/v1/comments/${complaintId}`);
-                if (!res.ok) throw new Error("Failed to fetch comments");
-                const comments = await res.json();
-
-                container.innerHTML = "";
-                if (comments.length === 0) {
-                    container.innerHTML = "<div style='text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 10px;'>No comments yet. Start the discussion!</div>";
-                    return;
-                }
-
-                comments.forEach(c => {
-                    const picUrl = c.senderProfilePic ? `${baseUrl}${c.senderProfilePic}` : '';
-                    const initial = c.senderName ? c.senderName.charAt(0).toUpperCase() : 'U';
-                    const isStaff = c.senderRole === 'STAFF';
-                    const isAdmin = c.senderRole === 'ADMIN';
-
-                    let roleBadge = "Student";
-                    let roleColor = "var(--primary)";
-                    let roleBg = "var(--primary-light)";
-                    if (isStaff) { roleBadge = "Staff"; roleColor = "#047857"; roleBg = "#d1fae5"; }
-                    if (isAdmin) { roleBadge = "Admin"; roleColor = "#b91c1c"; roleBg = "#fee2e2"; }
-
-                    const avatarStyle = picUrl ? `background-image: url('${picUrl}');` : '';
-                    const avatarContent = picUrl ? '' : initial;
-
-                    container.innerHTML += `
-                        <div class="chat-message">
-                            <div class="chat-message-avatar" style="${avatarStyle}">${avatarContent}</div>
-                            <div class="chat-bubble">
-                                <div class="chat-bubble-header">
-                                    <span class="chat-sender-name">${c.senderName} <span class="chat-sender-role" style="color:${roleColor}; background:${roleBg}">${roleBadge}</span></span>
-                                    <span class="chat-time">${new Date(c.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                </div>
-                                <div style="color: var(--text-strong);">${c.text}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-                // Auto scroll to bottom
-                container.scrollTop = container.scrollHeight;
-            } catch (err) {
-                console.error(err);
-                container.innerHTML = "<div style='color: red; font-size: 12px;'>Error loading comments</div>";
-            }
-        }
-
-        async function postComment(complaintId) {
-            const input = document.getElementById(`chat-input-${complaintId}`);
-            const text = input.value.trim();
-            if (!text) return;
-
-            const email = sessionStorage.getItem("userEmail");
-
-            try {
-                input.disabled = true;
-                const res = await fetch(`${baseUrl}/api/v1/comments/${complaintId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'User-Email': email
-                    },
-                    body: JSON.stringify({ text: text })
-                });
-
-                if (res.ok) {
-                    input.value = "";
-                    await fetchComments(complaintId); // refresh
-                } else {
-                    alert("Failed to post comment");
-                }
-            } catch (e) { console.error(e); }
-            finally {
-                input.disabled = false;
-                input.focus();
-            }
-        }
-
-        function handleChatKeypress(event, complaintId) {
-            if (event.key === 'Enter') {
-                postComment(complaintId);
-            }
-        }
-
-        async function closeComplaint(id) {
-            if (!confirm("Are you sure you want to close this ticket? Have they properly resolved it?")) return;
-
-            const email = sessionStorage.getItem("userEmail");
-            try {
-                const res = await fetch(`${baseUrl}/api/student/close/${id}`, {
-                    method: 'PATCH',
-                    headers: { "User-Email": email }
-                });
-
-                if (res.ok) {
-                    alert("Complaint Closed successfully! ✅");
-                    initDashboard(); // refresh dashboard
-                } else {
-                    const txt = await res.text();
-                    alert("Failed to close: " + txt);
-                }
-            } catch (e) { console.error(e); }
-        }
-
-        function logout() {
-            sessionStorage.clear();
-            window.location.href = "login-v2.html";
-        }
-
-        document.addEventListener("DOMContentLoaded", initDashboard);
-
         function toggleTheme() {
             const current = document.documentElement.getAttribute('data-theme');
             const next = current === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', next);
             localStorage.setItem('theme', next);
-            updateThemeIcon(next);
-        }
-        function updateThemeIcon(theme) {
-            const icon = document.getElementById('themeIcon');
-            if (theme === 'dark') {
-                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
-            } else {
-                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>';
-            }
-        }
-        window.addEventListener('DOMContentLoaded', () => {
-            updateThemeIcon(document.documentElement.getAttribute('data-theme'));
-            const email = sessionStorage.getItem("userEmail");
-            if (email) {
-                document.getElementById("nav-email").innerText = email;
-                document.getElementById("nav-avatar").innerText = email.charAt(0).toUpperCase();
-            }
-        });
-
-        // --- GLOBAL SEARCH LOGIC ---
-        function filterComplaints() {
-            const query = document.getElementById("global-search").value.toLowerCase();
-            const statusFilterInput = document.getElementById("statusFilter");
-            const statusFilter = statusFilterInput ? statusFilterInput.value.toLowerCase() : "";
-            const cards = document.querySelectorAll(".complaint-box");
-            let visibleCount = 0;
-
-            cards.forEach(card => {
-                const textContent = card.innerText.toLowerCase();
-                const cardStatus = card.getAttribute("data-status") || "";
-                const matchesQuery = query === "" || textContent.includes(query);
-                const matchesStatus = statusFilter === "" || cardStatus === statusFilter;
-
-                if (matchesQuery && matchesStatus) {
-                    card.style.display = "flex";
-                    visibleCount++;
-                } else {
-                    card.style.display = "none";
-                }
-            });
-
-            const container = document.getElementById("complaint-container");
-            let noResultMsg = document.getElementById("no-search-result");
-
-            if (visibleCount === 0 && query !== "") {
-                if (!noResultMsg) {
-                    const msg = document.createElement('p');
-                    msg.id = "no-search-result";
-                    msg.style.cssText = "grid-column: 1/-1; text-align:center; color: var(--text-muted); padding: 40px; border: 1px dashed var(--border); border-radius: 12px;";
-                    msg.innerText = `No complaints found matching "${query}"`;
-                    container.appendChild(msg);
-                } else {
-                    noResultMsg.innerText = `No complaints found matching "${query}"`;
-                    noResultMsg.style.display = "block";
-                }
-            } else if (noResultMsg) {
-                noResultMsg.style.display = "none";
-            }
         }
     </script>
 </body>

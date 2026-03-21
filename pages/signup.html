@@ -5,140 +5,105 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up | Smart Complaint System</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Unified CSS Architecture -->
     <link rel="stylesheet" href="../css/style.css">
-    <script>
-        (function () {
-            const saved = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', saved);
-        })();
-    </script>
 </head>
 
-<body class="login-body">
-    <div class="login-card">
-        <h2>Create Account</h2>
-        <p>Join the Smart Complaint Portal</p>
+<body>
 
-        <form onsubmit="handleSignup(event)">
-            <div class="input-group">
-                <label>Full Name</label>
-                <input type="text" id="name" placeholder="John Doe" required>
+    <div class="ambient-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="auth-wrapper">
+        <section class="hero-section">
+            <div class="logo-box"><span>SC</span></div>
+            <h1>Start your journey with us.</h1>
+            <p>The smartest way to manage and resolve campus complaints. Join thousands of students today.</p>
+            <a href="login-v2.html" class="btn-outline">Sign In Instead</a>
+        </section>
+
+        <section class="form-section">
+            <div class="form-header">
+                <h2>Create Account</h2>
+                <p>Join the Smart Complaint Portal</p>
             </div>
 
-            <div class="input-group">
-                <label>Email Address</label>
-                <input type="email" id="email" placeholder="example@college.com" required>
-            </div>
+            <form id="signupForm" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="name" class="input-control" placeholder="John Doe" required>
+                </div>
 
-            <div class="input-group">
-                <label>Password</label>
-                <input type="password" id="password" placeholder="Min. 6 characters" minlength="6" required>
-            </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" class="input-control" placeholder="name@college.edu" required>
+                </div>
 
-            <div class="input-group">
-                <label>I am a...</label>
-                <select id="role" required>
-                    <option value="STUDENT">Student</option>
-                    <option value="STAFF">Staff Member</option>
-                    <option value="ADMIN">Admin</option>
-                </select>
-            </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" class="input-control" placeholder="••••••••" minlength="6"
+                        required>
+                </div>
 
-            <div class="input-group" id="dept-group" style="display: none;">
-                <label>Specialization / Category</label>
-                <select id="department">
-                    <option value="ELECTRICAL">Electrical</option>
-                    <option value="PLUMBING">Plumbing</option>
-                    <option value="CLEANING">Cleaning</option>
-                    <option value="ACADEMIC">Academic</option>
-                    <option value="HOSTEL">Hostel</option>
-                    <option value="OTHER">Other</option>
-                </select>
-            </div>
-
-            <button type="submit" class="btn-primary" id="signup-btn">Create Account</button>
-
-            <div class="auth-footer">
-                <p>Already have an account? <a href="login-v2.html">Login here</a></p>
-            </div>
-        </form>
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <span class="spinner" id="spinner"></span>
+                    <span id="btnText">Create Account</span>
+                </button>
+            </form>
+        </section>
     </div>
 
     <script>
-        document.getElementById('role').addEventListener('change', function () {
-            const deptGroup = document.getElementById('dept-group');
-            if (this.value === 'STAFF') {
-                deptGroup.style.display = 'block';
-                document.getElementById('department').required = true;
-            } else {
-                deptGroup.style.display = 'none';
-                document.getElementById('department').required = false;
-            }
-        });
-
         async function handleSignup(e) {
             e.preventDefault();
-            const btn = document.getElementById("signup-btn");
-            const name = document.getElementById("name").value;
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const role = document.getElementById("role").value;
-            const department = role === 'STAFF' ? document.getElementById("department").value : null;
+            const btn = document.getElementById("submitBtn");
+            const spinner = document.getElementById("spinner");
+            const btnText = document.getElementById("btnText");
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
 
             btn.disabled = true;
-            btn.innerHTML = "Creating Account...";
-
-            const signupData = { name, email, password, role, department };
+            spinner.style.display = "block";
+            btnText.textContent = "Creating Account...";
 
             try {
-                const response = await fetch("https://complaint-backend-5rdk.onrender.com/api/auth/signup", {
+                const response = await fetch("http://127.0.0.1:8080/api/auth/signup", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(signupData)
+                    body: JSON.stringify({ name, email, password })
                 });
 
                 const data = await response.text();
 
                 if (response.ok) {
-                    alert("Account Created Successfully! ✅");
-                    window.location.href = "login-v2.html";
+                    btnText.textContent = "Account Created!";
+                    btn.style.background = "#22c55e";
+                    btn.style.color = "#fff";
+                    setTimeout(() => window.location.href = "login-v2.html", 1000);
                 } else {
-                    alert(data || "Signup failed! Email might already be registered.");
+                    alert(data || "Signup failed!");
+                    btn.disabled = false;
+                    spinner.style.display = "none";
+                    btnText.textContent = "Create Account";
                 }
             } catch (err) {
-                console.error("Connection Error:", err);
-                alert("Server error! Is your Spring Boot app running?");
-            } finally {
+                console.error(err);
+                alert("Server error! Please check if backend is running.");
                 btn.disabled = false;
-                btn.innerHTML = "Create Account";
+                spinner.style.display = "none";
+                btnText.textContent = "Create Account";
             }
         }
-
-        function toggleTheme() {
-            const current = document.documentElement.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('theme', next);
-            updateThemeIcon(next);
-        }
-        function updateThemeIcon(theme) {
-            const icon = document.getElementById('themeIcon');
-            if (theme === 'dark') {
-                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
-            } else {
-                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>';
-            }
-        }
-        window.addEventListener('DOMContentLoaded', () => {
-            updateThemeIcon(document.documentElement.getAttribute('data-theme'));
-        });
     </script>
-    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn" title="Toggle Dark/Light Mode">
-        <svg id="themeIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9 0 0012 21a9.003 9 0 008.354-5.646z"></path>
-        </svg>
-    </button>
 </body>
 
 </html>

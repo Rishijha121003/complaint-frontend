@@ -1,7 +1,7 @@
 // ==============================
 // CONFIG & PATHS (Backend se sync rakhein)
 // ==============================
-const BASE_URL = "https://complaint-backend-5rdk.onrender.com/api/v1/complaints"; // ✅ v1 added based on your controller
+const BASE_URL = "http://127.0.0.1:8080/api/v1/complaints"; // ✅ v1 added based on your controller
 
 // ==============================
 // LOAD COMPLAINTS

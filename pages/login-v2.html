@@ -5,401 +5,218 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Smart Complaint System</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Unified CSS Architecture -->
     <link rel="stylesheet" href="../css/style.css">
-    <script>
-        (function () {
-            const saved = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', saved);
-        })();
-    </script>
 </head>
 
-<body style="margin: 0; padding: 0;">
+<body>
 
-    <div class="sliding-auth-wrapper">
-        <!-- Theme Toggle positioned absolute top right -->
-        <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn" title="Toggle Dark/Light Mode"
-            style="position: absolute; top: 20px; right: 20px; z-index: 999;">
-            <svg id="themeIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9 0 0012 21a9.003 9 0 008.354-5.646z"></path>
-            </svg>
-        </button>
+    <!-- Ambient Background -->
+    <div class="ambient-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
 
-        <div class="sliding-auth-container" id="container">
-            <!-- Sign Up Form (Appears when panel slides left) -->
-            <div class="auth-form-container sign-up-container">
-                <div class="auth-form-content">
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <h2 style="font-size: 32px; font-weight: 800; margin-bottom: 5px;">Create Account</h2>
-                        <p style="color: var(--text-muted); font-size: 15px;">Join the Smart Complaint Portal</p>
-                    </div>
-                    <form onsubmit="handleSignup(event)">
-                        <!-- Grid for Name and Email -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <div class="form-group" style="margin: 0; position: relative;">
-                                <label
-                                    style="font-weight: 600; font-size: 13.5px; margin-bottom: 6px; display: block;">Full
-                                    Name</label>
-                                <svg style="position: absolute; left: 12px; top: 40px; color: var(--text-muted); width: 16px; height: 16px;"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                </svg>
-                                <input type="text" id="name" class="auth-input" placeholder="John Doe" required
-                                    style="padding-left: 36px;">
-                            </div>
-                            <div class="form-group" style="margin: 0; position: relative;">
-                                <label
-                                    style="font-weight: 600; font-size: 13.5px; margin-bottom: 6px; display: block;">Email</label>
-                                <svg style="position: absolute; left: 12px; top: 40px; color: var(--text-muted); width: 16px; height: 16px;"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                                <input type="email" id="signup-email" class="auth-input" placeholder="email@college.com"
-                                    required style="padding-left: 36px;">
-                            </div>
-                        </div>
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
+        <i class="fa-solid fa-moon"></i>
+    </button>
 
-                        <!-- Grid for Password and Role -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <div class="form-group" style="margin: 0; position: relative;">
-                                <label
-                                    style="font-weight: 600; font-size: 13.5px; margin-bottom: 6px; display: block;">Password</label>
-                                <svg style="position: absolute; left: 12px; top: 40px; color: var(--text-muted); width: 16px; height: 16px;"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7z">
-                                    </path>
-                                </svg>
-                                <input type="password" id="signup-password" class="auth-input" placeholder="Min 6 chars"
-                                    minlength="6" required style="padding-left: 36px;">
-                                <button type="button" onclick="togglePassword('signup-password')"
-                                    style="position: absolute; right: 12px; top: 40px; background: none; border: none; padding: 0; cursor: pointer; color: var(--text-muted);">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                        </path>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="form-group" style="margin: 0;">
-                                <label
-                                    style="font-weight: 600; font-size: 13.5px; margin-bottom: 6px; display: block;">Role</label>
-                                <select id="role" class="auth-input" required style="padding-left: 12px;">
-                                    <option value="STUDENT">Student</option>
-                                    <option value="STAFF">Staff Member</option>
-                                    <option value="ADMIN">Admin</option>
-                                </select>
-                            </div>
-                        </div>
+    <div class="auth-card" id="authCard">
 
-                        <div class="form-group" id="dept-group" style="display: none; margin: 0;">
-                            <label
-                                style="font-weight: 600; font-size: 13.5px; margin-bottom: 6px; display: block;">Specialization
-                                / Category</label>
-                            <select id="department" class="auth-input" style="padding-left: 12px;">
-                                <option value="ELECTRICAL">Electrical</option>
-                                <option value="PLUMBING">Plumbing</option>
-                                <option value="CLEANING">Cleaning</option>
-                                <option value="ACADEMIC">Academic</option>
-                                <option value="HOSTEL">Hostel</option>
-                                <option value="OTHER">Other</option>
-                            </select>
-                        </div>
-
-                        <button type="submit" class="auth-submit-btn" id="signup-btn">
-                            Create Account
-                        </button>
-
-                        <!-- Mobile Switcher -->
-                        <div style="text-align: center; margin-top: 15px; font-size: 14.5px;" class="d-mobile-only">
-                            <span style="color: var(--text-muted)">Already have an account?</span> <a href="#"
-                                id="mobile-signIn" style="color: var(--primary); font-weight: 600;">Sign In</a>
-                        </div>
-                    </form>
-                </div>
+        <!-- Section: Login Form (Right Panel initially, Hero on Left) -->
+        <div class="form-panel login-view">
+            <div class="form-header">
+                <h1>Welcome Back</h1>
+                <p>Login to access your dashboard</p>
             </div>
-
-            <!-- Sign In Form (Default Active) -->
-            <div class="auth-form-container sign-in-container">
-                <div class="auth-form-content">
-                    <div style="text-align: center; margin-bottom: 25px;">
-                        <h2 style="font-size: 32px; font-weight: 800; margin-bottom: 5px;">Welcome Back</h2>
-                        <p style="color: var(--text-muted); font-size: 15px;">Log in to access your dashboard</p>
+            <form onsubmit="handleAuth(event, 'login')">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <div class="input-box">
+                        <input type="email" id="loginEmail" placeholder="example@college.com" required>
                     </div>
-                    <form onsubmit="handleLogin(event)">
-                        <div class="form-group" style="margin: 0; position: relative;">
-                            <label style="font-weight: 600; font-size: 14px; margin-bottom: 6px; display: block;">Email
-                                Address</label>
-                            <svg style="position: absolute; left: 14px; top: 41px; color: var(--text-muted); width: 18px; height: 18px;"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
-                                </path>
-                            </svg>
-                            <input type="email" id="login-email" class="auth-input" placeholder="example@college.com"
-                                required>
-                        </div>
-
-                        <div class="form-group" style="margin: 0; position: relative;">
-                            <label
-                                style="font-weight: 600; font-size: 14px; margin-bottom: 6px; display: block;">Password</label>
-                            <svg style="position: absolute; left: 14px; top: 41px; color: var(--text-muted); width: 18px; height: 18px;"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7z">
-                                </path>
-                            </svg>
-                            <input type="password" id="login-password" class="auth-input" placeholder="••••••••"
-                                required>
-                            <button type="button" onclick="togglePassword('login-password')"
-                                style="position: absolute; right: 14px; top: 41px; background: none; border: none; padding: 0; cursor: pointer; color: var(--text-muted);">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                    </path>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; opacity: 0.9;">
-                            <label
-                                style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-strong);">
-                                <input type="checkbox"
-                                    style="accent-color: var(--primary); width: 15px; height: 15px; margin: 0;">
-                                Remember me
-                            </label>
-                            <a href="#" style="color: var(--primary); font-weight: 600; text-decoration: none;">Forgot
-                                password?</a>
-                        </div>
-
-                        <button type="submit" class="auth-submit-btn" id="login-btn">
-                            Sign In
-                        </button>
-
-                        <!-- Mobile Switcher -->
-                        <div style="text-align: center; margin-top: 20px; font-size: 14.5px;" class="d-mobile-only">
-                            <span style="color: var(--text-muted)">Don't have an account?</span> <a href="#"
-                                id="mobile-signUp" style="color: var(--primary); font-weight: 600;">Sign Up</a>
-                        </div>
-                    </form>
                 </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-box">
+                        <input type="password" id="loginPass" placeholder="••••••••" required>
+                    </div>
+                </div>
+                <div class="flex-actions">
+                    <label class="remember-me">
+                        <input type="checkbox"> Remember me
+                    </label>
+                    <a href="#" class="forgot-link">Forgot password?</a>
+                </div>
+                <button type="submit" class="btn-submit">
+                    <span class="spinner"></span>
+                    <span>Sign In</span>
+                </button>
+            </form>
+            <div class="mobile-switch">Don't have an account? <span onclick="toggleMode()">Sign Up</span></div>
+        </div>
+
+        <!-- Section: Signup Form (Left Panel initially, Hero on Right) -->
+        <div class="form-panel signup-view">
+            <div class="form-header">
+                <h1>Create Account</h1>
+                <p>Join the Smart Complaint Portal</p>
             </div>
-
-            <!-- Sliding Overlay container -->
-            <div class="overlay-container d-desktop-block">
-                <div class="overlay">
-                    <!-- Left Panel (Visible by default alongside Login) -->
-                    <div class="overlay-panel overlay-left">
-                        <div
-                            style="width: 52px; height: 52px; background: white; color: var(--primary); border-radius: 16px; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: 900; margin-bottom: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-                            SC</div>
-                        <h1 style="font-size: 34px; font-weight: 800; margin-bottom: 12px; line-height: 1.2;">Resolving
-                            issues faster, smarter.</h1>
-                        <div style="font-size: 17px; opacity: 0.95; margin-bottom: 6px; font-weight: 600;">
-                            <span id="typing-text"></span><span class="typewriter-cursor"></span>
-                        </div>
-                        <p
-                            style="font-size: 15px; opacity: 0.8; margin-bottom: 30px; font-weight: 400; max-width: 90%;">
-                            Join us to bring all your requests into one tracking dashboard.</p>
-                        <button class="auth-overlay-btn" id="signUp">Create Account</button>
+            <form onsubmit="handleAuth(event, 'signup')">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <div class="input-box"><input type="text" id="regName" placeholder="John Doe" required></div>
                     </div>
-
-                    <!-- Right Panel (Visible when Signup is active) -->
-                    <div class="overlay-panel overlay-right">
-                        <div
-                            style="width: 52px; height: 52px; background: white; color: var(--primary); border-radius: 16px; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: 900; margin-bottom: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-                            SC</div>
-                        <h1 style="font-size: 34px; font-weight: 800; margin-bottom: 12px;">Already signed up?</h1>
-                        <p
-                            style="font-size: 16px; opacity: 0.9; margin-bottom: 30px; line-height: 1.5; font-weight: 400;">
-                            Jump back in and start resolving issues effortlessly on campus.</p>
-                        <button class="auth-overlay-btn" id="signIn">Sign In Here</button>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <div class="input-box"><input type="email" id="regEmail" placeholder="email@college.com"
+                                required></div>
                     </div>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-box">
+                        <input type="password" id="regPass" placeholder="Min 6 chars" minlength="6" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit">
+                    <span class="spinner"></span>
+                    <span>Create Account</span>
+                </button>
+            </form>
+            <div class="mobile-switch">Already have an account? <span onclick="toggleMode()">Sign In</span></div>
+        </div>
+
+        <!-- Sliding Overlay Hero Section -->
+        <div class="overlay-container">
+            <div class="overlay">
+                <!-- Overlay Left (Visible when in Signup Mode) -->
+                <div class="overlay-panel overlay-left">
+                    <div class="logo-box"><span>SC</span></div>
+                    <h2>Already signed up?</h2>
+                    <p>Jump back in and start resolving issues effortlessly on campus.</p>
+                    <div class="btn-ghost" onclick="toggleMode()">Sign In Here</div>
+                </div>
+                <!-- Overlay Right (Visible when in Login Mode) -->
+                <div class="overlay-panel overlay-right">
+                    <div class="logo-box"><span>SC</span></div>
+                    <h2>New here?</h2>
+                    <p>Resolving issues faster, smarter. Sign up to get started.</p>
+                    <div class="btn-ghost" onclick="toggleMode()">Create Account</div>
                 </div>
             </div>
         </div>
+
     </div>
 
-    <!-- Script that handles both logic -->
     <script>
-        // Typing Animation Helper
-        const typingTextElement = document.getElementById("typing-text");
-        const phrases = ["Track Complaints", "Resolve Issues Faster", "Improve Campus Support"];
-        let phraseIndex = 0;
-        let letterIndex = 0;
-        let isDeleting = false;
+        const card = document.getElementById('authCard');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('i');
 
-        function typeEffect() {
-            if (!typingTextElement) return;
-            const currentPhrase = phrases[phraseIndex];
-
-            if (isDeleting) {
-                typingTextElement.textContent = currentPhrase.substring(0, letterIndex - 1);
-                letterIndex--;
-            } else {
-                typingTextElement.textContent = currentPhrase.substring(0, letterIndex + 1);
-                letterIndex++;
-            }
-
-            let typeSpeed = isDeleting ? 40 : 80;
-
-            if (!isDeleting && letterIndex === currentPhrase.length) {
-                typeSpeed = 2000; // Pause at end of word
-                isDeleting = true;
-            } else if (isDeleting && letterIndex === 0) {
-                isDeleting = false;
-                phraseIndex = (phraseIndex + 1) % phrases.length;
-                typeSpeed = 500; // Pause before typing next word
-            }
-
-            setTimeout(typeEffect, typeSpeed);
+        // Logic: Switch between Login and Signup modes
+        function toggleMode() {
+            card.classList.toggle('signup-mode');
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            setTimeout(typeEffect, 1000); // Start typing animation
-        });
-
-        // Password Reveal Toggle
-        function togglePassword(inputId) {
-            const input = document.getElementById(inputId);
-            if (input.type === 'password') input.type = 'text';
-            else input.type = 'password';
+        // Logic: Theme Switcher (Dark Mode Handling)
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
         }
 
-        // Set dynamic backend url if needed (fallback handled)
-        const BASE_URL = "https://complaint-backend-5rdk.onrender.com";
+        function updateThemeIcon(theme) {
+            if (!themeIcon) return;
+            themeIcon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        }
 
-        // UI Animation Toggle
-        const signUpButton = document.getElementById('signUp');
-        const signInButton = document.getElementById('signIn');
-        const mobileSignUp = document.getElementById('mobile-signUp');
-        const mobileSignIn = document.getElementById('mobile-signIn');
-        const container = document.getElementById('container');
-
-        if (signUpButton) signUpButton.addEventListener('click', () => container.classList.add("right-panel-active"));
-        if (signInButton) signInButton.addEventListener('click', () => container.classList.remove("right-panel-active"));
-        if (mobileSignUp) mobileSignUp.addEventListener('click', (e) => { e.preventDefault(); container.classList.add("right-panel-active"); });
-        if (mobileSignIn) mobileSignIn.addEventListener('click', (e) => { e.preventDefault(); container.classList.remove("right-panel-active"); });
-
-        // Role Dropdown logic
-        document.getElementById('role').addEventListener('change', function () {
-            const deptGroup = document.getElementById('dept-group');
-            if (this.value === 'STAFF') {
-                deptGroup.style.display = 'block';
-                document.getElementById('department').required = true;
+        // --- NEW: URL Routing Logic ---
+        // Automatically switch to Signup mode if URL has ?mode=signup
+        function handleRouting() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('mode');
+            if (mode === 'signup') {
+                card.classList.add('signup-mode');
             } else {
-                deptGroup.style.display = 'none';
-                document.getElementById('department').required = false;
+                card.classList.remove('signup-mode');
             }
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            handleRouting();
         });
 
-        // LOGIN Logic
-        async function handleLogin(e) {
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        initTheme();
+
+        // Logic: Authentication (Fake API Simulation / Integration Ready)
+        async function handleAuth(e, type) {
             e.preventDefault();
-            const btn = document.getElementById("login-btn");
-            const email = document.getElementById("login-email").value;
-            const password = document.getElementById("login-password").value;
+            const btn = e.target.querySelector('.btn-submit');
+            const spinner = btn.querySelector('.spinner');
+            const btnTxt = btn.querySelector('span:last-child');
 
             btn.disabled = true;
-            btn.innerHTML = "Authenticating...";
+            spinner.style.display = 'block';
+            btnTxt.textContent = type === 'login' ? 'Validating...' : 'Processing...';
 
             try {
-                const response = await fetch(`${BASE_URL}/api/auth/login`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password })
+                const BASE = "http://127.0.0.1:8080/api/auth";
+                const endpoint = type === 'login' ? `${BASE}/login` : `${BASE}/signup`;
+
+                const payload = type === 'login'
+                    ? { email: e.target[0].value, password: e.target[1].value }
+                    : { name: e.target[0].value, email: e.target[1].value, password: e.target[2].value };
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
 
-                if (response.ok) {
+                if (!response.ok) throw new Error(await response.text() || 'Failed');
+
+                if (type === 'login') {
                     const data = await response.json();
                     sessionStorage.setItem("userEmail", data.email);
                     sessionStorage.setItem("userRole", data.role);
-
-                    if (data.role === "ADMIN") window.location.href = "admin_dashboard.html";
-                    else if (data.role === "STAFF") window.location.href = "staff_dashboard.html";
-                    else window.location.href = "student_dashboard.html";
+                    btnTxt.textContent = 'Redirecting...';
+                    setTimeout(() => {
+                        window.location.href = data.role === "ADMIN" ? "admin_dashboard.html" : (data.role === "STAFF" ? "staff_dashboard.html" : "student_dashboard.html");
+                    }, 600);
                 } else {
-                    const errorMsg = await response.text();
-                    alert("Login Failed: " + errorMsg);
-                    btn.disabled = false;
-                    btn.innerHTML = "Sign In";
+                    alert("Account Created! You can now log in.");
+                    toggleMode();
                 }
             } catch (err) {
-                console.error(err);
-                alert("Server error! Backend check kijiye.");
+                alert(err.message);
                 btn.disabled = false;
-                btn.innerHTML = "Sign In";
+                spinner.style.display = 'none';
+                btnTxt.textContent = type === 'login' ? 'Sign In' : 'Create Account';
             }
         }
-
-        // SIGNUP Logic
-        async function handleSignup(e) {
-            e.preventDefault();
-            const btn = document.getElementById("signup-btn");
-            const name = document.getElementById("name").value;
-            const email = document.getElementById("signup-email").value;
-            const password = document.getElementById("signup-password").value;
-            const role = document.getElementById("role").value;
-            const department = role === 'STAFF' ? document.getElementById("department").value : null;
-
-            btn.disabled = true;
-            btn.innerHTML = "Creating Account...";
-
-            const signupData = { name, email, password, role, department };
-
-            try {
-                const response = await fetch(`${BASE_URL}/api/auth/signup`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(signupData)
-                });
-
-                const data = await response.text();
-
-                if (response.ok) {
-                    alert("Account Created Successfully! ✅ You can now login.");
-                    container.classList.remove("right-panel-active"); // slide back to login
-                    document.getElementById("login-email").value = email; // auto fill email
-                } else {
-                    alert(data || "Signup failed! Email might already be registered.");
-                }
-            } catch (err) {
-                console.error("Connection Error:", err);
-                alert("Server error! Is your Spring Boot app running?");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = "Create Account";
-            }
-        }
-
-        // Theme
-        function toggleTheme() {
-            const current = document.documentElement.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('theme', next);
-            updateThemeIcon(next);
-        }
-        function updateThemeIcon(theme) {
-            const icon = document.getElementById('themeIcon');
-            if (theme === 'dark') {
-                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
-            } else {
-                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>';
-            }
-        }
-        window.addEventListener('DOMContentLoaded', () => {
-            updateThemeIcon(document.documentElement.getAttribute('data-theme'));
-        });
     </script>
 </body>
 
