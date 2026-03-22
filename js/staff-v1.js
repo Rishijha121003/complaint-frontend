@@ -1,9 +1,9 @@
 // Staff Dashboard Logic v1.0
 let allStaffComplaints = [];
 
-const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:'
+const baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://127.0.0.1:8080'
-    : 'http://127.0.0.1:8080';
+    : 'https://complaint-backend-5rdk.onrender.com';
 
 // --- INITIALIZATION ---
 async function initStaff() {
@@ -243,4 +243,70 @@ async function postComment(id) {
 }
 
 function logout() { sessionStorage.clear(); window.location.href = "login-v2.html"; }
-document.addEventListener("DOMContentLoaded", initStaff);
+
+function addMobileMenuSupport() {
+    const menuBtn = document.getElementById("menu-toggle");
+    const sidebar = document.querySelector('.sidebar');
+    if (menuBtn && sidebar) {
+
+        let overlay = document.getElementById('sidebarOverlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'sidebar-overlay';
+            overlay.id = 'sidebarOverlay';
+            document.body.appendChild(overlay);
+        }
+
+        if (window.innerWidth <= 1024) {
+            // Move hamburger into native flow to prevent gaps
+            const topNav = document.querySelector('.top-nav') || document.querySelector('.navbar');
+            if (topNav && menuBtn.parentNode !== topNav) {
+                topNav.appendChild(menuBtn);
+                menuBtn.style.position = 'relative';
+                menuBtn.style.top = 'auto';
+                menuBtn.style.right = 'auto';
+                menuBtn.style.margin = '0';
+            }
+
+            const headerRight = document.querySelector('.header-right') || document.querySelector('.nav-right');
+            const nav = sidebar.querySelector('nav') || sidebar.querySelector('#sidebar-nav');
+            if (headerRight && nav && !document.getElementById('mobile-extras')) {
+                const mobileSection = document.createElement('div');
+                mobileSection.id = 'mobile-extras';
+                mobileSection.style.padding = '16px 24px';
+                mobileSection.style.display = 'flex';
+                mobileSection.style.justifyContent = 'center';
+                mobileSection.style.alignItems = 'center';
+                mobileSection.style.borderTop = '1px solid var(--border)';
+                mobileSection.style.marginTop = '10px';
+                mobileSection.innerHTML = headerRight.innerHTML;
+                nav.appendChild(mobileSection);
+                headerRight.style.display = 'none';
+            }
+        }
+
+        const closeSidebar = () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        };
+
+        menuBtn.addEventListener('click', () => {
+            const isActive = sidebar.classList.toggle('active');
+            overlay.classList.toggle('active', isActive);
+        });
+
+        overlay.addEventListener('click', closeSidebar);
+
+        const navItems = document.querySelectorAll(".nav-item");
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) closeSidebar();
+            });
+        });
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    initStaff();
+    addMobileMenuSupport();
+});

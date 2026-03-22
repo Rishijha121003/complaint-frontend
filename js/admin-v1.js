@@ -6,7 +6,9 @@
 
 "use strict";
 
-const BASE_URL = "http://127.0.0.1:8080";
+const BASE_URL = (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost")
+    ? "http://127.0.0.1:8080"
+    : "https://complaint-backend-5rdk.onrender.com";
 let allComplaints = [];
 let allUsers = [];
 
@@ -587,7 +589,69 @@ function renderCharts(complaints) {
 }
 
 function addMobileMenuSupport() {
-    // Basic mobile guard/toggle can be added here if needed
+    const menuBtn = document.getElementById("menu-toggle");
+    const sidebar = document.querySelector('.sidebar');
+    if (menuBtn && sidebar) {
+
+        let overlay = document.getElementById('sidebarOverlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'sidebar-overlay';
+            overlay.id = 'sidebarOverlay';
+            document.body.appendChild(overlay);
+        }
+
+        // Move outer items (search, dark mode, refresh) inside the Dropdown on Mobile
+        if (window.innerWidth <= 1024) {
+            // Move hamburger into native flow to prevent gaps
+            const topNav = document.querySelector('.top-nav') || document.querySelector('.navbar');
+            if (topNav && menuBtn.parentNode !== topNav) {
+                topNav.appendChild(menuBtn);
+                menuBtn.style.position = 'relative';
+                menuBtn.style.top = '0';
+                menuBtn.style.right = '0';
+                menuBtn.style.margin = '0';
+            }
+
+            const headerRight = document.querySelector('.header-right') || document.querySelector('.nav-right');
+            const nav = sidebar.querySelector('nav') || sidebar.querySelector('#sidebar-nav');
+            if (headerRight && nav && !document.getElementById('mobile-extras')) {
+                const mobileSection = document.createElement('div');
+                mobileSection.id = 'mobile-extras';
+                mobileSection.style.padding = '16px 24px';
+                mobileSection.style.display = 'flex';
+                mobileSection.style.flexDirection = 'column';
+                mobileSection.style.gap = '16px';
+                mobileSection.style.borderTop = '1px solid var(--border)';
+                mobileSection.style.marginTop = '10px';
+                // Clone inner content, this persists inline onclick like toggleTheme()
+                mobileSection.innerHTML = headerRight.innerHTML;
+                nav.appendChild(mobileSection);
+                headerRight.style.display = 'none';
+            }
+        }
+
+        const closeSidebar = () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        };
+
+        menuBtn.addEventListener('click', () => {
+            const isActive = sidebar.classList.toggle('active');
+            overlay.classList.toggle('active', isActive);
+        });
+
+        // Close when clicking outside
+        overlay.addEventListener('click', closeSidebar);
+
+        // Close sidebar when a nav-item is clicked on mobile
+        const navItems = document.querySelectorAll(".nav-item");
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) closeSidebar();
+            });
+        });
+    }
 }
 
 async function handleAutoAssign(id) {

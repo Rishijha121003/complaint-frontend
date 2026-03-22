@@ -183,7 +183,9 @@
             btnTxt.textContent = type === 'login' ? 'Validating...' : 'Processing...';
 
             try {
-                const BASE = "http://127.0.0.1:8080/api/auth";
+                const BASE = (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost")
+                    ? "http://127.0.0.1:8080/api/auth"
+                    : "https://complaint-backend-5rdk.onrender.com/api/auth";
                 const endpoint = type === 'login' ? `${BASE}/login` : `${BASE}/signup`;
 
                 const payload = type === 'login'

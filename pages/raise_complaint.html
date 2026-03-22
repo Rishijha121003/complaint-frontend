@@ -384,12 +384,55 @@
         document.addEventListener("DOMContentLoaded", initLayout);
 
         const menuBtn = document.getElementById("menu-toggle");
-        const sidebar = document.getElementById("sidebar");
-        if (menuBtn) {
-            menuBtn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                sidebar.classList.toggle("active");
+        const sidebar = document.querySelector('.sidebar');
+        if (menuBtn && sidebar) {
+            let overlay = document.getElementById('sidebarOverlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.className = 'sidebar-overlay';
+                overlay.id = 'sidebarOverlay';
+                document.body.appendChild(overlay);
+            }
+
+            if (window.innerWidth <= 1024) {
+                // Move hamburger into native flow to prevent gaps
+                const topNav = document.querySelector('.top-nav') || document.querySelector('.navbar');
+                if (topNav && menuBtn.parentNode !== topNav) {
+                    topNav.appendChild(menuBtn);
+                    menuBtn.style.position = 'relative';
+                    menuBtn.style.top = 'auto';
+                    menuBtn.style.right = 'auto';
+                    menuBtn.style.margin = '0';
+                }
+
+                const headerRight = document.querySelector('.header-right') || document.querySelector('.nav-right');
+                const nav = sidebar.querySelector('nav') || sidebar.querySelector('#sidebar-nav');
+                if (headerRight && nav && !document.getElementById('mobile-extras')) {
+                    const mobileSection = document.createElement('div');
+                    mobileSection.id = 'mobile-extras';
+                    mobileSection.style.padding = '16px 24px';
+                    mobileSection.style.display = 'flex';
+                    mobileSection.style.justifyContent = 'center';
+                    mobileSection.style.alignItems = 'center';
+                    mobileSection.style.borderTop = '1px solid var(--border)';
+                    mobileSection.style.marginTop = '10px';
+                    mobileSection.innerHTML = headerRight.innerHTML;
+                    nav.appendChild(mobileSection);
+                    headerRight.style.display = 'none';
+                }
+            }
+
+            const closeSidebar = () => {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            };
+
+            menuBtn.addEventListener('click', () => {
+                const isActive = sidebar.classList.toggle('active');
+                overlay.classList.toggle('active', isActive);
             });
+
+            overlay.addEventListener('click', closeSidebar);
         }
     </script>
 </body>
