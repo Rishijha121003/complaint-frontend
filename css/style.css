@@ -2399,6 +2399,85 @@ textarea.auth-input {
     }
 }
 
+/* --- Desktop Workflow Grid --- */
+.steps-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    margin-top: 60px;
+}
+
+.steps-container .step-item {
+    background: var(--bg-card);
+    padding: 40px;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    transition: var(--transition);
+    position: relative;
+    text-align: center;
+}
+
+.steps-container .step-item:hover {
+    transform: translateY(-8px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-lg);
+}
+
+.steps-container .step-number {
+    width: 48px;
+    height: 48px;
+    background: var(--primary);
+    color: white;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 20px;
+    margin: 0 auto 24px;
+    box-shadow: 0 8px 16px var(--primary-glow);
+}
+
+/* --- Premium CTA Box --- */
+.cta-box {
+    background: var(--hero-gradient);
+    padding: 80px 40px;
+    border-radius: 40px;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    margin: 40px 0;
+    box-shadow: 0 20px 50px rgba(99, 102, 241, 0.3);
+}
+
+.cta-box h2 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 24px;
+    line-height: 1.2;
+}
+
+.btn-premium {
+    background: white;
+    color: var(--primary) !important;
+    padding: 16px 40px;
+    font-weight: 800;
+    border-radius: 14px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    transition: var(--transition);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.btn-premium:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    background: #f8fafc;
+}
+
 /* Info Box */
 .info-banner {
     display: flex;
@@ -2410,6 +2489,7 @@ textarea.auth-input {
     margin-bottom: 32px;
     border-left: 4px solid var(--primary);
 }
+
 
 .info-banner i {
     color: var(--primary);
