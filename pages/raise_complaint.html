@@ -10,27 +10,22 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap"
         rel="stylesheet">
-    <script>
-        (function () {
-            const saved = localStorage.getItem('theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', saved);
-        })();
-    </script>
-    <script src="auth.js"></script>
+    <script src="../js/config.js"></script>
+    <script>UI.initTheme();</script>
 </head>
 
 <body class="dashboard-body">
 
-    <button class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
+
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="logo">
-                <i class="fa-solid fa-screwdriver-wrench"></i>
-                <span id="sidebar-role-title">Student Portal</span>
+            <div class="brand-logo">
+                <div class="logo-icon">SC</div>
+                <span class="logo-text">Smart<span>Portal</span></span>
             </div>
         </div>
-        <nav id="sidebar-nav">
+        <nav class="sidebar-nav" id="sidebar-nav">
             <!-- Populated via renderSidebar() -->
         </nav>
         <div class="sidebar-footer">
@@ -51,14 +46,20 @@
     </div>
 
     <div class="main-content">
-        <header class="top-nav">
+        <header class="top-nav flex-between">
             <div class="header-left">
-                <h1 class="view-title">Raise New Complaint</h1>
-                <p class="view-subtitle">Detailed issue reporting for rapid resolution</p>
+                <div class="logo-icon-box mobile-only" style="margin-right: 12px; transform: scale(0.8);">SC</div>
+                <button id="back-btn" class="back-btn" onclick="UI.goBack()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="titles-wrapper">
+                    <h1 class="view-title">Raise New Complaint</h1>
+                    <p class="view-subtitle">Detailed issue reporting for rapid resolution</p>
+                </div>
             </div>
             <div class="header-right">
-                <button class="theme-toggle" onclick="toggleTheme()"><i
-                        class="fa-solid fa-circle-half-stroke"></i></button>
+                <button class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
+                <button class="theme-toggle" onclick="UI.toggleTheme()"><i class="fa-solid fa-moon"></i></button>
             </div>
         </header>
 
@@ -77,7 +78,7 @@
                             Complaint Details
                         </h3>
 
-                        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; margin-bottom: 24px;">
+                        <div class="responsive-grid-split" style="margin-bottom: 24px;">
                             <div class="form-group">
                                 <label>Complaint Title</label>
                                 <div class="premium-input-wrapper">
@@ -106,7 +107,7 @@
                             </div>
                         </div>
 
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        <div class="responsive-grid-2" style="gap: 24px;">
                             <div class="form-group">
                                 <label>Category</label>
                                 <div class="premium-input-wrapper">
@@ -182,28 +183,16 @@
     </div>
 
     <script>
-        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://127.0.0.1:8080' : 'https://complaint-backend-5rdk.onrender.com';
+        const baseUrl = CONFIG.API_BASE_URL;
 
         function renderSidebar() {
+            UI.renderSidebar('raise_complaint.html');
             const role = sessionStorage.getItem("userRole") || "STUDENT";
-            let dashLink = "student_dashboard.html";
-            let portalName = "Student Hub";
-            if (role === 'ADMIN') { dashLink = "admin_dashboard.html"; portalName = "Admin Hub"; }
-            if (role === 'STAFF') { dashLink = "staff_dashboard.html"; portalName = "Staff Portal"; }
-
+            let portalName = "Student Portal";
+            if (role === 'ADMIN') portalName = "Admin Hub";
+            if (role === 'STAFF') portalName = "Staff Portal";
             const roleEl = document.getElementById("sidebar-role-title");
             if (roleEl) roleEl.innerText = portalName;
-
-            document.getElementById("sidebar-nav").innerHTML = `
-                <a href="${dashLink}" class="nav-item">
-                    <i class="fa-solid fa-clipboard-list"></i>
-                    <span>Complaint Hub</span>
-                </a>
-                <a href="profile.html" class="nav-item">
-                    <i class="fa-solid fa-user-circle"></i>
-                    <span>Profile Hub</span>
-                </a>
-            `;
         }
 
         async function initLayout() {
@@ -216,21 +205,26 @@
             const sideAvatar = document.getElementById("sidebar-avatar");
             const sideName = document.getElementById("sidebar-name");
 
+            // Initial Identity Set from Session
+            const initial = email.charAt(0).toUpperCase();
+            if (sideEmail) sideEmail.innerText = email;
+            if (sideName) sideName.innerText = email.split('@')[0];
+            if (sideAvatar) sideAvatar.innerText = initial;
+
             try {
                 const res = await fetch(`${baseUrl}/api/v1/profile`, {
                     headers: { "User-Email": email }
                 });
                 if (res.ok) {
                     const data = await res.json();
-                    const initials = (data.name || email).charAt(0).toUpperCase();
                     if (sideName) sideName.innerText = data.name || email.split('@')[0];
-                    if (sideEmail) sideEmail.innerText = data.email;
                     if (sideAvatar) {
-                        sideAvatar.innerText = initials;
                         if (data.profilePictureUrl) {
+                            sideAvatar.innerText = "";
                             sideAvatar.style.backgroundImage = `url('${baseUrl}${data.profilePictureUrl}')`;
                             sideAvatar.style.backgroundSize = "cover";
-                            sideAvatar.innerText = "";
+                        } else {
+                            sideAvatar.innerText = (data.name || email).charAt(0).toUpperCase();
                         }
                     }
                 }
@@ -356,25 +350,23 @@
                 });
 
                 if (res.ok) {
-                    submitBtn.classList.add("success");
+                    UI.showToast("Complaint Submited Successfully!", "success");
                     submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> <span>Success!</span>';
-                    setTimeout(() => {
-                        window.location.href = "student_dashboard.html";
-                    }, 1200);
+                    setTimeout(() => { window.location.href = "student_dashboard.html"; }, 1500);
                 } else {
                     const err = await res.text();
-                    alert("Failure: " + err);
+                    UI.showToast("Error: " + err, "error");
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalHTML;
                 }
             } catch (err) {
-                alert("Backend Connection Error!");
+                UI.showToast("Backend Connection Error!", "error");
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalHTML;
             }
         });
 
-        function logout() { sessionStorage.clear(); window.location.href = "login-v2.html"; }
+        function logout() { UI.logout(); }
         function toggleTheme() {
             const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', next);
@@ -382,58 +374,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", initLayout);
-
-        const menuBtn = document.getElementById("menu-toggle");
-        const sidebar = document.querySelector('.sidebar');
-        if (menuBtn && sidebar) {
-            let overlay = document.getElementById('sidebarOverlay');
-            if (!overlay) {
-                overlay = document.createElement('div');
-                overlay.className = 'sidebar-overlay';
-                overlay.id = 'sidebarOverlay';
-                document.body.appendChild(overlay);
-            }
-
-            if (window.innerWidth <= 1024) {
-                // Move hamburger into native flow to prevent gaps
-                const topNav = document.querySelector('.top-nav') || document.querySelector('.navbar');
-                if (topNav && menuBtn.parentNode !== topNav) {
-                    topNav.appendChild(menuBtn);
-                    menuBtn.style.position = 'relative';
-                    menuBtn.style.top = 'auto';
-                    menuBtn.style.right = 'auto';
-                    menuBtn.style.margin = '0';
-                }
-
-                const headerRight = document.querySelector('.header-right') || document.querySelector('.nav-right');
-                const nav = sidebar.querySelector('nav') || sidebar.querySelector('#sidebar-nav');
-                if (headerRight && nav && !document.getElementById('mobile-extras')) {
-                    const mobileSection = document.createElement('div');
-                    mobileSection.id = 'mobile-extras';
-                    mobileSection.style.padding = '16px 24px';
-                    mobileSection.style.display = 'flex';
-                    mobileSection.style.justifyContent = 'center';
-                    mobileSection.style.alignItems = 'center';
-                    mobileSection.style.borderTop = '1px solid var(--border)';
-                    mobileSection.style.marginTop = '10px';
-                    mobileSection.innerHTML = headerRight.innerHTML;
-                    nav.appendChild(mobileSection);
-                    headerRight.style.display = 'none';
-                }
-            }
-
-            const closeSidebar = () => {
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-            };
-
-            menuBtn.addEventListener('click', () => {
-                const isActive = sidebar.classList.toggle('active');
-                overlay.classList.toggle('active', isActive);
-            });
-
-            overlay.addEventListener('click', closeSidebar);
-        }
+        // Navigation handled globally via config.js UI.initSidebar()
     </script>
 </body>
 

@@ -6,9 +6,7 @@
 
 "use strict";
 
-const BASE_URL = (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost")
-    ? "http://127.0.0.1:8080"
-    : "https://complaint-backend-5rdk.onrender.com";
+const BASE_URL = CONFIG.API_BASE_URL;
 let allComplaints = [];
 let allUsers = [];
 
@@ -31,8 +29,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     updateUserIdentity(userEmail);
-    // Add Mobile Sidebar Toggle
-    addMobileMenuSupport();
+    // UI.initSidebar is handled globally in config.js
     await refreshDashboard();
 });
 
@@ -42,6 +39,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 function switchView(viewName) {
     currentView = viewName;
     currentPage = 1;
+
+    // Manage Back Button
+    const backBtn = document.getElementById('back-btn');
+    if(backBtn) {
+        backBtn.style.display = (viewName === 'dashboard') ? 'none' : 'flex';
+    }
 
     document.querySelectorAll(".nav-item").forEach(i => i.classList.remove("active"));
     const navItem = document.getElementById(`nav-${viewName}`);
@@ -61,7 +64,7 @@ function switchView(viewName) {
         if (contentArea && !document.getElementById("complaints-tbody")) {
             contentArea.innerHTML = `
                 <div class="table-header">
-                    <h2 id="table-title">Recent Activity Registry</h2>
+                    <h2 id="table-title">Global Ticket Log</h2>
                     <div id="filter-slot"></div>
                 </div>
                 <div class="table-responsive">
@@ -101,7 +104,9 @@ function switchView(viewName) {
             if (broadcast) broadcast.remove();
         }
 
-        if (viewTitle) viewTitle.textContent = viewName === 'dashboard' ? "Admin Controller" : "Complaints Database";
+        const viewSubtitle = document.getElementById("view-subtitle");
+        if (viewTitle) viewTitle.textContent = viewName === 'dashboard' ? "Overview Dashboard" : "Registry Master";
+        if (viewSubtitle) viewSubtitle.textContent = viewName === 'dashboard' ? "Master system analytics and global ticket registry" : "Complete historical record of all system complaints";
         if (tableTitle) tableTitle.textContent = viewName === 'dashboard' ? "Recent Activity Queue" : "Global Complaints Record";
 
         // Restore Complaints Filter
@@ -129,7 +134,6 @@ function switchView(viewName) {
         if (insights) insights.style.display = 'none';
         if (viewTitle) viewTitle.textContent = "Users Management";
 
-        // RESTORE TABLE STRUCTURE if it was wiped by System Overview
         const contentArea = document.querySelector(".table-container");
         if (contentArea && !document.getElementById("complaints-tbody")) {
             contentArea.innerHTML = `
@@ -146,7 +150,6 @@ function switchView(viewName) {
                     </table>
                 </div>
             `;
-            // Re-fetch elements after restoration
             tableHeader = document.getElementById("table-header-row");
             tableTitle = document.getElementById("table-title");
             filterSlot = document.getElementById("filter-slot");
@@ -154,7 +157,6 @@ function switchView(viewName) {
 
         if (tableTitle) tableTitle.textContent = "Identity Directory Core";
 
-        // Inject Table Headers
         tableHeader.innerHTML = `
             <th style="padding-left: 24px;">ID</th>
             <th>Name</th>
@@ -165,7 +167,6 @@ function switchView(viewName) {
             <th style="text-align: right; padding-right: 24px;">Actions</th>
         `;
 
-        // Inject Global Action Button
         if (filterSlot) {
             filterSlot.innerHTML = `
                 <button class="btn btn-primary" onclick="alert('Admin Action: Spawning New Identity...')">
@@ -175,118 +176,6 @@ function switchView(viewName) {
         }
 
         renderUsersTable();
-    }
-    else if (viewName === 'system') {
-        if (insights) insights.style.display = 'none';
-        if (viewTitle) viewTitle.textContent = "System Analytics Overview";
-
-        const contentArea = document.querySelector(".table-container");
-        if (contentArea) {
-            // Real Data Calculation
-            const total = allComplaints.length || 0;
-            const pending = allComplaints.filter(c => ['PENDING', 'ASSIGNED', 'IN_PROGRESS'].includes(c.status)).length;
-            const resolved = allComplaints.filter(c => ['RESOLVED', 'CLOSED'].includes(c.status)).length;
-            const resolutionRate = total > 0 ? Math.round((resolved / total) * 100) : 0;
-
-            // Category Distribution (Visual Bars)
-            const catMap = {};
-            allComplaints.forEach(c => {
-                const catName = c.category && c.category.name ? c.category.name : 'Uncategorized';
-                catMap[catName] = (catMap[catName] || 0) + 1;
-            });
-            const categoriesHTML = Object.entries(catMap).map(([cat, count]) => {
-                const percentage = total > 0 ? (count / total) * 100 : 0;
-                return `
-                    <div style="margin-bottom: 20px;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom: 6px; font-size: 13px;">
-                            <span style="font-weight:700; color:var(--text-strong);">${cat}</span>
-                            <span style="color:var(--text-muted); font-weight:600;">${count}</span>
-                        </div>
-                        <div style="height: 6px; background: var(--bg-hover); border-radius: 3px; overflow: hidden;">
-                            <div style="width: ${percentage}%; height: 100%; background: var(--primary); border-radius: 3px;"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('') || '<p style="color:var(--text-muted); padding: 20px 0; text-align: center;">No category data available</p>';
-
-            // Recent Complaints (Clean Table)
-            const recent = [...allComplaints].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
-            const recentHTML = recent.map(c => `
-                <tr style="border-bottom: 1px solid var(--border);">
-                    <td style="padding: 16px; font-family:monospace; color:var(--text-muted); font-size: 13px;">#${c.id}</td>
-                    <td style="padding: 16px; font-weight:600; font-size: 14px; color: var(--text-strong);">${c.title}</td>
-                    <td style="padding: 16px;"><span class="badge ${c.status === 'RESOLVED' ? 'badge-green' : 'badge-amber'}" style="font-size: 11px; padding: 4px 10px;">${c.status}</span></td>
-                    <td style="padding: 16px; font-size: 13px; color:var(--text-muted);">${new Date(c.createdAt).toLocaleDateString()}</td>
-                </tr>
-            `).join('') || '<tr><td colspan="4" style="text-align:center; padding: 32px; color: var(--text-muted);">No recent logs found</td></tr>';
-
-            contentArea.innerHTML = `
-                <div style="padding: 24px; display: flex; flex-direction: column; gap: 24px;">
-                    
-                    <!-- A. Summary Stats -->
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
-                        <div class="card" style="padding: 32px; border-radius: 16px; background: var(--bg-card);">
-                            <p style="font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Total Complaints</p>
-                            <h2 style="font-size: 32px; font-weight: 800; color: var(--text-strong); margin: 0;">${total}</h2>
-                        </div>
-                        <div class="card" style="padding: 32px; border-radius: 16px; background: var(--bg-card);">
-                            <p style="font-size: 13px; font-weight: 700; color: var(--warning); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Pending Complaints</p>
-                            <h2 style="font-size: 32px; font-weight: 800; color: var(--text-strong); margin: 0;">${pending}</h2>
-                        </div>
-                        <div class="card" style="padding: 32px; border-radius: 16px; background: var(--bg-card);">
-                            <p style="font-size: 13px; font-weight: 700; color: var(--success); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Resolved Complaints</p>
-                            <h2 style="font-size: 32px; font-weight: 800; color: var(--text-strong); margin: 0;">${resolved}</h2>
-                        </div>
-                    </div>
-
-                    <!-- B & C Distribution & Recent -->
-                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px; align-items: start;">
-                        <!-- Category Distribution -->
-                        <div class="card" style="padding: 24px; border-radius: 16px;">
-                            <h3 style="font-family:'Outfit'; font-size: 16px; font-weight: 800; margin-bottom: 24px; color: var(--text-strong);">By Department</h3>
-                            <div style="display: flex; flex-direction: column;">
-                                ${categoriesHTML}
-                            </div>
-                        </div>
-
-                        <!-- Recent Complaints -->
-                        <div class="card" style="padding: 24px; border-radius: 16px; overflow: hidden;">
-                            <h3 style="font-family:'Outfit'; font-size: 16px; font-weight: 800; margin-bottom: 24px; color: var(--text-strong);">Recent Complaints</h3>
-                            <div style="overflow-x: auto;">
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    <thead>
-                                        <tr style="text-align: left; background: var(--bg-hover);">
-                                            <th style="padding: 12px 16px; font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">ID</th>
-                                            <th style="padding: 12px 16px; font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Title</th>
-                                            <th style="padding: 12px 16px; font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Status</th>
-                                            <th style="padding: 12px 16px; font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Logged Date</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${recentHTML}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- D. Resolution Analytics -->
-                    <div class="card" style="padding: 32px; border-radius: 16px;">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px;">
-                            <div>
-                                <h3 style="font-family:'Outfit'; font-size: 16px; font-weight: 800; margin-bottom: 4px; color: var(--text-strong);">Overall Resolution Progress</h3>
-                                <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Performance tracking based on resolved vs total complaints.</p>
-                            </div>
-                            <h2 style="font-size: 28px; font-weight: 800; color: var(--success); margin: 0;">${resolutionRate}% <small style="font-size: 13px; font-weight: 600; color: var(--text-muted);">Completed</small></h2>
-                        </div>
-                        <div style="height: 10px; background: var(--bg-hover); border-radius: 5px; overflow: hidden;">
-                            <div style="width: ${resolutionRate}%; height: 100%; background: var(--success); border-radius: 5px; transition: width 0.6s ease;"></div>
-                        </div>
-                    </div>
-
-                </div>
-            `;
-        }
     }
 }
 
@@ -360,8 +249,14 @@ function renderUsersTable() {
  */
 async function refreshDashboard() {
     try {
+        const btn = document.querySelector('button[onclick="refreshDashboard()"]');
+        if (btn) UI.spinIcon(btn);
+        
         const email = sessionStorage.getItem("userEmail");
         // FETCHING BOTH DATASETS IN PARALLEL
+        UI.showStatSkeletons(['stat-total', 'stat-pending', 'stat-resolved']);
+        UI.showTableSkeletons("complaints-tbody", 8);
+
         const [complaints, users] = await Promise.all([
             fetch(`${BASE_URL}/api/v1/complaints/admin/all`, { headers: { "User-Email": email } }).then(r => r.json()),
             fetch(`${BASE_URL}/api/v1/complaints/admin/users/all`, { headers: { "User-Email": email } }).then(r => r.json())
@@ -433,7 +328,6 @@ function renderTable() {
                 <div style="display: flex; gap: 8px; justify-content: flex-end; flex-direction: column; align-items: flex-end;">
                     <div style="display: flex; gap: 8px;">
                         <button class="btn-primary" style="padding: 6px 14px; font-size: 11px; border-radius: 8px;" onclick="openAssignModal(${c.id})"><i class="fa-solid fa-user-plus"></i> Assign</button>
-                        ${c.status === 'OPEN' ? `<button class="btn-primary" style="padding: 6px 14px; font-size: 11px; border-radius: 8px; background: var(--secondary);" onclick="handleAutoAssign(${c.id})" title="Auto-Assign"><i class="fa-solid fa-robot"></i></button>` : ''}
                     </div>
             `;
             if ((c.status === 'ASSIGNED' || c.status === 'IN_PROGRESS') && c.assignedStaff) {
@@ -465,11 +359,19 @@ function renderStats(data) {
     const total = data.length;
     const pending = data.filter(c => c.status !== 'RESOLVED' && c.status !== 'CLOSED').length;
     const resolved = total - pending;
+    const rate = total > 0 ? Math.round((resolved / total) * 100) : 0;
 
-    const elements = { 'stat-total': total, 'stat-pending': pending, 'stat-resolved': resolved };
+    // Update Stats Cards
+    const elements = { 'stat-total': total, 'stat-pending': pending, 'stat-resolved': `${rate}%` };
     for (const [id, val] of Object.entries(elements)) {
         const el = document.getElementById(id); if (el) el.textContent = val;
     }
+
+    // Update Resolution Progress Bar (New System Dashboard Integration)
+    const bar = document.getElementById("resolution-bar");
+    const percent = document.getElementById("resolution-percent");
+    if (bar) bar.style.width = `${rate}%`;
+    if (percent) percent.textContent = `${rate}%`;
 }
 
 function handleSort(field) {
@@ -500,30 +402,21 @@ function handleGlobalSearch() { currentPage = 1; if (currentView === 'users') re
 function handleFilterChange() { currentPage = 1; renderTable(); }
 
 function updateUserIdentity(email) {
-    const avatar = document.getElementById("nav-avatar");
-    const navText = document.getElementById("nav-email");
     const navName = document.getElementById("nav-name");
+    const sideName = document.getElementById("sidebar-name");
+    const sideEmail = document.getElementById("sidebar-email");
+    const sideAvatar = document.getElementById("sidebar-avatar");
 
-    // Sidebar Elements
-    const sidebarAvatar = document.getElementById("sidebar-avatar");
-    const sidebarEmail = document.getElementById("sidebar-email");
-    const sidebarName = document.getElementById("sidebar-name");
+    const initial = email ? email.charAt(0).toUpperCase() : "A";
 
-    const initial = email.charAt(0).toUpperCase();
-
-    if (avatar) avatar.textContent = initial;
-    if (navText) navText.textContent = email;
     if (navName) navName.textContent = "Admin Control";
-
-    if (sidebarAvatar) sidebarAvatar.textContent = initial;
-    if (sidebarEmail) sidebarEmail.textContent = email;
-    if (sidebarName) sidebarName.textContent = "Management Hub";
+    if (sideName) sideName.textContent = sessionStorage.getItem('userName') || "University Admin";
+    if (sideEmail) sideEmail.textContent = email;
+    if (sideAvatar) sideAvatar.textContent = initial;
 }
 
 function toggleTheme() {
-    const doc = document.documentElement; const cur = doc.getAttribute('data-theme'); const nxt = cur === 'dark' ? 'light' : 'dark';
-    doc.setAttribute('data-theme', nxt); localStorage.setItem('theme', nxt);
-    const icon = document.querySelector("#themeBtn i"); if (icon) icon.className = nxt === 'dark' ? "fa-solid fa-moon" : "fa-solid fa-sun";
+    UI.toggleTheme();
     renderCharts(allComplaints);
 }
 
@@ -588,94 +481,8 @@ function renderCharts(complaints) {
     if (chartTitles.length > 0) chartTitles[0].textContent = "Complaints Intake (Weekly)";
 }
 
-function addMobileMenuSupport() {
-    const menuBtn = document.getElementById("menu-toggle");
-    const sidebar = document.querySelector('.sidebar');
-    if (menuBtn && sidebar) {
+// Dynamic sidebar logic is handled via config.js UI.initSidebar()
 
-        let overlay = document.getElementById('sidebarOverlay');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.className = 'sidebar-overlay';
-            overlay.id = 'sidebarOverlay';
-            document.body.appendChild(overlay);
-        }
-
-        // Move outer items (search, dark mode, refresh) inside the Dropdown on Mobile
-        if (window.innerWidth <= 1024) {
-            // Move hamburger into native flow to prevent gaps
-            const topNav = document.querySelector('.top-nav') || document.querySelector('.navbar');
-            if (topNav && menuBtn.parentNode !== topNav) {
-                topNav.appendChild(menuBtn);
-                menuBtn.style.position = 'relative';
-                menuBtn.style.top = '0';
-                menuBtn.style.right = '0';
-                menuBtn.style.margin = '0';
-            }
-
-            const headerRight = document.querySelector('.header-right') || document.querySelector('.nav-right');
-            const nav = sidebar.querySelector('nav') || sidebar.querySelector('#sidebar-nav');
-            if (headerRight && nav && !document.getElementById('mobile-extras')) {
-                const mobileSection = document.createElement('div');
-                mobileSection.id = 'mobile-extras';
-                mobileSection.style.padding = '16px 24px';
-                mobileSection.style.display = 'flex';
-                mobileSection.style.flexDirection = 'column';
-                mobileSection.style.gap = '16px';
-                mobileSection.style.borderTop = '1px solid var(--border)';
-                mobileSection.style.marginTop = '10px';
-                // Clone inner content, this persists inline onclick like toggleTheme()
-                mobileSection.innerHTML = headerRight.innerHTML;
-                nav.appendChild(mobileSection);
-                headerRight.style.display = 'none';
-            }
-        }
-
-        const closeSidebar = () => {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-        };
-
-        menuBtn.addEventListener('click', () => {
-            const isActive = sidebar.classList.toggle('active');
-            overlay.classList.toggle('active', isActive);
-        });
-
-        // Close when clicking outside
-        overlay.addEventListener('click', closeSidebar);
-
-        // Close sidebar when a nav-item is clicked on mobile
-        const navItems = document.querySelectorAll(".nav-item");
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                if (window.innerWidth <= 1024) closeSidebar();
-            });
-        });
-    }
-}
-
-async function handleAutoAssign(id) {
-    const email = sessionStorage.getItem("userEmail");
-    if (!email) return;
-
-    try {
-        const res = await fetch(`${BASE_URL}/api/v1/complaints/admin/auto-assign?complaintId=${id}`, {
-            method: 'POST',
-            headers: { 'User-Email': email }
-        });
-
-        const rawText = await res.text();
-        if (res.ok) {
-            alert("Success: " + rawText);
-            refreshDashboard();
-        } else {
-            alert("Failed to auto-assign: " + rawText);
-        }
-    } catch (err) {
-        console.error(err);
-        alert("Server communication error during Auto-Assign.");
-    }
-}
 
 let currentSelectedStaffId = null;
 

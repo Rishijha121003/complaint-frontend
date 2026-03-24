@@ -15,6 +15,8 @@
 
     <!-- Unified CSS Architecture -->
     <link rel="stylesheet" href="../css/style.css">
+    <!-- Configuration and Shared Utils -->
+    <script src="../js/config.js"></script>
 </head>
 
 <body>
@@ -30,6 +32,11 @@
     <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
         <i class="fa-solid fa-moon"></i>
     </button>
+
+    <!-- Back to Landing -->
+    <a href="../index.html" class="auth-back-btn" title="Back to Home">
+        <i class="fa-solid fa-arrow-left"></i>
+    </a>
 
     <div class="auth-card" id="authCard">
 
@@ -122,54 +129,25 @@
 
     <script>
         const card = document.getElementById('authCard');
-        const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = themeToggle.querySelector('i');
 
         // Logic: Switch between Login and Signup modes
         function toggleMode() {
             card.classList.toggle('signup-mode');
         }
 
-        // Logic: Theme Switcher (Dark Mode Handling)
-        function initTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            updateThemeIcon(savedTheme);
-        }
-
-        function updateThemeIcon(theme) {
-            if (!themeIcon) return;
-            themeIcon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-        }
-
         // --- NEW: URL Routing Logic ---
-        // Automatically switch to Signup mode if URL has ?mode=signup
         function handleRouting() {
             const urlParams = new URLSearchParams(window.location.search);
-            const mode = urlParams.get('mode');
-            if (mode === 'signup') {
-                card.classList.add('signup-mode');
-            } else {
-                card.classList.remove('signup-mode');
-            }
+            if (urlParams.get('mode') === 'signup') card.classList.add('signup-mode');
         }
 
         // Initialize on load
         window.addEventListener('DOMContentLoaded', () => {
-            initTheme();
+            UI.initTheme();
             handleRouting();
         });
 
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateThemeIcon(newTheme);
-        });
-
-        initTheme();
+        document.getElementById('themeToggle').addEventListener('click', UI.toggleTheme);
 
         // Logic: Authentication (Fake API Simulation / Integration Ready)
         async function handleAuth(e, type) {
@@ -183,14 +161,17 @@
             btnTxt.textContent = type === 'login' ? 'Validating...' : 'Processing...';
 
             try {
-                const BASE = (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost")
-                    ? "http://127.0.0.1:8080/api/auth"
-                    : "https://complaint-backend-5rdk.onrender.com/api/auth";
-                const endpoint = type === 'login' ? `${BASE}/login` : `${BASE}/signup`;
+                const endpoint = type === 'login' 
+                    ? `${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.AUTH}/login` 
+                    : `${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.AUTH}/signup`;
 
                 const payload = type === 'login'
                     ? { email: e.target[0].value, password: e.target[1].value }
-                    : { name: e.target[0].value, email: e.target[1].value, password: e.target[2].value };
+                    : { 
+                        name: e.target[0].value, 
+                        email: e.target[1].value, 
+                        password: e.target[2].value 
+                    };
 
                 const response = await fetch(endpoint, {
                     method: 'POST',
@@ -209,11 +190,11 @@
                         window.location.href = data.role === "ADMIN" ? "admin_dashboard.html" : (data.role === "STAFF" ? "staff_dashboard.html" : "student_dashboard.html");
                     }, 600);
                 } else {
-                    alert("Account Created! You can now log in.");
+                    UI.showToast("Account Created! You can now log in.", "success");
                     toggleMode();
                 }
             } catch (err) {
-                alert(err.message);
+                UI.showToast(err.message, "error");
                 btn.disabled = false;
                 spinner.style.display = 'none';
                 btnTxt.textContent = type === 'login' ? 'Sign In' : 'Create Account';

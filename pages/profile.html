@@ -10,37 +10,33 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap"
         rel="stylesheet">
-    <script>
-        (function () {
-            const saved = localStorage.getItem('theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', saved);
-        })();
-    </script>
+    <script src="../js/config.js"></script>
+    <script>UI.initTheme();</script>
 </head>
 
 <body class="dashboard-body">
-    <button class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
+
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo">
-                <i class="fa-solid fa-screwdriver-wrench"></i>
-                <span id="sidebar-role-title">Portal Hub</span>
+                <div class="logo-icon-box" style="width: 38px; height: 38px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; box-shadow: 0 4px 12px var(--primary-glow);">SC</div>
+                <div class="logo-text" style="font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 800; color: var(--text-strong); letter-spacing: -0.5px;">Smart<span>Portal</span></div>
             </div>
         </div>
-        <nav id="sidebar-nav">
+        <nav class="sidebar-nav" id="sidebar-nav">
             <!-- Populated via renderSidebar() -->
         </nav>
         <div class="sidebar-footer">
             <div class="profile-card">
-                <div class="profile-main">
-                    <div class="profile-avatar" id="sidebar-avatar">U</div>
-                    <div class="profile-info">
-                        <span class="profile-name" id="sidebar-name">User Account</span>
-                        <span class="profile-email" id="sidebar-email">loading...</span>
+                <div class="profile-card-top">
+                    <div class="avatar" id="sidebar-avatar">U</div>
+                    <div class="profile-details">
+                        <label id="sidebar-name">User Account</label>
+                        <span id="sidebar-email">loading...</span>
                     </div>
                 </div>
-                <button class="logout-btn" onclick="logout()">
+                <button class="logout-btn" onclick="logout()" style="width: 100%; padding: 10px; border-radius: 10px; border: none; background: rgba(239, 68, 68, 0.1); color: #ef4444; font-weight: 700; cursor: pointer;">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                     <span>Log Out</span>
                 </button>
@@ -49,27 +45,33 @@
     </div>
 
     <div class="main-content">
-        <header class="top-nav">
+        <header class="top-nav flex-between">
             <div class="header-left">
-                <h1 class="view-title">Account Profile</h1>
-                <p class="view-subtitle">Verified system credentials and personnel profile</p>
+                <div class="logo-icon-box mobile-only" style="margin-right: 12px; transform: scale(0.8);">SC</div>
+                <button id="back-btn" class="back-btn" onclick="UI.goBack()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="titles-wrapper">
+                    <h1 class="view-title">Account Profile</h1>
+                    <p class="view-subtitle">Verified system credentials and personnel profile</p>
+                </div>
             </div>
             <div class="header-right">
-                <button class="theme-toggle" onclick="toggleTheme()"><i
-                        class="fa-solid fa-circle-half-stroke"></i></button>
+                <button class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
+                <button class="theme-toggle" onclick="UI.toggleTheme()"><i class="fa-solid fa-moon"></i></button>
             </div>
         </header>
 
-        <div class="profile-container"
-            style="margin-top: 40px; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 32px;">
+        <div class="profile-container responsive-grid-2" style="margin-top: 40px;">
             <!-- PROFILE DETAILS CARD -->
-            <div class="saas-card" style="border-top: 4px solid var(--primary); padding: 32px;">
+            <div class="saas-card" style="border-top: 4px solid var(--primary);">
                 <h4 style="display: flex; align-items: center; gap: 12px; margin-bottom: 32px; font-family: 'Outfit';">
                     <i class="fa-solid fa-user-pen" style="color: var(--primary);"></i> Update Identity Details
                 </h4>
 
                 <div class="avatar-wrapper"
-                    style="display: flex; align-items: center; gap: 24px; margin-bottom: 40px; background: rgba(255,255,255,0.02); padding: 24px; border-radius: 20px; border: 1px solid var(--border);">
+                    style="display: flex; align-items: center; gap: 24px; margin-bottom: 40px; background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px solid var(--border);">
+
                     <div class="avatar-circle" id="profile-picture-container"
                         style="width: 80px; height: 80px; background: var(--primary); border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: white; cursor: pointer; border: 4px solid rgba(99, 102, 241, 0.2);"
                         onclick="document.getElementById('dp-upload').click()">
@@ -119,7 +121,7 @@
             </div>
 
             <!-- SECURITY CARD -->
-            <div class="saas-card" style="border-top: 4px solid var(--warning); padding: 32px;">
+            <div class="saas-card" style="border-top: 4px solid var(--warning);">
                 <h4 style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; font-family: 'Outfit';">
                     <i class="fa-solid fa-shield-virus" style="color: var(--warning);"></i> Security & Password
                 </h4>
@@ -167,84 +169,14 @@
     </div>
 
     <script>
-        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://127.0.0.1:8080'
-            : 'https://complaint-backend-5rdk.onrender.com';
+        const baseUrl = CONFIG.API_BASE_URL;
+        // Navigation is handled globally via config.js UI.initSidebar()
 
-        const menuBtn = document.getElementById("menu-toggle");
-        const sidebar = document.getElementById("sidebar");
-
-        if (menuBtn && sidebar) {
-            let overlay = document.getElementById('sidebarOverlay');
-            if (!overlay) {
-                overlay = document.createElement('div');
-                overlay.className = 'sidebar-overlay';
-                overlay.id = 'sidebarOverlay';
-                document.body.appendChild(overlay);
-            }
-
-            if (window.innerWidth <= 1024) {
-                // Move hamburger into native flow to prevent gaps
-                const topNav = document.querySelector('.top-nav') || document.querySelector('.navbar');
-                if (topNav && menuBtn.parentNode !== topNav) {
-                    topNav.appendChild(menuBtn);
-                    menuBtn.style.position = 'relative';
-                    menuBtn.style.top = 'auto';
-                    menuBtn.style.right = 'auto';
-                    menuBtn.style.margin = '0';
-                }
-
-                const headerRight = document.querySelector('.header-right') || document.querySelector('.nav-right');
-                const nav = sidebar.querySelector('nav') || sidebar.querySelector('#sidebar-nav');
-                if (headerRight && nav && !document.getElementById('mobile-extras')) {
-                    const mobileSection = document.createElement('div');
-                    mobileSection.id = 'mobile-extras';
-                    mobileSection.style.padding = '16px 24px';
-                    mobileSection.style.display = 'flex';
-                    mobileSection.style.justifyContent = 'center';
-                    mobileSection.style.alignItems = 'center';
-                    mobileSection.style.borderTop = '1px solid var(--border)';
-                    mobileSection.style.marginTop = '10px';
-                    mobileSection.innerHTML = headerRight.innerHTML;
-                    nav.appendChild(mobileSection);
-                    headerRight.style.display = 'none';
-                }
-            }
-
-            const closeSidebar = () => {
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-            };
-
-            menuBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isActive = sidebar.classList.toggle('active');
-                overlay.classList.toggle('active', isActive);
-            });
-
-            overlay.addEventListener('click', closeSidebar);
-        }
 
         function renderSidebar() {
-            const role = sessionStorage.getItem("userRole") || "STUDENT";
-            let dashLink = "student_dashboard.html";
-            let portalName = "Management Hub";
-            if (role === 'ADMIN') { dashLink = "admin_dashboard.html"; portalName = "Admin Hub"; }
-            if (role === 'STAFF') { dashLink = "staff_dashboard.html"; portalName = "Staff Portal"; }
-
+            UI.renderSidebar('profile.html');
             const roleEl = document.getElementById("sidebar-role-title");
-            if (roleEl) roleEl.innerText = portalName;
-
-            document.getElementById("sidebar-nav").innerHTML = `
-                <a href="${dashLink}" class="nav-item">
-                    <i class="fa-solid fa-clipboard-list"></i>
-                    <span>Tasks View</span>
-                </a>
-                <a href="profile.html" class="nav-item active">
-                    <i class="fa-solid fa-user-circle"></i>
-                    <span>Profile Hub</span>
-                </a>
-            `;
+            if (roleEl) roleEl.innerText = "SmartPortal";
         }
 
         async function initProfile() {
@@ -257,34 +189,44 @@
             const sideAvatarEl = document.getElementById("sidebar-avatar");
             const sideNameEl = document.getElementById("sidebar-name");
 
+            // Initial Identity Set from Session
+            const initial = email.charAt(0).toUpperCase();
+            if (sideEmailEl) sideEmailEl.innerText = email;
+            if (sideNameEl) sideNameEl.innerText = email.split('@')[0];
+            if (sideAvatarEl) sideAvatarEl.innerText = initial;
+
             try {
                 const res = await fetch(`${baseUrl}/api/v1/profile`, {
                     headers: { "User-Email": email }
                 });
                 if (res.ok) {
                     const data = await res.json();
-
                     document.getElementById("name").value = data.name || "";
                     document.getElementById("email").value = data.email || "";
-                    document.getElementById("role-badge").innerText = data.role || "USER";
-                    document.getElementById("disp-name").innerText = data.name || email.split('@')[0];
-
-                    const initials = (data.name || email).charAt(0).toUpperCase();
-                    const profileContainer = document.getElementById("profile-picture-container");
-                    if (profileContainer) {
-                        if (data.profilePictureUrl) {
-                            profileContainer.style.backgroundImage = `url('${baseUrl}${data.profilePictureUrl}')`;
-                            profileContainer.innerText = "";
-                            profileContainer.style.backgroundSize = "cover";
-                        } else {
-                            profileContainer.innerText = initials;
-                            profileContainer.style.backgroundImage = "";
+                    const disp = document.getElementById("disp-name");
+                    if (disp) disp.innerText = data.name || email.split('@')[0];
+                    if (sideNameEl) sideNameEl.innerText = data.name || email.split('@')[0];
+                    
+                    const role = sessionStorage.getItem("userRole");
+                    const roleBadge = document.getElementById("role-badge");
+                    if (roleBadge) {
+                        roleBadge.innerText = role || "STUDENT";
+                        if (role === 'ADMIN') {
+                            roleBadge.style.background = 'rgba(251, 191, 36, 0.1)';
+                            roleBadge.style.color = 'var(--accent)';
+                            roleBadge.style.borderColor = 'rgba(251, 191, 36, 0.2)';
                         }
                     }
-
-                    if (sideNameEl) sideNameEl.innerText = data.name || email.split('@')[0];
-                    if (sideEmailEl) sideEmailEl.innerText = data.email;
-                    if (sideAvatarEl) sideAvatarEl.innerText = initials;
+                    if (sideAvatarEl) {
+                        if (data.profilePictureUrl) {
+                            const avion = `url('${baseUrl}${data.profilePictureUrl}')`;
+                            sideAvatarEl.innerText = "";
+                            sideAvatarEl.style.backgroundImage = avion;
+                            sideAvatarEl.style.backgroundSize = "cover";
+                        } else {
+                            sideAvatarEl.innerText = (data.name || email).charAt(0).toUpperCase();
+                        }
+                    }
                 }
             } catch (err) { console.error("Profile load failed", err); }
         }
@@ -302,10 +244,10 @@
                 });
 
                 if (res.ok) {
-                    alert("Identity Details Updated! ✅");
+                    UI.showToast("Identity Details Updated! ✅", "success");
                     initProfile();
                 } else {
-                    alert("Update failed.");
+                    UI.showToast("Update failed.", "error");
                 }
             } catch (err) { console.error(err); }
         });
@@ -326,11 +268,11 @@
                 });
 
                 if (res.ok) {
-                    alert("Profile Picture Updated! 😊");
+                    UI.showToast("Profile Picture Updated! 😊", "success");
                     initProfile();
                 } else {
                     const txt = await res.text();
-                    alert("Upload failed: " + txt);
+                    UI.showToast("Upload failed: " + txt, "error");
                 }
             } catch (err) { console.error(err); }
         }
@@ -356,21 +298,16 @@
                 });
 
                 if (res.ok) {
-                    alert("Success! Password rotated. Please login again.");
-                    logout();
+                    UI.showToast("Success! Password rotated.", "success");
+                    setTimeout(logout, 1500);
                 } else {
                     const errTxt = await res.text();
-                    alert("Failed: " + errTxt);
+                    UI.showToast("Failed: " + errTxt, "error");
                 }
             } catch (err) { console.error(err); }
         });
 
-        function logout() { sessionStorage.clear(); window.location.href = "login-v2.html"; }
-        function toggleTheme() {
-            const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('theme', next);
-        }
+        function logout() { UI.logout(); }
 
         document.addEventListener("DOMContentLoaded", initProfile);
     </script>

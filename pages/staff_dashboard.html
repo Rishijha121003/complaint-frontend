@@ -10,26 +10,22 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap"
         rel="stylesheet">
-    <script>
-        (function () {
-            const saved = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', saved);
-        })();
-    </script>
+    <script src="../js/config.js"></script>
+    <script>UI.initTheme();</script>
 </head>
 
 <body class="dashboard-body">
-    <button class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
+
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="logo">
-                <i class="fa-solid fa-screwdriver-wrench"></i>
-                <span>Staff Portal</span>
+            <div class="brand-logo">
+                <div class="logo-icon">SC</div>
+                <span class="logo-text">Smart<span>Portal</span></span>
             </div>
         </div>
 
-        <nav id="sidebar-nav">
+        <nav class="sidebar-nav" id="sidebar-nav">
             <a href="#" class="nav-item active" onclick="switchView('tasks', this)" id="nav-tasks">
                 <i class="fa-solid fa-clipboard-list"></i>
                 <span>Tasks View</span>
@@ -41,7 +37,7 @@
         </nav>
 
         <div class="sidebar-footer">
-            <div class="profile-card">
+            <div class="profile-card" onclick="switchView('profile', document.getElementById('nav-profile'))" style="cursor: pointer;" title="View Your Profile">
                 <div class="profile-main">
                     <div class="profile-avatar" id="sidebar-avatar">S</div>
                     <div class="profile-info">
@@ -60,7 +56,11 @@
     <div class="main-content">
         <header class="top-nav">
             <div class="header-left">
-                <h1 class="view-title">Service Desk</h1>
+                <button id="back-btn" class="back-btn" onclick="switchView('dashboard', document.getElementById('nav-dashboard'))" style="display:none; margin-right:12px; background:var(--bg-hover); border:1.5px solid var(--border); border-radius:12px; width:40px; height:40px; cursor:pointer;" title="Back to Dashboard">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="titles-wrapper">
+                    <h1 class="view-title">Service Desk</h1>
                 <p class="view-subtitle" id="current-date">Fulfilling assigned laboratory and campus requests</p>
             </div>
 
@@ -69,8 +69,10 @@
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input type="text" placeholder="Filter tasks by title or ID..." onkeyup="filterComplaints()">
                 </div>
+                <button class="refresh-btn" onclick="UI.spinIcon(this); initStaff()" title="Refresh Data"><i class="fa-solid fa-sync"></i></button>
                 <button class="theme-toggle" onclick="toggleTheme()"><i
                         class="fa-solid fa-circle-half-stroke"></i></button>
+                <button class="menu-toggle" id="menu-toggle" style="margin-left: 12px;"><i class="fa-solid fa-bars"></i></button>
             </div>
         </header>
 
@@ -205,39 +207,32 @@
         </div>
     </div>
 
-    <script src="../js/staff-v1.js"></script>
     <script>
-        function toggleTheme() {
-            const current = document.documentElement.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('theme', next);
-        }
+        function logout() { UI.logout(); }
 
         function switchView(view, element) {
-            if (view === 'profile') {
-                document.getElementById('tasks-view').style.display = 'none';
-                document.getElementById('profile-view').style.display = 'block';
-            } else {
-                document.getElementById('tasks-view').style.display = 'block';
-                document.getElementById('profile-view').style.display = 'none';
+            const isProfile = (view === 'profile');
+            document.getElementById('tasks-view').style.display = isProfile ? 'none' : 'block';
+            document.getElementById('profile-view').style.display = isProfile ? 'block' : 'none';
+
+            // Back button logic (Universal)
+            const backBtn = document.getElementById('back-btn');
+            if(backBtn) {
+                backBtn.style.display = isProfile ? 'flex' : 'none';
             }
 
             // Update Active Class
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-            element.classList.add('active');
+            if(element) element.classList.add('active');
 
             // Update Header Title
             const title = document.querySelector('.view-title');
-            const subtitle = document.querySelector('.view-subtitle');
-            if (view === 'profile') {
-                title.innerText = "Account Profile";
-                subtitle.innerText = "Verified system credentials and personnel details";
-            } else {
-                title.innerText = "Service Desk";
-                subtitle.innerText = "Fulfilling assigned laboratory and campus requests";
-            }
+            if (title) title.innerText = isProfile ? "Account Profile" : "Service Desk";
         }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            if(typeof initStaff === 'function') initStaff();
+        });
     </script>
 </body>
 

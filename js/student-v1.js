@@ -14,14 +14,18 @@ async function initDashboard() {
         return;
     }
 
-    // Set Identity in Sidebar & Navbar
+    // Set Initial Identity
+    const initial = email.charAt(0).toUpperCase();
+
+    // Select Elements explicitly to avoid ReferenceErrors
     const navEmail = document.getElementById("nav-email");
     const navAvatar = document.getElementById("nav-avatar");
+    const navName = document.getElementById("nav-name");
     const sideEmail = document.getElementById("sidebar-email");
     const sideAvatar = document.getElementById("sidebar-avatar");
-    const identLink = document.getElementById("nav-identity");
+    const sideName = document.getElementById("sidebar-name");
+    const identLink = document.getElementById("sidebar-ident-link");
 
-    const initial = email.charAt(0).toUpperCase();
     if (navEmail) navEmail.innerText = email;
     if (navAvatar) navAvatar.innerText = initial;
     if (sideEmail) sideEmail.innerText = email;
@@ -32,13 +36,33 @@ async function initDashboard() {
     }
 
     try {
-        const res = await fetch(`${baseUrl}/api/v1/complaints/student/my-complaints`, {
+        // Show Skeletons while loading
+        UI.showStatSkeletons(['stat-total', 'stat-active', 'stat-resolved']);
+        UI.showTableSkeletons("complaint-container", 5);
+
+        const res = await fetch(`${baseUrl}/api/v1/profile`, {
             headers: { "User-Email": email }
         });
 
-        if (!res.ok) throw new Error("Server error: " + res.status);
+        if (res.ok) {
+            const data = await res.json();
+            if (navName) navName.innerText = data.name || email.split('@')[0];
+            if (sideName) sideName.innerText = data.name || email.split('@')[0];
+            if (sideEmail) sideEmail.innerText = data.email;
+            if (data.profilePictureUrl) {
+                const avatarUrl = `${baseUrl}${data.profilePictureUrl}`;
+                if (navAvatar) { navAvatar.innerText = ""; navAvatar.style.backgroundImage = `url('${avatarUrl}')`; navAvatar.style.backgroundSize = "cover"; }
+                if (sideAvatar) { sideAvatar.innerText = ""; sideAvatar.style.backgroundImage = `url('${avatarUrl}')`; sideAvatar.style.backgroundSize = "cover"; }
+            }
+        }
 
-        allMyComplaints = await res.json();
+        const compRes = await fetch(`${baseUrl}/api/v1/complaints/student/my-complaints`, {
+            headers: { "User-Email": email }
+        });
+
+        if (!compRes.ok) throw new Error("Server error: " + compRes.status);
+
+        allMyComplaints = await compRes.json();
         renderComplaints();
 
     } catch (err) {
@@ -158,6 +182,7 @@ async function toggleComments(id) {
 
 async function fetchComments(id) {
     const container = document.getElementById(`chat-messages-${id}`);
+    if (container) container.innerHTML = `<div class="skeleton skeleton-card" style="height: 60px; border-radius: 12px; margin-bottom: 12px;"></div>`.repeat(3);
     try {
         const res = await fetch(`${baseUrl}/api/v1/comments/${id}`);
         const comments = await res.json();
@@ -207,69 +232,6 @@ function logout() {
     window.location.href = "login-v2.html";
 }
 
-function addMobileMenuSupport() {
-    const menuBtn = document.getElementById("menu-toggle");
-    const sidebar = document.querySelector('.sidebar');
-    if (menuBtn && sidebar) {
-
-        let overlay = document.getElementById('sidebarOverlay');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.className = 'sidebar-overlay';
-            overlay.id = 'sidebarOverlay';
-            document.body.appendChild(overlay);
-        }
-
-        if (window.innerWidth <= 1024) {
-            // Move hamburger into native flow to prevent gaps
-            const topNav = document.querySelector('.top-nav') || document.querySelector('.navbar');
-            if (topNav && menuBtn.parentNode !== topNav) {
-                topNav.appendChild(menuBtn);
-                menuBtn.style.position = 'relative';
-                menuBtn.style.top = 'auto';
-                menuBtn.style.right = 'auto';
-                menuBtn.style.margin = '0';
-            }
-
-            const headerRight = document.querySelector('.header-right') || document.querySelector('.nav-right');
-            const nav = sidebar.querySelector('nav') || sidebar.querySelector('#sidebar-nav');
-            if (headerRight && nav && !document.getElementById('mobile-extras')) {
-                const mobileSection = document.createElement('div');
-                mobileSection.id = 'mobile-extras';
-                mobileSection.style.padding = '16px 24px';
-                mobileSection.style.display = 'flex';
-                mobileSection.style.justifyContent = 'center';
-                mobileSection.style.alignItems = 'center';
-                mobileSection.style.borderTop = '1px solid var(--border)';
-                mobileSection.style.marginTop = '10px';
-                mobileSection.innerHTML = headerRight.innerHTML;
-                nav.appendChild(mobileSection);
-                headerRight.style.display = 'none';
-            }
-        }
-
-        const closeSidebar = () => {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-        };
-
-        menuBtn.addEventListener('click', () => {
-            const isActive = sidebar.classList.toggle('active');
-            overlay.classList.toggle('active', isActive);
-        });
-
-        overlay.addEventListener('click', closeSidebar);
-
-        const navItems = document.querySelectorAll(".nav-item");
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                if (window.innerWidth <= 1024) closeSidebar();
-            });
-        });
-    }
-}
-
 document.addEventListener("DOMContentLoaded", () => {
     initDashboard();
-    addMobileMenuSupport();
 });

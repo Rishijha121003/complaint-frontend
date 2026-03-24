@@ -10,26 +10,22 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap"
         rel="stylesheet">
-    <script>
-        (function () {
-            const saved = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', saved);
-        })();
-    </script>
+    <script src="../js/config.js"></script>
+    <script>UI.initTheme();</script>
 </head>
 
 <body class="dashboard-body">
-    <button class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
+
 
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo">
-                <i class="fa-solid fa-graduation-cap"></i>
-                <span>Student Hub</span>
+                <i class="fa-solid fa-circle-plus"></i>
+                <span id="sidebar-role-title">Student Portal</span>
             </div>
         </div>
 
-        <nav>
+        <nav class="sidebar-nav" id="sidebar-nav">
             <a href="student_dashboard.html" class="nav-item active">
                 <i class="fa-solid fa-house-user"></i>
                 <span>Summary View</span>
@@ -46,15 +42,15 @@
 
         <div class="sidebar-footer">
             <div class="profile-card">
-                <div class="profile-main">
-                    <div class="profile-avatar" id="sidebar-avatar">S</div>
-                    <div class="profile-info">
-                        <span class="profile-name" id="sidebar-name">Student</span>
-                        <span class="profile-email" id="sidebar-email">student@system.com</span>
+                <div class="profile-card-top">
+                    <div class="avatar" id="sidebar-avatar">S</div>
+                    <div class="profile-details">
+                        <label id="sidebar-name">Student</label>
+                        <span id="sidebar-email">student@system.com</span>
                     </div>
                 </div>
-                <button class="logout-btn" onclick="logout()">
-                    <i class="fa-solid fa-power-off"></i>
+                <button class="logout-btn" onclick="logout()" style="width: 100%; padding: 10px; border-radius: 10px; border: none; background: rgba(239, 68, 68, 0.1); color: #ef4444; font-weight: 700; cursor: pointer;">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
                     <span>Log Out</span>
                 </button>
             </div>
@@ -62,19 +58,23 @@
     </div>
 
     <div class="main-content">
-        <header class="top-nav">
+        <header class="top-nav flex-between">
             <div class="header-left">
                 <h1 class="view-title">My Tickets</h1>
                 <p class="view-subtitle" id="current-date">Track and manage your submitted concerns</p>
             </div>
-
             <div class="header-right">
                 <div class="search-bar">
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input type="text" placeholder="Find ticket by title or ID..." onkeyup="filterComplaints()">
                 </div>
-                <button class="theme-toggle" onclick="toggleTheme()"><i
-                        class="fa-solid fa-circle-half-stroke"></i></button>
+                <!-- Premium Quick Shortcut to Raise Complaint -->
+                <button class="quick-action-btn primary" onclick="window.location.href='raise_complaint.html'" title="Raise New Ticket">
+                    <i class="fa-solid fa-plus-circle"></i>
+                </button>
+                <button class="theme-toggle" onclick="UI.toggleTheme()"><i
+                        class="fa-solid fa-moon"></i></button>
+                <button class="menu-toggle" id="menu-toggle" style="margin-left: 12px;"><i class="fa-solid fa-bars"></i></button>
             </div>
         </header>
 
@@ -113,7 +113,7 @@
         <div class="table-container" style="margin-top: 40px; padding-bottom: 40px;">
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 24px;">
                 <h3 style="font-family: 'Outfit'; font-size: 20px; font-weight: 800; color: var(--text-strong);">
-                    Tracking Registry</h3>
+                    Ticket Status Feed</h3>
                 <div style="display: flex; gap: 12px; align-items: center;">
                     <label
                         style="font-size: 13px; font-weight: 700; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 8px;">
@@ -142,12 +142,7 @@
 
     <script src="../js/student-v1.js"></script>
     <script>
-        function toggleTheme() {
-            const current = document.documentElement.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('theme', next);
-        }
+        function logout() { UI.logout(); }
     </script>
 </body>
 

@@ -12,102 +12,45 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .dashboard-header {
-            margin-bottom: 32px;
-        }
-
-        .dashboard-header h1 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 28px;
-            font-weight: 800;
-        }
-
-        .premium-stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .premium-stat-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--primary);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .stat-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-        }
-
-        .stat-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .stat-info label {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .stat-info h2 {
-            font-size: 30px;
-            font-weight: 800;
-            margin-top: 4px;
-            color: var(--text-strong);
-        }
-    </style>
+    <script src="../js/config.js"></script>
+    <script>UI.initTheme();</script>
 </head>
 
 <body>
-    <button class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
+
 
     <script>
         (function () {
-            const saved = localStorage.getItem('theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', saved);
+            // Theme handled by UI.initTheme()
         })();
     </script>
 
     <!-- Sidebar Infrastructure -->
-    <aside class="sidebar">
-        <div class="sidebar-header" style="height: 100px; padding: 0 24px;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div class="logo-box" style="width: 48px; height: 48px; border-radius: 12px;">SC</div>
-                <span class="logo-text" style="font-size: 20px;">Smart<span>Portal</span></span>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon-box">SC</div>
+                <div class="logo-text">Smart<span>Portal</span></div>
             </div>
         </div>
 
-        <nav class="sidebar-nav" style="padding: 20px 16px;">
+        <nav class="sidebar-nav" id="sidebar-nav">
             <button id="nav-dashboard" class="nav-item active" onclick="switchView('dashboard')">
                 <i class="fa-solid fa-chart-simple"></i>
                 <span>Overview</span>
             </button>
             <button id="nav-complaints" class="nav-item" onclick="switchView('complaints')">
                 <i class="fa-solid fa-list-check"></i>
-                <span>Complaints Registry</span>
+                <span>Registry</span>
             </button>
             <button id="nav-users" class="nav-item" onclick="switchView('users')">
                 <i class="fa-solid fa-user-group"></i>
-                <span>Identity Hub</span>
+                <span>Identities</span>
             </button>
-            <button id="nav-system" class="nav-item" onclick="switchView('system')">
-                <i class="fa-solid fa-server"></i>
-                <span>System Overview</span>
-            </button>
+            <a href="profile.html" class="nav-item">
+                <i class="fa-solid fa-user-circle"></i>
+                <span>Admin Profile</span>
+            </a>
         </nav>
 
         <div class="sidebar-footer">
@@ -130,28 +73,34 @@
 
     <!-- Application Viewport -->
     <div class="main-wrapper">
-        <header class="navbar" style="border: none; background: transparent; padding: 24px 32px;">
-            <div class="nav-left">
-                <h1 id="view-title" style="font-family: 'Outfit'; font-weight: 800; font-size: 32px;">Admin Overview
-                </h1>
+        <header class="top-nav flex-between">
+            <div class="header-left">
+                <button id="back-btn" class="back-btn" onclick="switchView('dashboard')" style="display:none;">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="titles-wrapper">
+                    <h1 id="view-title" class="view-title">Overview Dashboard</h1>
+                    <p class="view-subtitle" id="view-subtitle">Master system analytics and global ticket registry</p>
+                </div>
             </div>
             <div class="nav-right">
-                <div class="search-container" style="width: 300px; margin-right: 16px;">
+                <div class="search-container" style="width: 300px;">
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input type="text" id="global-search" class="search-input" placeholder="Search anything..."
                         onkeyup="handleGlobalSearch()">
                 </div>
-                <button onclick="toggleTheme()" class="btn btn-icon" id="themeBtn"
-                    style="border: none; background: var(--bg-hover);"><i class="fa-solid fa-moon"></i></button>
-                <button onclick="refreshDashboard()" class="btn btn-icon"
-                    style="border: none; background: var(--bg-hover);"><i class="fa-solid fa-sync"></i></button>
+                <button onclick="UI.toggleTheme()" class="theme-toggle" id="themeBtn"><i
+                        class="fa-solid fa-moon"></i></button>
+                <button onclick="refreshDashboard()" class="refresh-btn"><i class="fa-solid fa-sync"></i></button>
+                <button class="menu-toggle" id="menu-toggle" style="margin-left: 12px;"><i
+                        class="fa-solid fa-bars"></i></button>
             </div>
         </header>
 
         <main class="content" style="padding: 0 32px 40px;">
             <!-- SPA Insight Engine -->
             <div id="dashboard-insights">
-                <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); gap: 24px;">
+                <div class="grid-3" style="margin-bottom: 24px;">
                     <div class="premium-stat-card">
                         <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;"><i
                                 class="fa-solid fa-layer-group"></i></div>
@@ -173,7 +122,28 @@
                                 class="fa-solid fa-check-double"></i></div>
                         <div class="stat-info">
                             <label>Resolution Rate</label>
-                            <h2 id="stat-resolved">0</h2>
+                            <h2 id="stat-resolved">0%</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resolution Progress Bar -->
+                <div class="card" style="margin-top: 24px; padding: 24px 32px; border-radius: 20px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px;">
+                        <div>
+                            <h3
+                                style="font-family:'Outfit'; font-size: 15px; font-weight: 800; margin-bottom: 4px; color: var(--text-strong);">
+                                System Resolution Progress</h3>
+                            <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Performance tracking based
+                                on closed vs total tickets.</p>
+                        </div>
+                        <h2 id="resolution-percent"
+                            style="font-size: 24px; font-weight: 800; color: var(--success); margin: 0;">0%</h2>
+                    </div>
+                    <div style="height: 8px; background: var(--bg-hover); border-radius: 4px; overflow: hidden;">
+                        <div id="resolution-bar"
+                            style="width: 0%; height: 100%; background: var(--success); border-radius: 4px; transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);">
                         </div>
                     </div>
                 </div>
@@ -191,15 +161,12 @@
                 </div>
             </div>
 
-            <!-- Enhanced Data Registry -->
+            <!-- Master Ticket Log -->
             <section class="table-container"
                 style="margin-top: 32px; border-radius: 24px; border: 1px solid var(--border);">
                 <div class="table-header" style="padding: 24px 32px;">
-                    <div style="display: flex; flex-direction: column; gap: 4px;">
-                        <h2 id="table-title" style="font-family: 'Outfit'; font-size: 18px; font-weight: 800;">Recent
-                            Master Registry</h2>
-                        <p style="font-size: 12px; color: var(--text-muted);">Real-time analytical feed</p>
-                    </div>
+                    <h2 id="table-title" style="font-family: 'Outfit'; font-size: 18px; font-weight: 800;">Master Ticket
+                        Log</h2>
                     <div id="filter-slot">
                         <select id="statusFilter" class="search-input"
                             style="width: auto; padding-right: 40px; border-radius: 12px; height: 44px;"
@@ -263,6 +230,48 @@
 
             <div
                 style="padding: 24px 32px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                <style>
+                    /* --- GLOBAL LOGO SYSTEM --- */
+                    .sidebar-header {
+                        height: 100px;
+                        padding: 0 24px;
+                        display: flex;
+                        align-items: center;
+                        border-bottom: 1px solid var(--border);
+                    }
+
+                    .brand-logo {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                    }
+
+                    .logo-icon {
+                        width: 44px;
+                        height: 44px;
+                        background: var(--primary);
+                        border-radius: 12px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                        font-weight: 800;
+                        font-size: 18px;
+                        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+                    }
+
+                    .logo-text {
+                        font-family: 'Outfit', sans-serif;
+                        font-size: 19px;
+                        font-weight: 800;
+                        color: var(--text-strong);
+                        letter-spacing: -0.5px;
+                    }
+
+                    .logo-text span {
+                        color: var(--primary);
+                    }
+                </style>
                 <h3
                     style="font-family:'Outfit'; font-size: 20px; font-weight: 800; color: var(--text-strong); margin: 0;">
                     Task Delegation Workflow</h3>
