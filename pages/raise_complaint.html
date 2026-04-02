@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raise New Complaint | Nexus System</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="../js/config.js"></script>
+    <script>UI.initTheme();</script>
+</head>
+
+<body class="dashboard-body">
+
+
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo" style="display: flex; align-items: center; gap: 14px; cursor: pointer;">
+                <img src="../assets/G-Logo-V2.png" alt="GLogo" style="height: 52px; width: auto; filter: drop-shadow(0px 0px 15px rgba(0, 198, 255, 0.4)); transform: translateY(2px);">
+                <span style="font-family: 'Outfit', sans-serif; font-size: 30px; font-weight: 800; background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px;">GRIEVLY</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav" id="sidebar-nav">
+            <!-- Populated via renderSidebar() -->
+        </nav>
+        <div class="sidebar-footer">
+            <div class="profile-card">
+                <div class="profile-main">
+                    <div class="profile-avatar" id="sidebar-avatar">U</div>
+                    <div class="profile-info">
+                        <span class="profile-name" id="sidebar-name">Student Account</span>
+                        <span class="profile-email" id="sidebar-email">loading...</span>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Log Out</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <header class="top-nav flex-between">
+            <div class="header-left">
+                <div class="cd-logo mobile-only" style="margin-right: 12px; transform: scale(0.8);">CD</div>
+                <button id="back-btn" class="back-btn" onclick="UI.goBack()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="titles-wrapper">
+                    <h1 class="view-title">Raise New Complaint</h1>
+                    <p class="view-subtitle">Detailed issue reporting for rapid resolution</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
+                <button class="theme-toggle" onclick="UI.toggleTheme()"><i class="fa-solid fa-moon"></i></button>
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="info-banner">
+                <i class="fa-solid fa-circle-info"></i>
+                <p>Submitting detailed complaints helps staff resolve issues faster.</p>
+            </div>
+
+            <div class="form-card">
+                <form id="complaintForm" style="display: flex; flex-direction: column; gap: 40px;">
+                    <!-- SECTION 1: Complaint Details -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <span class="step-number">1</span>
+                            Complaint Details
+                        </h3>
+
+                        <div class="responsive-grid-split" style="margin-bottom: 24px;">
+                            <div class="form-group">
+                                <label>Complaint Title</label>
+                                <div class="premium-input-wrapper">
+                                    <i class="fa-solid fa-pen-nib premium-input-icon"></i>
+                                    <input type="text" id="title" class="premium-input"
+                                        placeholder="e.g., Water leakage in washroom" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Priority Level</label>
+                                <div class="priority-grid">
+                                    <label class="priority-label" title="Low Priority">
+                                        <input type="radio" name="priority" value="LOW" checked>
+                                        <div class="priority-btn low">LOW</div>
+                                    </label>
+                                    <label class="priority-label" title="Medium Priority">
+                                        <input type="radio" name="priority" value="MEDIUM">
+                                        <div class="priority-btn mid">MID</div>
+                                    </label>
+                                    <label class="priority-label" title="High Priority">
+                                        <input type="radio" name="priority" value="HIGH">
+                                        <div class="priority-btn high">HIGH</div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="responsive-grid-2" style="gap: 24px;">
+                            <div class="form-group">
+                                <label>Category</label>
+                                <div class="premium-input-wrapper">
+                                    <i class="fa-solid fa-layer-group premium-input-icon"></i>
+                                    <select id="domain" class="premium-input" required onchange="loadCategories()"
+                                        style="appearance: none; cursor: pointer;">
+                                        <option value="" disabled selected>Select Domain</option>
+                                        <!-- Domains loaded via JS -->
+                                    </select>
+                                    <i class="fa-solid fa-chevron-down"
+                                        style="position: absolute; right: 18px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted); font-size: 12px;"></i>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Specific Category</label>
+                                <div class="premium-input-wrapper">
+                                    <i class="fa-solid fa-tag premium-input-icon"></i>
+                                    <select id="category" class="premium-input" required
+                                        style="appearance: none; cursor: pointer;">
+                                        <option value="" disabled selected>Select Category</option>
+                                        <!-- Categories loaded via JS -->
+                                    </select>
+                                    <i class="fa-solid fa-chevron-down"
+                                        style="position: absolute; right: 18px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted); font-size: 12px;"></i>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Location / Room No.</label>
+                                <div class="premium-input-wrapper">
+                                    <i class="fa-solid fa-location-dot premium-input-icon"></i>
+                                    <input type="text" id="location" class="premium-input" placeholder="e.g., Room 408"
+                                        required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 2: Description -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <span class="step-number">2</span>
+                            Detailed Description
+                        </h3>
+                        <textarea id="description" class="premium-textarea"
+                            placeholder="Describe your problem in detail... (Ex: Pipe is leaking since morning...)"
+                            required></textarea>
+                    </div>
+
+                    <!-- SECTION 3: Evidence -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <span class="step-number">3</span>
+                            Evidence (Optional)
+                        </h3>
+                        <div class="dropzone" id="dropzone" onclick="document.getElementById('image').click()">
+                            <input type="file" id="image" accept="image/*" style="display: none;">
+                            <img id="image-preview" src="" alt="Preview">
+                            <div class="dropzone-content">
+                                <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+                                <h4 id="uploadText">Click to upload or drag & drop</h4>
+                                <p>Supports JPG, PNG up to 5MB</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn-premium" id="submitBtn">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Finalize & Post Complaint</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const baseUrl = CONFIG.API_BASE_URL;
+
+        function renderSidebar() {
+            UI.renderSidebar('raise_complaint.html');
+            const role = sessionStorage.getItem("userRole") || "STUDENT";
+            let portalName = "Student Portal";
+            if (role === 'ADMIN') portalName = "Admin Hub";
+            if (role === 'STAFF') portalName = "Staff Portal";
+            const roleEl = document.getElementById("sidebar-role-title");
+            if (roleEl) roleEl.innerText = portalName;
+        }
+
+        async function initLayout() {
+            const email = sessionStorage.getItem("email");
+            if (!email) { window.location.href = "login-v2.html"; return; }
+
+            renderSidebar();
+
+            const sideEmail = document.getElementById("sidebar-email");
+            const sideAvatar = document.getElementById("sidebar-avatar");
+            const sideName = document.getElementById("sidebar-name");
+
+            // Initial Identity Set from Session
+            const initial = email.charAt(0).toUpperCase();
+            if (sideEmail) sideEmail.innerText = email;
+            if (sideName) sideName.innerText = email.split('@')[0];
+            if (sideAvatar) sideAvatar.innerText = initial;
+
+            try {
+                const res = await fetch(`${baseUrl}/api/v1/profile`, {
+                    headers: { "User-Email": email }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (sideName) sideName.innerText = data.name || email.split('@')[0];
+                    if (sideAvatar) {
+                        if (data.profilePictureUrl) {
+                            sideAvatar.innerText = "";
+                            sideAvatar.style.backgroundImage = `url('${baseUrl}${data.profilePictureUrl}')`;
+                            sideAvatar.style.backgroundSize = "cover";
+                        } else {
+                            sideAvatar.innerText = (data.name || email).charAt(0).toUpperCase();
+                        }
+                    }
+                }
+            } catch (err) { console.error("Layout init fail", err); }
+            loadDomains();
+        }
+
+        async function loadDomains() {
+            const domainSelect = document.getElementById("domain");
+            const categorySelect = document.getElementById("category");
+
+            // Disable until loaded
+            domainSelect.disabled = true;
+            categorySelect.disabled = true;
+
+            try {
+                const res = await fetch(`${baseUrl}/api/public/domains`);
+                if (!res.ok) throw new Error("Failed to fetch domains");
+
+                const domains = await res.json();
+                domainSelect.innerHTML = '<option value="" disabled selected>Select Domain</option>' +
+                    domains.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+
+                domainSelect.disabled = false;
+            } catch (e) {
+                console.error("Domain load fail", e);
+                domainSelect.innerHTML = '<option value="" disabled selected>Error loading domains</option>';
+            }
+        }
+
+        async function loadCategories() {
+            const domainId = document.getElementById("domain").value;
+            const categorySelect = document.getElementById("category");
+
+            if (!domainId) {
+                categorySelect.disabled = true;
+                categorySelect.innerHTML = '<option value="" disabled selected>Select Domain first</option>';
+                return;
+            }
+
+            categorySelect.disabled = true;
+            categorySelect.innerHTML = '<option value="" disabled selected>Loading...</option>';
+
+            try {
+                const res = await fetch(`${baseUrl}/api/public/categories/${domainId}`);
+                if (!res.ok) throw new Error("Failed to fetch categories");
+
+                const categories = await res.json();
+                categorySelect.innerHTML = '<option value="" disabled selected>Select Category</option>' +
+                    categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+                categorySelect.disabled = false;
+            } catch (e) {
+                console.error("Category load fail", e);
+                categorySelect.innerHTML = '<option value="" disabled selected>Error loading categories</option>';
+            }
+        }
+
+        // Image Preview Logic
+        document.getElementById("image").addEventListener("change", function (e) {
+            const file = e.target.files[0];
+            const dropzone = document.getElementById("dropzone");
+            const preview = document.getElementById("image-preview");
+            const uploadText = document.getElementById("uploadText");
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    dropzone.classList.add("preview-active");
+                }
+                reader.readAsDataURL(file);
+                uploadText.innerText = file.name;
+            } else {
+                dropzone.classList.remove("preview-active");
+                uploadText.innerText = "Click to upload or drag & drop";
+            }
+        });
+
+        // Drag & Drop Support
+        const dropzone = document.getElementById("dropzone");
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+
+        dropzone.addEventListener('drop', e => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            document.getElementById('image').files = files;
+            const event = new Event('change');
+            document.getElementById('image').dispatchEvent(event);
+        });
+
+        document.getElementById("complaintForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById("submitBtn");
+            const originalHTML = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> <span>Submitting...</span>';
+
+            const email = sessionStorage.getItem("email");
+            const formData = new FormData();
+            formData.append("title", document.getElementById("title").value);
+            formData.append("categoryId", document.getElementById("category").value);
+            formData.append("description", document.getElementById("description").value);
+            formData.append("location", document.getElementById("location").value);
+            formData.append("priority", document.querySelector('input[name="priority"]:checked').value);
+
+            const imageEl = document.getElementById("image");
+            if (imageEl && imageEl.files.length > 0) {
+                formData.append("image", imageEl.files[0]);
+            }
+
+            try {
+                const res = await fetch(`${baseUrl}/api/student/raise`, {
+                    method: "POST",
+                    headers: { "User-Email": email },
+                    body: formData
+                });
+
+                if (res.ok) {
+                    UI.showToast("Complaint Submited Successfully!", "success");
+                    submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> <span>Success!</span>';
+                    setTimeout(() => { window.location.href = "student_dashboard.html"; }, 1500);
+                } else {
+                    const err = await res.text();
+                    UI.showToast("Error: " + err, "error");
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalHTML;
+                }
+            } catch (err) {
+                UI.showToast("Backend Connection Error!", "error");
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHTML;
+            }
+        });
+
+        function logout() { UI.logout(); }
+        function toggleTheme() {
+            const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        }
+
+        document.addEventListener("DOMContentLoaded", initLayout);
+        // Navigation handled globally via config.js UI.initSidebar()
+    </script>
+</body>
+
+</html>

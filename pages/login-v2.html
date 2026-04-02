@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRIEVLY | Identity Access Portal</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/config.js"></script>
+    <script src="../js/ui.js"></script>
+    <script>UI.initTheme();</script>
+</head>
+
+<body class="auth-body">
+    <a href="../index.html" class="auth-back-btn" title="Exit to Hub" style="z-index: 1001; position: fixed; top: 30px; left: 30px; width: 44px; height: 44px; background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #fff; text-decoration: none; cursor: pointer; transition: all 0.3s ease;">
+        <i class="fa-solid fa-arrow-left"></i>
+    </a>
+
+    <!-- Theme Toggle -->
+    <button onclick="UI.toggleTheme()" class="auth-theme-btn" title="Toggle Theme" style="z-index: 1001; position: fixed; top: 30px; right: 30px; width: 44px; height: 44px; background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; transition: all 0.3s ease;">
+        <i class="fa-solid fa-moon theme-icon-mobile"></i>
+    </button>
+
+    <div class="auth-card" id="authCard">
+        <!-- Section: Sign In (Visible initially) -->
+        <div class="form-panel login-view">
+            <h1>Welcome Back</h1>
+            <p>Login to access your dashboard</p>
+            
+            <form onsubmit="handleAuth(event, 'login')">
+                <label class="auth-label">EMAIL ADDRESS</label>
+                <div class="input-box">
+                    <input type="email" placeholder="example@college.com" required>
+                </div>
+                
+                <label class="auth-label">PASSWORD</label>
+                <div class="input-box">
+                    <input type="password" placeholder="••••••••" required>
+                </div>
+                
+                <div class="flex-actions">
+                    <label>
+                        <input type="checkbox"> Remember me
+                    </label>
+                    <a href="#" class="forgot-link">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="btn-submit">Sign In</button>
+            </form>
+            
+            <div style="text-align: center; margin-top: 32px; font-size: 14px; color: #94a3b8;">
+                Don't have an account? <span onclick="toggleMode()" style="color: #3b82f6; font-weight: 700; cursor: pointer;">Sign Up</span>
+            </div>
+        </div>
+
+        <!-- Section: Sign Up (Hidden initially) -->
+        <div class="form-panel signup-view" style="display: none;">
+            <h1>Create Account</h1>
+            <p>Join the GRIEVLY network today</p>
+            
+            <form onsubmit="handleAuth(event, 'signup')">
+                <label class="auth-label">FULL NAME</label>
+                <div class="input-box">
+                    <input type="text" placeholder="John Doe" required>
+                </div>
+                
+                <label class="auth-label">EMAIL ADDRESS</label>
+                <div class="input-box">
+                    <input type="email" placeholder="example@college.com" required>
+                </div>
+                
+                <label class="auth-label">COMPLEX PASSWORD</label>
+                <div class="input-box">
+                    <input type="password" placeholder="Min 6 characters" minlength="6" required>
+                </div>
+                
+                <button type="submit" class="btn-submit">Initialize Profile</button>
+            </form>
+            
+            <div style="text-align: center; margin-top: 32px; font-size: 14px; color: #94a3b8;">
+                Already verified? <span onclick="toggleMode()" style="color: #3b82f6; font-weight: 700; cursor: pointer;">Sign In</span>
+            </div>
+        </div>
+
+        <!-- Section: Sliding Overlay -->
+        <div class="overlay-container">
+            <div class="overlay">
+                <!-- Overlay Panels -->
+                <div class="overlay-panel overlay-left">
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+                        <span style="font-family: 'Outfit', sans-serif; font-size: 38px; font-weight: 800; background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 4px;">GRIEVLY</span>
+                    </div>
+                    <h2>Already verified?</h2>
+                    <p>Jump back in and start resolving issues effortlessly on campus.</p>
+                    <button class="btn-ghost" onclick="toggleMode()">Sign In Here</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 24px;">
+                        <span style="font-family: 'Outfit', sans-serif; font-size: 38px; font-weight: 800; background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 4px;">GRIEVLY</span>
+                    </div>
+                    <h2>New here?</h2>
+                    <p>Resolving issues faster, smarter. Sign up to get started.</p>
+                    <button class="btn-ghost" onclick="toggleMode()">Create Account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <script>
+        const card = document.getElementById('authCard');
+        const loginView = document.querySelector('.login-view');
+        const signupView = document.querySelector('.signup-view');
+        const mobileSwitch = document.getElementById('mobileSwitch');
+
+        function toggleMode() {
+            card.classList.toggle('signup-mode');
+            
+            // Toggle visibility for desktop-friendly structure
+            if (card.classList.contains('signup-mode')) {
+                loginView.style.display = 'none';
+                signupView.style.display = 'flex';
+                mobileSwitch.innerHTML = 'Already verified? <span onclick="toggleMode()" style="color: #3b82f6; font-weight: 700; cursor: pointer;">Sign In</span>';
+            } else {
+                loginView.style.display = 'flex';
+                signupView.style.display = 'none';
+                mobileSwitch.innerHTML = 'Don\'t have an account? <span onclick="toggleMode()" style="color: #3b82f6; font-weight: 700; cursor: pointer;">Sign Up</span>';
+            }
+        }
+
+        async function handleAuth(e, type) {
+            e.preventDefault();
+            const btn = e.target.querySelector('.btn-submit');
+            const originalTxt = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'VERIFYING...';
+
+            try {
+                const endpoint = type === 'login' 
+                    ? `${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.AUTH}/login` 
+                    : `${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.AUTH}/signup`;
+
+                const payload = type === 'login'
+                    ? { email: e.target[0].value, password: e.target[1].value }
+                    : { 
+                        name: e.target[0].value, 
+                        email: e.target[1].value, 
+                        password: e.target[2].value 
+                    };
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error(await response.text() || 'Unauthorized Access');
+
+                if (type === 'login') {
+                    const data = await response.json();
+                    sessionStorage.setItem("email", data.email);
+                    sessionStorage.setItem("userRole", data.role);
+                    btn.textContent = 'ACCESS GRANTED';
+                    setTimeout(() => {
+                        window.location.href = data.role === "ADMIN" ? "admin_dashboard.html" : 
+                                             (data.role === "STAFF" ? "staff_dashboard.html" : "student_dashboard.html");
+                    }, 800);
+                } else {
+                    if (window.UI) UI.showToast("Account Initialized!", "success");
+                    else alert("Account Initialized!");
+                    toggleMode();
+                    btn.disabled = false;
+                    btn.textContent = originalTxt;
+                }
+            } catch (err) {
+                if (window.UI) UI.showToast(err.message, "error");
+                else alert(err.message);
+                btn.disabled = false;
+                btn.textContent = originalTxt;
+            }
+        }
+    </script>
+</body>
+
+</html>

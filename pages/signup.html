@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Smart Complaint System</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Unified CSS Architecture -->
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="ambient-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="auth-wrapper">
+        <section class="hero-section">
+            <div class="logo-box"><span>SC</span></div>
+            <h1>Start your journey with us.</h1>
+            <p>The smartest way to manage and resolve campus complaints. Join thousands of students today.</p>
+            <a href="login-v2.html" class="btn-outline">Sign In Instead</a>
+        </section>
+
+        <section class="form-section">
+            <div class="form-header">
+                <h2>Create Account</h2>
+                <p>Join the Smart Complaint Portal</p>
+            </div>
+
+            <form id="signupForm" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="name" class="input-control" placeholder="John Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" class="input-control" placeholder="name@college.edu" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" class="input-control" placeholder="••••••••" minlength="6"
+                        required>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <span class="spinner" id="spinner"></span>
+                    <span id="btnText">Create Account</span>
+                </button>
+            </form>
+        </section>
+    </div>
+
+    <script>
+        async function handleSignup(e) {
+            e.preventDefault();
+            const btn = document.getElementById("submitBtn");
+            const spinner = document.getElementById("spinner");
+            const btnText = document.getElementById("btnText");
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+
+            btn.disabled = true;
+            spinner.style.display = "block";
+            btnText.textContent = "Creating Account...";
+
+            try {
+                const response = await fetch("http://127.0.0.1:8080/api/auth/signup", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.text();
+
+                if (response.ok) {
+                    btnText.textContent = "Account Created!";
+                    btn.style.background = "#22c55e";
+                    btn.style.color = "#fff";
+                    setTimeout(() => window.location.href = "login-v2.html", 1000);
+                } else {
+                    alert(data || "Signup failed!");
+                    btn.disabled = false;
+                    spinner.style.display = "none";
+                    btnText.textContent = "Create Account";
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Server error! Please check if backend is running.");
+                btn.disabled = false;
+                spinner.style.display = "none";
+                btnText.textContent = "Create Account";
+            }
+        }
+    </script>
+</body>
+
+</html>

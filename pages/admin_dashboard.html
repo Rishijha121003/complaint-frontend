@@ -1,0 +1,453 @@
+                            <!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Control | GRIEVLY Ecosystem</title>
+    <!-- Core Assets -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../js/config.js"></script>
+    <script>UI.initTheme();</script>
+</head>
+
+<body>
+
+
+    <script>
+        (function () {
+            // Theme handled by UI.initTheme()
+        })();
+    </script>
+
+    <!-- Sidebar Infrastructure -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo" style="display: flex; align-items: center; gap: 14px; cursor: pointer;">
+                <img src="../assets/G-Logo-V2.png" alt="GLogo" style="height: 52px; width: auto; filter: drop-shadow(0px 0px 15px rgba(0, 198, 255, 0.4)); transform: translateY(2px);">
+                <span style="font-family: 'Outfit', sans-serif; font-size: 30px; font-weight: 800; background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px;">GRIEVLY</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav" id="sidebar-nav">
+            <button id="nav-dashboard" class="nav-item active" onclick="switchView('dashboard')">
+                <i class="fa-solid fa-chart-simple"></i>
+                <span>Dashboard</span>
+            </button>
+            <button id="nav-complaints" class="nav-item" onclick="switchView('complaints')">
+                <i class="fa-solid fa-list-check"></i>
+                <span>All Complaints</span>
+            </button>
+            <button id="nav-staff" class="nav-item" onclick="switchView('staff')">
+                <i class="fa-solid fa-user-gear"></i>
+                <span>Manage Staff</span>
+            </button>
+            <button id="nav-students" class="nav-item" onclick="switchView('students')">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>Students</span>
+            </button>
+            <button id="nav-reports" class="nav-item" onclick="switchView('reports')">
+                <i class="fa-solid fa-file-contract"></i>
+                <span>Reports</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="profile.html" class="nav-item" style="margin-bottom: 12px;">
+                <i class="fa-solid fa-user-circle"></i>
+                <span>My Profile</span>
+            </a>
+            <div class="profile-card">
+                <div class="profile-card-top">
+                    <div class="avatar" id="sidebar-avatar"
+                        style="width: 42px; height: 42px; background: var(--primary); font-size: 16px;">A</div>
+                    <div class="profile-details">
+                        <label id="sidebar-name">University Admin</label>
+                        <span id="sidebar-email">admin@college.com</span>
+                    </div>
+                </div>
+                <button class="btn-logout-minimal"
+                    onclick="sessionStorage.clear(); window.location.href='login-v2.html'">
+                    <i class="fa-solid fa-power-off"></i> Secure Logout
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Application Viewport -->
+    <div class="main-wrapper">
+        <header class="top-nav flex-between">
+            <div class="header-left" style="display: flex; align-items: center; gap: 16px;">
+                <button class="menu-toggle" id="menu-toggle" style="display: none;">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="titles-wrapper">
+                    <h1 id="view-title" class="view-title">Overview Dashboard</h1>
+                    <p class="view-subtitle hidden-mobile" id="view-subtitle">Master system analytics</p>
+                </div>
+            </div>
+            <div class="nav-right">
+                <button onclick="UI.toggleTheme()" class="theme-toggle" id="themeBtn"><i
+                        class="fa-solid fa-moon"></i></button>
+                <button onclick="refreshDashboard()" class="refresh-btn"><i class="fa-solid fa-sync"></i></button>
+            </div>
+        </header>
+
+        <main class="content" style="padding: 0 32px 40px;">
+            <!-- Dashboard Insights (Overview) -->
+            <div id="dashboard-insights" class="view-section">
+                <!-- Stats Grid -->
+                <!-- ... existing insights ... -->
+                <div class="grid-3" style="margin-bottom: 24px;">
+                    <div class="premium-stat-card">
+                        <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;"><i
+                                class="fa-solid fa-layer-group"></i></div>
+                        <div class="stat-info">
+                            <label>System Volume</label>
+                            <h2 id="stat-total">0</h2>
+                        </div>
+                    </div>
+                    <div class="premium-stat-card">
+                        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;"><i
+                                class="fa-solid fa-hourglass-start"></i></div>
+                        <div class="stat-info">
+                            <label>In Process</label>
+                            <h2 id="stat-pending">0</h2>
+                        </div>
+                    </div>
+                    <div class="premium-stat-card">
+                        <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;"><i
+                                class="fa-solid fa-check-double"></i></div>
+                        <div class="stat-info">
+                            <label>Resolution Rate</label>
+                            <h2 id="stat-resolved">0%</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resolution Progress Bar -->
+                <div class="card" style="margin-top: 24px; padding: 24px 32px; border-radius: 20px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px;">
+                        <div>
+                            <h3
+                                style="font-family:'Outfit'; font-size: 15px; font-weight: 800; margin-bottom: 4px; color: var(--text-strong);">
+                                System Resolution Progress</h3>
+                            <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Performance tracking based
+                                on closed vs total tickets.</p>
+                        </div>
+                        <h2 id="resolution-percent"
+                            style="font-size: 24px; font-weight: 800; color: var(--success); margin: 0;">0%</h2>
+                    </div>
+                    <div style="height: 8px; background: var(--bg-hover); border-radius: 4px; overflow: hidden;">
+                        <div id="resolution-bar"
+                            style="width: 0%; height: 100%; background: var(--success); border-radius: 4px; transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-grid"
+                    style="margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <div class="card" style="padding: 32px; border-radius: 24px;">
+                        <h3 class="stat-label" style="margin-bottom: 24px; font-size: 14px;">Performance Trends</h3>
+                        <div style="height: 300px;"><canvas id="trendChart"></canvas></div>
+                    </div>
+                    <div class="card" style="padding: 32px; border-radius: 24px;">
+                        <h3 class="stat-label" style="margin-bottom: 24px; font-size: 14px;">Departmental Matrix</h3>
+                        <div style="height: 300px;"><canvas id="distributionChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Master Ticket Log -->
+            <section class="table-container"
+                style="margin-top: 32px; border-radius: 24px; border: 1px solid var(--border);">
+                <div class="table-header" style="padding: 24px 32px;">
+                    <h2 id="table-title" style="font-family: 'Outfit'; font-size: 18px; font-weight: 800;">Master Ticket
+                        Log</h2>
+                    <div id="filter-slot">
+                        <select id="statusFilter" class="search-input"
+                            style="width: auto; padding-right: 40px; border-radius: 12px; height: 44px;"
+                            onchange="handleFilterChange()">
+                            <option value="ALL">All Records</option>
+                            <option value="OPEN">Queue: Open</option>
+                            <option value="RESOLVED">Resolved Only</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="padding: 0 8px;">
+                    <table style="border-collapse: separate; border-spacing: 0 8px;">
+                        <thead>
+                            <tr id="table-header-row">
+                                <th class="th-sortable" onclick="handleSort('id')"
+                                    style="background: transparent; border: none;">ID <i id="sort-id"
+                                        class="fa-solid fa-sort"></i></th>
+                                <th class="th-sortable" onclick="handleSort('title')"
+                                    style="background: transparent; border: none;">Description <i id="sort-title"
+                                        class="fa-solid fa-sort"></i></th>
+                                <th class="th-sortable" onclick="handleSort('status')"
+                                    style="background: transparent; border: none;">Status <i id="sort-status"
+                                        class="fa-solid fa-sort"></i></th>
+                                <th class="th-sortable" onclick="handleSort('priority')"
+                                    style="background: transparent; border: none;">Priority <i id="sort-priority"
+                                        class="fa-solid fa-sort"></i></th>
+                                <th class="th-sortable" onclick="handleSort('createdAt')"
+                                    style="background: transparent; border: none;">Timestamp <i id="sort-createdAt"
+                                        class="fa-solid fa-sort"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody id="complaints-tbody">
+                            <!-- Injected by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div
+                    style="padding: 20px 32px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                    <span id="pagination-info"
+                        style="font-size: 13px; color: var(--text-muted); font-weight: 600;">System Ready.</span>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn-icon" id="prevPageBtn" onclick="changePage(-1)"
+                            style="width: 36px; height: 36px; border-radius: 10px; background: var(--bg-hover);"><i
+                                class="fa-solid fa-chevron-left"></i></button>
+                        <button class="btn-icon" id="nextPageBtn" onclick="changePage(1)"
+                            style="width: 36px; height: 36px; border-radius: 10px; background: var(--bg-hover);"><i
+                                class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Global Identity Creation Modal -->
+    <div id="add-user-modal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+        <div class="card"
+            style="width: 500px; max-width: 95vw; border-radius: 24px; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow-xl); border: 1px solid var(--border);">
+            <div
+                style="padding: 24px 32px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg-card);">
+                <h3
+                    style="font-family:'Outfit'; font-size: 20px; font-weight: 800; color: var(--text-strong); margin: 0;">
+                    Spawn New Identity</h3>
+                <button onclick="closeAddUserModal()"
+                    style="background: var(--bg-hover); width: 36px; height: 36px; border-radius: 50%; border: none; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; transition: var(--transition);">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div
+                style="padding: 32px; display: flex; flex-direction: column; gap: 20px; background: var(--bg-card); max-height: 80vh; overflow-y: auto;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label
+                        style="font-family: 'Outfit'; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; display: block;">FULL
+                        LEGAL NAME</label>
+                    <input type="text" id="add-user-name" class="input-control" placeholder="e.g. John Doe"
+                        style="background: var(--bg-body); border-radius: 12px; height: 50px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label
+                        style="font-family: 'Outfit'; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; display: block;">EMAIL
+                        ADDRESS</label>
+                    <input type="email" id="add-user-email" class="input-control" placeholder="user@college.com"
+                        style="background: var(--bg-body); border-radius: 12px; height: 50px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label
+                        style="font-family: 'Outfit'; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; display: block;">ACCESS
+                        PASSWORD</label>
+                    <input type="password" id="add-user-pass" class="input-control" value="123456"
+                        style="background: var(--bg-body); border-radius: 12px; height: 50px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label
+                        style="font-family: 'Outfit'; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; display: block;">SYSTEM
+                        ROLE</label>
+                    <select id="add-user-role" class="input-control" onchange="toggleAddUserFields()"
+                        style="background: var(--bg-body); border-radius: 12px; height: 50px; cursor: pointer;">
+                        <option value="STUDENT">Student Persona</option>
+                        <option value="STAFF">University Staff</option>
+                    </select>
+                </div>
+
+                <div id="staff-specific-fields"
+                    style="display: none; border-top: 1px solid var(--border); padding-top: 20px; flex-direction: column; gap: 20px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label
+                            style="font-family: 'Outfit'; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; display: block;">PRIMARY
+                            DEPARTMENT (DOMAIN)</label>
+                        <select id="add-user-domain" class="input-control" onchange="loadAddUserCategories()"
+                            style="background: var(--bg-body); border-radius: 12px; height: 50px; cursor: pointer;">
+                            <option value="">Select Domain...</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label
+                            style="font-family: 'Outfit'; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; display: block;">FUNCTIONAL
+                            SPECIALIZATION (CATEGORY)</label>
+                        <select id="add-user-category" class="input-control"
+                            style="background: var(--bg-body); border-radius: 12px; height: 50px; cursor: pointer;">
+                            <option value="">Select Specialization...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" id="create-user-btn"
+                    style="width: 100%; margin-top: 12px; height: 54px; border-radius: 14px; font-weight: 800; font-size: 14px; letter-spacing: 0.05em; text-transform: uppercase;"
+                    onclick="submitAddUser()">
+                    <i class="fa-solid fa-shield-plus"></i> Finalize Identity
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Split Window Assigner Modal -->
+    <div id="assign-modal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+        <div class="card"
+            style="width: 900px; max-width: 95vw; height: 600px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; border-radius: 24px; position: relative;">
+
+            <div
+                style="padding: 24px 32px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                <style>
+                    /* --- GLOBAL LOGO SYSTEM --- */
+                    .sidebar-header {
+                        height: 100px;
+                        padding: 0 24px;
+                        display: flex;
+                        align-items: center;
+                        border-bottom: 1px solid var(--border);
+                    }
+
+                    .brand-logo {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                    }
+
+                    .logo-icon {
+                        width: 44px;
+                        height: 44px;
+                        background: var(--primary);
+                        border-radius: 12px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                        font-weight: 800;
+                        font-size: 18px;
+                        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+                    }
+
+                    .logo-text {
+                        font-family: 'Outfit', sans-serif;
+                        font-size: 19px;
+                        font-weight: 800;
+                        color: var(--text-strong);
+                        letter-spacing: -0.5px;
+                    }
+
+                    .logo-text span {
+                        color: var(--primary);
+                    }
+                </style>
+                <h3
+                    style="font-family:'Outfit'; font-size: 20px; font-weight: 800; color: var(--text-strong); margin: 0;">
+                    Task Delegation Workflow</h3>
+                <button onclick="closeAssignModal()"
+                    style="background: var(--bg-hover); width: 36px; height: 36px; border-radius: 50%; border: none; font-size: 16px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center;"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr; overflow: hidden; flex: 1;">
+
+                <!-- LEFT: Complaint Details -->
+                <div
+                    style="padding: 32px; border-right: 1px solid var(--border); overflow-y: auto; background: var(--bg-body); display: flex; flex-direction: column;">
+                    <input type="hidden" id="assign-complaint-id">
+
+                    <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                        <span id="view-complaint-domain" class="badge badge-indigo" style="font-size: 11px;">Domain:
+                            -</span>
+                        <span id="view-complaint-category" class="badge badge-slate" style="font-size: 11px;">Category:
+                            -</span>
+                    </div>
+
+                    <h4 id="view-complaint-title"
+                        style="font-size: 24px; font-weight: 800; color: var(--text-strong); margin-bottom: 24px; line-height: 1.3;">
+                        Loading...</h4>
+
+                    <div
+                        style="background: var(--bg-card); padding: 20px; border-radius: 16px; border: 1px solid var(--border); margin-bottom: 24px; flex-shrink: 0;">
+                        <h5
+                            style="font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">
+                            <i class="fa-solid fa-align-left"></i> Description
+                        </h5>
+                        <p id="view-complaint-desc"
+                            style="font-size: 14px; color: var(--text-strong); line-height: 1.6; margin: 0; white-space: pre-wrap;">
+                        </p>
+                    </div>
+
+                    <div
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: auto; flex-shrink: 0;">
+                        <div
+                            style="background: var(--bg-card); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
+                            <label
+                                style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Reported
+                                By</label>
+                            <span id="view-complaint-author"
+                                style="font-size: 14px; font-weight: 600; color: var(--text-strong);">-</span>
+                        </div>
+                        <div
+                            style="background: var(--bg-card); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
+                            <label
+                                style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Logged
+                                On</label>
+                            <span id="view-complaint-date"
+                                style="font-size: 14px; font-weight: 600; color: var(--text-strong);">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Staff List -->
+                <div
+                    style="padding: 32px; display: flex; flex-direction: column; background: var(--bg-card); overflow: hidden;">
+                    <div style="margin-bottom: 20px; flex-shrink: 0;">
+                        <h4 style="font-size: 16px; font-weight: 800; color: var(--text-strong); margin-bottom: 8px;">
+                            Select Assignee</h4>
+                        <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Choose the most appropriate
+                            staff member for this task.</p>
+                    </div>
+
+                    <div class="search-container" style="margin-bottom: 16px; flex-shrink: 0;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="staff-search-input" class="search-input"
+                            placeholder="Search staff or department..." onkeyup="filterAssignStaff()">
+                    </div>
+
+                    <div id="assign-staff-list"
+                        style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 8px;">
+                        <!-- Staff Cards Rendered by JS -->
+                    </div>
+
+                    <div
+                        style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); flex-shrink: 0;">
+                        <button class="btn btn-primary" id="confirm-assign-btn"
+                            style="width: 100%; border-radius: 12px; height: 48px; font-size: 14px;"
+                            onclick="submitAssign()">
+                            <i class="fa-solid fa-check"></i> Finalize Assignment
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="UI.closeSidebar()"></div>
+    <script src="../js/admin-v1.js"></script>
+</body>
+
+</html>

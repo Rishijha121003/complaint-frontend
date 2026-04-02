@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Profile | Nexus System</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="../js/config.js"></script>
+    <script>UI.initTheme();</script>
+</head>
+
+<body class="dashboard-body">
+
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo" style="display: flex; align-items: center; gap: 14px; cursor: pointer;">
+                <img src="../assets/G-Logo-V2.png" alt="GLogo" style="height: 52px; width: auto; filter: drop-shadow(0px 0px 15px rgba(0, 198, 255, 0.4)); transform: translateY(2px);">
+                <span style="font-family: 'Outfit', sans-serif; font-size: 30px; font-weight: 800; background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px;">GRIEVLY</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav" id="sidebar-nav">
+            <!-- Populated via renderSidebar() -->
+        </nav>
+        <div class="sidebar-footer">
+            <div class="profile-card">
+                <div class="profile-card-top">
+                    <div class="avatar" id="sidebar-avatar">U</div>
+                    <div class="profile-details">
+                        <label id="sidebar-name">User Account</label>
+                        <span id="sidebar-email">loading...</span>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logout()" style="width: 100%; padding: 10px; border-radius: 10px; border: none; background: rgba(239, 68, 68, 0.1); color: #ef4444; font-weight: 700; cursor: pointer;">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Log Out</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <header class="top-nav flex-between">
+            <div class="header-left">
+                <div class="cd-logo mobile-only" style="margin-right: 12px; transform: scale(0.8);"></div>
+                <button id="back-btn" class="back-btn" onclick="UI.goBack()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="titles-wrapper">
+                    <h1 class="view-title">Account Profile</h1>
+                    <p class="view-subtitle">Verified system credentials and personnel profile</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
+                <button class="theme-toggle" onclick="UI.toggleTheme()"><i class="fa-solid fa-moon"></i></button>
+            </div>
+        </header>
+
+        <div class="profile-container responsive-grid-2" style="margin-top: 40px;">
+            <!-- PROFILE DETAILS CARD -->
+            <div class="saas-card" style="border-top: 4px solid var(--primary);">
+                <h4 style="display: flex; align-items: center; gap: 12px; margin-bottom: 32px; font-family: 'Outfit';">
+                    <i class="fa-solid fa-user-pen" style="color: var(--primary);"></i> Update Identity Details
+                </h4>
+
+                <div class="avatar-wrapper"
+                    style="display: flex; align-items: center; gap: 24px; margin-bottom: 40px; background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px solid var(--border);">
+
+                    <div class="avatar-circle" id="profile-picture-container"
+                        style="width: 80px; height: 80px; background: var(--primary); border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: white; cursor: pointer; border: 4px solid rgba(99, 102, 241, 0.2);"
+                        onclick="document.getElementById('dp-upload').click()">
+                        U
+                    </div>
+                    <div>
+                        <input type="file" id="dp-upload" accept="image/*" style="display: none;"
+                            onchange="uploadProfilePicture(event)">
+                        <div style="font-weight: 800; color: var(--text-strong); font-size: 18px; margin-bottom: 4px; font-family: 'Outfit';"
+                            id="disp-name">Loading...</div>
+                        <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Click avatar to upload (Max
+                            5MB)</p>
+                    </div>
+                </div>
+
+                <form id="profileForm" style="display: flex; flex-direction: column; gap: 20px;">
+                    <div class="form-group">
+                        <label
+                            style="text-transform: uppercase; font-size: 11px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 8px; display: block;">Employment
+                            Role & Access</label>
+                        <div style="display: flex; gap: 10px;" id="badge-container">
+                            <span class="badge" id="role-badge"
+                                style="background: rgba(99, 102, 241, 0.1); color: var(--primary); border: 1px solid rgba(99,102,241,0.2);">STUDENT</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label
+                            style="text-transform: uppercase; font-size: 11px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 8px; display: block;">Primary
+                            Email Address</label>
+                        <input type="email" id="email" class="saas-input" disabled
+                            style="background: var(--bg-main); opacity: 0.7; cursor: not-allowed; border: 2px solid var(--border); border-radius: 12px; padding: 14px 16px; width: 100%; color: var(--text-muted);">
+                    </div>
+
+                    <div class="form-group">
+                        <label
+                            style="text-transform: uppercase; font-size: 11px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 8px; display: block;">Full
+                            Display Name</label>
+                        <input type="text" id="name" class="saas-input" required placeholder="Enter your full name"
+                            style="background: var(--bg-main); border: 2px solid var(--border); border-radius: 12px; padding: 14px 16px; width: 100%; color: white; font-family: 'Outfit';">
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="margin-top: 20px; height: 50px; font-weight: 800;">
+                        <i class="fa-solid fa-check" style="margin-right: 8px;"></i> Save Identification
+                    </button>
+                </form>
+            </div>
+
+            <!-- SECURITY CARD -->
+            <div class="saas-card" style="border-top: 4px solid var(--warning);">
+                <h4 style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; font-family: 'Outfit';">
+                    <i class="fa-solid fa-shield-virus" style="color: var(--warning);"></i> Security & Password
+                </h4>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 32px; line-height: 1.6;">
+                    Ensure your account is protected with a complex password. You will be logged out globally after
+                    rotation.
+                </p>
+
+                <form id="passwordForm" style="display: flex; flex-direction: column; gap: 16px;">
+                    <div class="form-group">
+                        <label
+                            style="text-transform: uppercase; font-size: 11px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 8px; display: block;">Current
+                            Credentials</label>
+                        <input type="password" id="oldPassword" class="saas-input" required
+                            placeholder="Enter current password"
+                            style="background: var(--bg-main); border: 2px solid var(--border); border-radius: 12px; padding: 14px 16px; width: 100%; color: white;">
+                    </div>
+                    <div class="form-group">
+                        <label
+                            style="text-transform: uppercase; font-size: 11px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 8px; display: block;">New
+                            Strong Password</label>
+                        <input type="password" id="newPassword" class="saas-input" required
+                            placeholder="Min. 6 alphanumeric chars"
+                            style="background: var(--bg-main); border: 2px solid var(--border); border-radius: 12px; padding: 14px 16px; width: 100%; color: white;">
+                    </div>
+                    <div class="form-group">
+                        <label
+                            style="text-transform: uppercase; font-size: 11px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 8px; display: block;">Verify
+                            New Password</label>
+                        <input type="password" id="confirmPassword" class="saas-input" required
+                            placeholder="Repeat new password"
+                            style="background: var(--bg-main); border: 2px solid var(--border); border-radius: 12px; padding: 14px 16px; width: 100%; color: white;">
+                    </div>
+
+                    <button type="submit" class="btn-primary"
+                        style="background: var(--warning); border: none; margin-top: 16px; height: 50px; font-weight: 800;">
+                        <i class="fa-solid fa-rotate" style="margin-right: 8px;"></i> Rotate Password
+                    </button>
+                    <div id="pwd-error"
+                        style="color: #ef4444; font-size: 12px; margin-top: 10px; text-align: center; display: none; font-weight: 700;">
+                        Passwords mismatch!</div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const baseUrl = CONFIG.API_BASE_URL;
+        // Navigation is handled globally via config.js UI.initSidebar()
+
+
+        function renderSidebar() {
+            UI.renderSidebar('profile.html');
+            const roleEl = document.getElementById("sidebar-role-title");
+            if (roleEl) roleEl.innerText = "GRIEVLY";
+        }
+
+        async function initProfile() {
+            const email = sessionStorage.getItem("email");
+            if (!email) { window.location.href = "login-v2.html"; return; }
+
+            renderSidebar();
+
+            const sideEmailEl = document.getElementById("sidebar-email");
+            const sideAvatarEl = document.getElementById("sidebar-avatar");
+            const sideNameEl = document.getElementById("sidebar-name");
+
+            // Initial Identity Set from Session
+            const initial = email.charAt(0).toUpperCase();
+            if (sideEmailEl) sideEmailEl.innerText = email;
+            if (sideNameEl) sideNameEl.innerText = email.split('@')[0];
+            if (sideAvatarEl) sideAvatarEl.innerText = initial;
+
+            try {
+                const res = await fetch(`${baseUrl}/api/v1/profile`, {
+                    headers: { "User-Email": email }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById("name").value = data.name || "";
+                    document.getElementById("email").value = data.email || "";
+                    const disp = document.getElementById("disp-name");
+                    if (disp) disp.innerText = data.name || email.split('@')[0];
+                    if (sideNameEl) sideNameEl.innerText = data.name || email.split('@')[0];
+                    
+                    const role = sessionStorage.getItem("userRole");
+                    const roleBadge = document.getElementById("role-badge");
+                    if (roleBadge) {
+                        roleBadge.innerText = role || "STUDENT";
+                        if (role === 'ADMIN') {
+                            roleBadge.style.background = 'rgba(251, 191, 36, 0.1)';
+                            roleBadge.style.color = 'var(--accent)';
+                            roleBadge.style.borderColor = 'rgba(251, 191, 36, 0.2)';
+                        }
+                    }
+                    if (sideAvatarEl) {
+                        if (data.profilePictureUrl) {
+                            const avion = `url('${baseUrl}${data.profilePictureUrl}')`;
+                            sideAvatarEl.innerText = "";
+                            sideAvatarEl.style.backgroundImage = avion;
+                            sideAvatarEl.style.backgroundSize = "cover";
+                        } else {
+                            sideAvatarEl.innerText = (data.name || email).charAt(0).toUpperCase();
+                        }
+                    }
+                }
+            } catch (err) { console.error("Profile load failed", err); }
+        }
+
+        document.getElementById("profileForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = sessionStorage.getItem("email");
+            const newName = document.getElementById("name").value;
+
+            try {
+                const res = await fetch(`${baseUrl}/api/v1/profile/update`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json", "User-Email": email },
+                    body: JSON.stringify({ name: newName })
+                });
+
+                if (res.ok) {
+                    UI.showToast("Identity Details Updated! ✅", "success");
+                    initProfile();
+                } else {
+                    UI.showToast("Update failed.", "error");
+                }
+            } catch (err) { console.error(err); }
+        });
+
+        async function uploadProfilePicture(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const email = sessionStorage.getItem("email");
+            const formData = new FormData();
+            formData.append("image", file);
+
+            try {
+                const res = await fetch(`${baseUrl}/api/v1/profile/upload-dp`, {
+                    method: "POST",
+                    headers: { "User-Email": email },
+                    body: formData
+                });
+
+                if (res.ok) {
+                    UI.showToast("Profile Picture Updated! 😊", "success");
+                    initProfile();
+                } else {
+                    const txt = await res.text();
+                    UI.showToast("Upload failed: " + txt, "error");
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        document.getElementById("passwordForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = sessionStorage.getItem("email");
+            const oldPassword = document.getElementById("oldPassword").value;
+            const newPassword = document.getElementById("newPassword").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+
+            if (newPassword !== confirmPassword) {
+                document.getElementById("pwd-error").style.display = "block";
+                return;
+            }
+            document.getElementById("pwd-error").style.display = "none";
+
+            try {
+                const res = await fetch(`${baseUrl}/api/v1/profile/update`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json", "User-Email": email },
+                    body: JSON.stringify({ oldPassword, newPassword })
+                });
+
+                if (res.ok) {
+                    UI.showToast("Success! Password rotated.", "success");
+                    setTimeout(logout, 1500);
+                } else {
+                    const errTxt = await res.text();
+                    UI.showToast("Failed: " + errTxt, "error");
+                }
+            } catch (err) { console.error(err); }
+        });
+
+        function logout() { UI.logout(); }
+
+        document.addEventListener("DOMContentLoaded", initProfile);
+    </script>
+</body>
+
+</html>
