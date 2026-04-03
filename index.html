@@ -7,7 +7,9 @@
     <title>GRIEVLY | College Student Complaint Portal</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;800&display=swap"
+        rel="stylesheet">
     <script src="js/config.js"></script>
     <script>UI.initTheme();</script>
 </head>
@@ -23,9 +25,9 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="content flex-between">
-            <div class="logo flex-center" style="gap: 16px; cursor: pointer;">
-                <img src="assets/G-Logo-V2.png" alt="GLogo" style="height: 56px; width: auto; flex-shrink: 0; filter: drop-shadow(0px 0px 20px rgba(0, 198, 255, 0.4));">
-                <span class="brand-text" style="font-family: 'Outfit', sans-serif; font-size: 34px; font-weight: 800; background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1.5px;">GRIEVLY</span>
+            <div class="logo flex-center" style="gap: 0; cursor: pointer;" onclick="window.location.href='index.html'">
+                <img src="assets/G-Logo-V2.png" alt="GLogo" style="height: 82px; width: auto; flex-shrink: 0; filter: drop-shadow(0px 0px 20px rgba(0, 198, 255, 0.4)); transform: translateX(12px) translateY(-4px);">
+                <span class="brand-text" style="font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 800; background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1.5px; margin-left: -18px;">RIEVLY</span>
             </div>
 
             <button class="mobile-toggle" id="mobile-toggle">
@@ -35,9 +37,10 @@
             <div class="nav-links flex-center gap-32" id="nav-links">
                 <a href="#features" class="nav-item">Features</a>
                 <a href="#how-it-works" class="nav-item">Workflow</a>
-                
+
                 <!-- Mobile Theme Toggle -->
-                <div class="nav-item mobile-only flex-between" onclick="UI.toggleTheme()" style="cursor: pointer; width: 100%;">
+                <div class="nav-item mobile-only flex-between" onclick="UI.toggleTheme()"
+                    style="cursor: pointer; width: 100%;">
                     <span>Switch Theme</span>
                     <i class="fa-solid fa-moon theme-icon-mobile"></i>
                 </div>
@@ -61,13 +64,17 @@
             <div class="content">
                 <div class="hero-layout">
                     <div class="hero-content">
-                        <div class="badge badge-indigo" style="margin-bottom: 24px; background: var(--primary); color: #fff;">COLLEGE STUDENT COMPLAINT PORTAL</div>
+                        <div class="badge badge-indigo"
+                            style="margin-bottom: 24px; background: var(--primary); color: #fff;">COLLEGE STUDENT
+                            COMPLAINT PORTAL</div>
                         <h1 class="hero-title">Better Management for <br><span>Better Campus Life.</span></h1>
                         <p class="hero-subtitle">
-                            The unified digital hub for modern campus operations. Resolve maintenance, security, and facility reports faster than ever before with high-transparency grievance handling.
+                            The unified digital hub for modern campus operations. Resolve maintenance, security, and
+                            facility reports faster than ever before with high-transparency grievance handling.
                         </p>
                         <div class="hero-buttons">
-                            <a href="pages/login-v2.html?mode=signup" class="btn btn-primary btn-hero">Signup as Student</a>
+                            <a href="pages/login-v2.html?mode=signup" class="btn btn-primary btn-hero">Signup as
+                                Student</a>
                             <a href="#how-it-works" class="btn btn-secondary btn-hero">See Efficiency</a>
                         </div>
                     </div>
@@ -102,10 +109,14 @@
                             </div>
                             <div class="mockup-floating-card">
                                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                                    <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-check"></i></div>
+                                    <div
+                                        style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                                        <i class="fa-solid fa-check"></i></div>
                                     <span style="font-weight: 800; font-size: 13px;">Issue Resolved</span>
                                 </div>
-                                <div style="height: 6px; width: 80%; background: rgba(255,255,255,0.2); border-radius: 3px;"></div>
+                                <div
+                                    style="height: 6px; width: 80%; background: rgba(255,255,255,0.2); border-radius: 3px;">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -122,7 +133,8 @@
                 </div>
                 <div class="grid-3">
                     <div class="feature-card role-card" style="border-left: 4px solid #6366f1;">
-                        <div class="feature-icon-box" style="color: #6366f1;"><i class="fa-solid fa-graduation-cap"></i></div>
+                        <div class="feature-icon-box" style="color: #6366f1;"><i class="fa-solid fa-graduation-cap"></i>
+                        </div>
                         <h4 style="margin-bottom: 12px; font-weight: 700; font-size: 20px;">For Students</h4>
                         <ul class="role-list">
                             <li><i class="fa-solid fa-check"></i> Personalized Dashboards</li>
@@ -131,7 +143,8 @@
                         </ul>
                     </div>
                     <div class="feature-card role-card" style="border-left: 4px solid #a855f7;">
-                        <div class="feature-icon-box" style="color: #a855f7;"><i class="fa-solid fa-user-shield"></i></div>
+                        <div class="feature-icon-box" style="color: #a855f7;"><i class="fa-solid fa-user-shield"></i>
+                        </div>
                         <h4 style="margin-bottom: 12px; font-weight: 700; font-size: 20px;">For Staff</h4>
                         <ul class="role-list">
                             <li><i class="fa-solid fa-check"></i> Efficient Task Sorting</li>
@@ -156,7 +169,9 @@
         <section id="features" class="section-spacing">
             <div class="content">
                 <div class="text-center" style="margin-bottom: 64px;">
-                    <h2 class="heading-2" style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 16px;">Powerful Features</h2>
+                    <h2 class="heading-2"
+                        style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 16px;">Powerful
+                        Features</h2>
                     <p class="text-muted" style="font-size: 1.1rem;">Small details that make a huge difference.</p>
                 </div>
                 <div class="grid-3">
@@ -186,7 +201,8 @@
         <section id="how-it-works" class="section-spacing">
             <div class="content">
                 <div class="text-center" style="margin-bottom: 60px;">
-                    <h2 class="heading-2" style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 800;">Simple Workflow</h2>
+                    <h2 class="heading-2" style="font-size: clamp(2rem, 4vw, 3rem); font-weight: 800;">Simple Workflow
+                    </h2>
                 </div>
                 <div class="steps-container">
                     <div class="step-item">
@@ -216,10 +232,12 @@
             <div class="cta-box">
                 <div class="cta-content">
                     <h2 class="heading-2" style="margin-bottom: 24px;">Empower Your Campus Today</h2>
-                    <p class="text-lg" style="margin-bottom: 48px; max-width: 600px; margin-left: auto; margin-right: auto; opacity: 0.9;">
+                    <p class="text-lg"
+                        style="margin-bottom: 48px; max-width: 600px; margin-left: auto; margin-right: auto; opacity: 0.9;">
                         Join thousands of students and staff using the GRIEVLY portal to resolve issues efficiently.
                     </p>
-                    <a href="pages/login-v2.html?mode=signup" class="btn-premium">Create Free Account <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="pages/login-v2.html?mode=signup" class="btn-premium">Create Free Account <i
+                            class="fa-solid fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
@@ -228,7 +246,8 @@
     <footer class="footer">
         <div class="content flex-col-center text-center">
             <p class="text-muted footer-text">
-                Designed to empower students and modernize campus operations through a unified, transparent digital desk.
+                Designed to empower students and modernize campus operations through a unified, transparent digital
+                desk.
             </p>
             <div class="footer-copyright">
                 &copy; 2026 GRIEVLY Portal. All rights reserved.
