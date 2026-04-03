@@ -80,8 +80,10 @@
 
 /* --- Modern Navbar (Premium Glassmorphism) --- */
 .navbar {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    width: 100%;
     z-index: 1000;
     height: 80px; /* Increased for larger logo */
     padding: 0 5%;
@@ -92,6 +94,10 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+main {
+    padding-top: 80px; /* Offset for fixed navbar */
 }
 
 /* --- Premium Logo Layout --- */
