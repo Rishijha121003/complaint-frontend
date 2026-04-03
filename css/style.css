@@ -83,11 +83,11 @@
     position: sticky;
     top: 0;
     z-index: 1000;
-    height: 60px; /* Slimmer height */
+    height: 80px; /* Increased for larger logo */
     padding: 0 5%;
     background: var(--navbar-bg);
-    backdrop-filter: blur(8px); /* Lighter blur */
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--navbar-border);
     display: flex;
     align-items: center;
