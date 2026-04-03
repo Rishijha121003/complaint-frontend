@@ -27,26 +27,33 @@
             <!-- Populated via renderSidebar() -->
         </nav>
         <div class="sidebar-footer">
-            <div class="profile-card">
-                <div class="profile-main">
-                    <div class="profile-avatar" id="sidebar-avatar">U</div>
-                    <div class="profile-info">
-                        <span class="profile-name" id="sidebar-name">Student Account</span>
-                        <span class="profile-email" id="sidebar-email">loading...</span>
+            <div class="profile-card" onclick="window.location.href='profile.html'" style="cursor: pointer; background: rgba(15, 23, 42, 0.6); border: 1.5px solid var(--border); padding: 20px; transition: var(--transition); border-radius: 16px;" title="View Your Profile">
+                <div class="profile-main" style="display: flex; align-items: center; gap: 16px;">
+                    <div class="avatar" id="sidebar-avatar" style="width: 48px; height: 48px; min-width: 48px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: white;">U</div>
+                    <div class="profile-info" style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                            <span class="profile-name" id="sidebar-name" style="font-size: 15px; font-weight: 800; color: var(--text-strong); letter-spacing: -0.01em;">User</span>
+                            <button class="theme-toggle" onclick="event.stopPropagation(); UI.toggleTheme()" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: whitesmoke; cursor: pointer; width: 32px; height: 32px; border-radius: 10px; display: flex !important; align-items: center; justify-content: center; transition: var(--transition);">
+                                <i class="fa-solid fa-moon"></i>
+                            </button>
+                        </div>
+                        <span id="sidebar-email" style="font-size: 12px; color: var(--text-muted); font-weight: 600; opacity: 0.7;">loading...</span>
                     </div>
                 </div>
-                <button class="logout-btn" onclick="logout()">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    <span>Log Out</span>
+                
+                <button class="logout-btn" onclick="event.stopPropagation(); logout()" style="width: 100%; margin-top: 18px; padding: 12px; border-radius: 12px; border: 1.5px solid rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05); color: #ef4444; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: var(--transition);">
+                    <i class="fa-solid fa-power-off"></i>
+                    <span>Secure Logout</span>
                 </button>
             </div>
         </div>
     </div>
 
+
     <div class="main-content">
         <header class="top-nav flex-between">
             <div class="header-left">
-                <div class="cd-logo mobile-only" style="margin-right: 12px; transform: scale(0.8);">CD</div>
+
                 <button id="back-btn" class="back-btn" onclick="UI.goBack()">
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
@@ -203,11 +210,23 @@
             const sideAvatar = document.getElementById("sidebar-avatar");
             const sideName = document.getElementById("sidebar-name");
 
-            // Initial Identity Set from Session
-            const initial = email.charAt(0).toUpperCase();
+            // Cached Data
+            const cachedName = sessionStorage.getItem("userName");
+            const cachedAvatar = sessionStorage.getItem("userAvatar");
+
+            // Initial Identity Set from Session (Instant)
+            const initial = (cachedName || email).charAt(0).toUpperCase();
             if (sideEmail) sideEmail.innerText = email;
-            if (sideName) sideName.innerText = email.split('@')[0];
-            if (sideAvatar) sideAvatar.innerText = initial;
+            if (sideName) sideName.innerText = cachedName || email.split('@')[0];
+            if (sideAvatar) {
+                if (cachedAvatar) {
+                    sideAvatar.innerText = "";
+                    sideAvatar.style.backgroundImage = `url('${baseUrl}${cachedAvatar}')`;
+                    sideAvatar.style.backgroundSize = "cover";
+                } else {
+                    sideAvatar.innerText = initial;
+                }
+            }
 
             try {
                 const res = await fetch(`${baseUrl}/api/v1/profile`, {

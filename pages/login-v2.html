@@ -169,6 +169,8 @@
                     const data = await response.json();
                     sessionStorage.setItem("email", data.email);
                     sessionStorage.setItem("userRole", data.role);
+                    sessionStorage.setItem("userName", data.name);
+                    sessionStorage.setItem("userAvatar", data.avatar);
                     btn.textContent = 'ACCESS GRANTED';
                     setTimeout(() => {
                         window.location.href = data.role === "ADMIN" ? "admin_dashboard.html" : 

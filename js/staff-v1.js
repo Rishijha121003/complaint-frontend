@@ -1,9 +1,7 @@
 // Staff Dashboard Logic v1.0
 let allStaffComplaints = [];
 
-const baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? 'http://127.0.0.1:8080'
-    : 'https://complaint-backend-5rdk.onrender.com';
+const baseUrl = CONFIG.API_BASE_URL;
 
 // --- INITIALIZATION ---
 async function initStaff() {
@@ -13,22 +11,34 @@ async function initStaff() {
         return;
     }
 
-    // Set Identity in Sidebar & Navbar
+    // Set Identity in Sidebar & Navbar (Instant from Session)
     const navEmail = document.getElementById("nav-email");
     const sideEmail = document.getElementById("sidebar-email");
     const sideAvatar = document.getElementById("sidebar-avatar");
-    const identLink = document.getElementById("nav-identity");
+    const sideName = document.getElementById("sidebar-name");
 
-    const initial = email.charAt(0).toUpperCase();
+    const cachedName = sessionStorage.getItem("userName");
+    const cachedAvatar = sessionStorage.getItem("userAvatar");
+
+    const initial = (cachedName || email).charAt(0).toUpperCase();
     if (navEmail) navEmail.innerText = email;
     if (sideEmail) sideEmail.innerText = email;
-    if (sideAvatar) sideAvatar.innerText = initial;
-    if (identLink) {
-        identLink.href = "profile.html";
-        identLink.style.cursor = "pointer";
+    if (sideName) sideName.innerText = cachedName || email.split('@')[0];
+    if (sideAvatar) {
+        if (cachedAvatar) {
+            sideAvatar.innerText = "";
+            sideAvatar.style.backgroundImage = `url('${baseUrl}${cachedAvatar}')`;
+            sideAvatar.style.backgroundSize = "cover";
+        } else {
+            sideAvatar.innerText = initial;
+        }
     }
 
+
     try {
+        // FETCH PROFILE IMMEDIATELY FOR SIDEBAR & IDENTITY
+        fetchStaffProfile(email);
+
         // FETCHING DATA
         UI.showStatSkeletons(['stat-total', 'stat-progress', 'stat-completed']);
         UI.showTableSkeletons("staff-container", 5);
@@ -43,9 +53,12 @@ async function initStaff() {
 
         allStaffComplaints = await res.json();
         renderStaffTasks();
-
-        // Also fetch profile for Identity section
-        fetchStaffProfile(email);
+        
+        // Show success if it's a refresh
+        if (window.isRefreshing) {
+            UI.showToast("System updated with latest tasks!", "success");
+            window.isRefreshing = false;
+        }
 
     } catch (err) {
         console.error(err);
@@ -63,23 +76,35 @@ async function fetchStaffProfile(email) {
         });
         if (res.ok) {
             const data = await res.json();
+            
+            // Sync session for next instant load
+            sessionStorage.setItem("userName", data.name || "");
+            sessionStorage.setItem("userAvatar", data.profilePictureUrl || "");
+
             const nameEl = document.getElementById("ident-name");
             const emailEl = document.getElementById("ident-email");
             const roleEl = document.getElementById("ident-role");
             const deptEl = document.getElementById("ident-dept");
             const avatarEl = document.getElementById("ident-avatar-large");
             const sideName = document.getElementById("sidebar-name");
+            const sideEmail = document.getElementById("sidebar-email");
+            const sideAvatar = document.getElementById("sidebar-avatar");
 
-            if (nameEl) nameEl.innerText = data.name;
+            if (nameEl) nameEl.innerText = data.name || "Staff Member";
             if (emailEl) emailEl.innerText = data.email;
             if (roleEl) roleEl.innerText = data.role === 'STAFF' ? 'OFFICIAL STAFF' : data.role;
             if (deptEl) deptEl.innerText = data.department || "GENERAL OPERATIONS";
-            if (avatarEl) avatarEl.innerText = data.name ? data.name.charAt(0).toUpperCase() : email.charAt(0).toUpperCase();
+            
+            const firstChar = data.name ? data.name.charAt(0).toUpperCase() : email.charAt(0).toUpperCase();
+            if (avatarEl) avatarEl.innerText = firstChar;
+            
             if (sideName) sideName.innerText = data.name || email.split('@')[0];
             if (sideEmail) sideEmail.innerText = email;
             if (data.profilePictureUrl) {
                 const avatarUrl = `url('${baseUrl}${data.profilePictureUrl}')`;
                 if (sideAvatar) { sideAvatar.innerText = ""; sideAvatar.style.backgroundImage = avatarUrl; sideAvatar.style.backgroundSize = "cover"; }
+            } else {
+                if (sideAvatar) sideAvatar.innerText = firstChar;
             }
         }
     } catch (err) { console.error("Profile fetch error:", err); }

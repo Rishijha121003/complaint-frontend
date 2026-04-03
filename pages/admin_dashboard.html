@@ -1,4 +1,4 @@
-                            <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 
 <head>
@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Management Control | GRIEVLY Ecosystem</title>
     <!-- Core Assets -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -27,8 +29,10 @@
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo" style="display: flex; align-items: center; gap: 14px; cursor: pointer;">
-                <img src="../assets/G-Logo-V2.png" alt="GLogo" style="height: 52px; width: auto; filter: drop-shadow(0px 0px 15px rgba(0, 198, 255, 0.4)); transform: translateY(2px);">
-                <span style="font-family: 'Outfit', sans-serif; font-size: 30px; font-weight: 800; background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px;">GRIEVLY</span>
+                <img src="../assets/G-Logo-V2.png" alt="GLogo"
+                    style="height: 52px; width: auto; filter: drop-shadow(0px 0px 15px rgba(0, 198, 255, 0.4)); transform: translateY(2px);">
+                <span
+                    style="font-family: 'Outfit', sans-serif; font-size: 30px; font-weight: 800; background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px;">GRIEVLY</span>
             </div>
         </div>
 
@@ -53,28 +57,36 @@
                 <i class="fa-solid fa-file-contract"></i>
                 <span>Reports</span>
             </button>
-        </nav>
-
-        <div class="sidebar-footer">
-            <a href="profile.html" class="nav-item" style="margin-bottom: 12px;">
+            <a href="profile.html" class="nav-item" id="nav-profile">
                 <i class="fa-solid fa-user-circle"></i>
                 <span>My Profile</span>
             </a>
-            <div class="profile-card">
-                <div class="profile-card-top">
-                    <div class="avatar" id="sidebar-avatar"
-                        style="width: 42px; height: 42px; background: var(--primary); font-size: 16px;">A</div>
-                    <div class="profile-details">
-                        <label id="sidebar-name">University Admin</label>
-                        <span id="sidebar-email">admin@college.com</span>
+        </nav>
+
+
+        <div class="sidebar-footer">
+            <div class="profile-card" onclick="window.location.href='profile.html'" style="cursor: pointer; background: rgba(15, 23, 42, 0.6); border: 1.5px solid var(--border); padding: 20px; transition: var(--transition); border-radius: 16px;" title="View Your Profile">
+                <div class="profile-main" style="display: flex; align-items: center; gap: 16px;">
+                    <div class="avatar" id="sidebar-avatar" style="width: 48px; height: 48px; min-width: 48px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: white;">A</div>
+                    <div class="profile-info" style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                            <span class="profile-name" id="sidebar-name" style="font-size: 15px; font-weight: 800; color: var(--text-strong); letter-spacing: -0.01em;">Admin</span>
+                            <button class="theme-toggle" onclick="event.stopPropagation(); UI.toggleTheme()" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: whitesmoke; cursor: pointer; width: 32px; height: 32px; border-radius: 10px; display: flex !important; align-items: center; justify-content: center; transition: var(--transition);">
+                                <i class="fa-solid fa-moon"></i>
+                            </button>
+                        </div>
+                        <span id="sidebar-email" style="font-size: 12px; color: var(--text-muted); font-weight: 600; opacity: 0.7;">admin@system.com</span>
                     </div>
                 </div>
-                <button class="btn-logout-minimal"
-                    onclick="sessionStorage.clear(); window.location.href='login-v2.html'">
-                    <i class="fa-solid fa-power-off"></i> Secure Logout
+                
+                <button class="logout-btn" onclick="event.stopPropagation(); logout()" style="width: 100%; margin-top: 18px; padding: 12px; border-radius: 12px; border: 1.5px solid rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05); color: #ef4444; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: var(--transition);">
+                    <i class="fa-solid fa-power-off"></i>
+                    <span>Secure Logout</span>
                 </button>
             </div>
         </div>
+        </div>
+
     </aside>
 
     <!-- Application Viewport -->
@@ -90,18 +102,21 @@
                 </div>
             </div>
             <div class="nav-right">
+                <span id="nav-name" style="display: none;"></span>
                 <button onclick="UI.toggleTheme()" class="theme-toggle" id="themeBtn"><i
                         class="fa-solid fa-moon"></i></button>
                 <button onclick="refreshDashboard()" class="refresh-btn"><i class="fa-solid fa-sync"></i></button>
             </div>
+
         </header>
 
-        <main class="content" style="padding: 0 32px 40px;">
+        <main class="content admin-content">
             <!-- Dashboard Insights (Overview) -->
-            <div id="dashboard-insights" class="view-section">
+            <div id="dashboard-insights" class="view-section active">
                 <!-- Stats Grid -->
                 <!-- ... existing insights ... -->
-                <div class="grid-3" style="margin-bottom: 24px;">
+                <div class="admin-stats-grid">
+
                     <div class="premium-stat-card">
                         <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;"><i
                                 class="fa-solid fa-layer-group"></i></div>
@@ -129,7 +144,7 @@
                 </div>
 
                 <!-- Resolution Progress Bar -->
-                <div class="card" style="margin-top: 24px; padding: 24px 32px; border-radius: 20px;">
+                <div class="card resolution-card" style="margin-top: 24px;">
                     <div
                         style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px;">
                         <div>
@@ -149,28 +164,39 @@
                     </div>
                 </div>
 
-                <div class="charts-grid"
-                    style="margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                    <div class="card" style="padding: 32px; border-radius: 24px;">
-                        <h3 class="stat-label" style="margin-bottom: 24px; font-size: 14px;">Performance Trends</h3>
-                        <div style="height: 300px;"><canvas id="trendChart"></canvas></div>
+                <div class="charts-grid">
+
+                    <div class="card chart-card">
+                        <h3 class="stat-label">Performance Trends</h3>
+                        <div class="chart-container"><canvas id="trendChart"></canvas></div>
                     </div>
-                    <div class="card" style="padding: 32px; border-radius: 24px;">
-                        <h3 class="stat-label" style="margin-bottom: 24px; font-size: 14px;">Departmental Matrix</h3>
-                        <div style="height: 300px;"><canvas id="distributionChart"></canvas></div>
+                    <div class="card chart-card">
+                        <h3 class="stat-label">Departmental Matrix</h3>
+                        <div class="chart-container"><canvas id="distributionChart"></canvas></div>
                     </div>
+
                 </div>
             </div>
 
             <!-- Master Ticket Log -->
             <section class="table-container"
                 style="margin-top: 32px; border-radius: 24px; border: 1px solid var(--border);">
-                <div class="table-header" style="padding: 24px 32px;">
-                    <h2 id="table-title" style="font-family: 'Outfit'; font-size: 18px; font-weight: 800;">Master Ticket
-                        Log</h2>
-                    <div id="filter-slot">
+                <div class="table-header"
+                    style="padding: 24px 32px; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between;">
+                    <h2 id="table-title" style="font-family: 'Outfit'; font-size: 18px; font-weight: 800; margin: 0;">
+                        Master Ticket Log</h2>
+                    <div id="filter-slot"
+                        style="display: flex; gap: 12px; align-items: center; flex: 1; justify-content: flex-end; min-width: 300px;">
+                        <div class="search-container" style="flex: 1; max-width: 300px; position: relative;">
+                            <i class="fa-solid fa-search"
+                                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                            <input type="text" id="global-search" class="search-input" placeholder="Search matrix..."
+                                onkeyup="handleGlobalSearch()"
+                                style="width: 100%; padding-left: 40px; border-radius: 12px; height: 44px; border: 1px solid var(--border); background: var(--bg-body);">
+
+                        </div>
                         <select id="statusFilter" class="search-input"
-                            style="width: auto; padding-right: 40px; border-radius: 12px; height: 44px;"
+                            style="width: auto; padding-right: 40px; border-radius: 12px; height: 44px; border: 1px solid var(--border); background: var(--bg-body);"
                             onchange="handleFilterChange()">
                             <option value="ALL">All Records</option>
                             <option value="OPEN">Queue: Open</option>
@@ -178,6 +204,7 @@
                         </select>
                     </div>
                 </div>
+
 
                 <div style="padding: 0 8px;">
                     <table style="border-collapse: separate; border-spacing: 0 8px;">

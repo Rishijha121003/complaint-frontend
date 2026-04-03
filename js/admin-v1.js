@@ -195,7 +195,9 @@ function switchView(viewName) {
  * Users Data Grid Renderer (Using Master Component Styles)
  */
 function renderUsersTable(viewType = 'users') {
-    const q = document.getElementById("global-search").value.toLowerCase();
+    const searchEl = document.getElementById("global-search");
+    const q = searchEl ? searchEl.value.toLowerCase() : "";
+
 
     let filtered = allUsers.filter(u => {
         const matchesQuery = (u.name && u.name.toLowerCase().includes(q)) ||
@@ -241,10 +243,8 @@ function renderUsersTable(viewType = 'users') {
             <td style="color: var(--text-muted); font-weight: 500;">${u.email}</td>
             <td><span class="badge ${roleBadge}">${u.role}</span></td>
             <td>
-                <div style="display: flex; flex-direction: column; gap: 4px;">
-                    <span style="font-size: 13px; font-weight: 700; color: var(--text-strong);">${u.department ? (u.department.name || u.department) : 'General'}</span>
-                    ${u.specialization ? `<span class="badge badge-indigo" style="font-size: 10px; width: fit-content;">${u.specialization.name || u.specialization}</span>` : ''}
-                </div>
+                    <span style="font-size: 13px; font-weight: 700; color: var(--text-strong);">${u.departmentName || (u.department ? (u.department.name || u.department) : 'General')}</span>
+                    ${(u.specializationName || u.specialization) ? `<span class="badge badge-indigo" style="font-size: 10px; width: fit-content;">${u.specializationName || (u.specialization ? (u.specialization.name || u.specialization) : '')}</span>` : ''}
             </td>
             <td>
                 <div class="status-indicator">
@@ -341,7 +341,8 @@ async function refreshDashboard() {
 function renderTable() {
     if (currentView === 'users') { renderUsersTable(); return; }
 
-    const q = document.getElementById("global-search").value.toLowerCase();
+    const searchEl = document.getElementById("global-search");
+    const q = searchEl ? searchEl.value.toLowerCase() : "";
     const sf = document.getElementById("statusFilter");
     const filterStatus = sf ? sf.value : "ALL";
 
@@ -349,6 +350,7 @@ function renderTable() {
         (c.title.toLowerCase().includes(q) || c.id.toString().includes(q)) &&
         (filterStatus === "ALL" || c.status === filterStatus)
     );
+
 
     filtered.sort((a, b) => {
         let valA = a[sortField]; let valB = b[sortField];
@@ -383,20 +385,22 @@ function renderTable() {
         const mediaIcon = c.imageUrl ? `<i class="fa-solid fa-paperclip" title="Evidence Attached" style="margin-left:8px; color:var(--primary); cursor:pointer;" onclick="window.open('${BASE_URL}${c.imageUrl}')"></i>` : "";
 
         let actionBtnHTML = "";
+        const isAssigned = c.assignedStaffName && c.assignedStaffName !== "Unassigned";
+
         if (c.status === 'OPEN' || c.status === 'ASSIGNED' || c.status === 'IN_PROGRESS') {
             actionBtnHTML = `
                 <div style="display: flex; gap: 8px; justify-content: flex-end; flex-direction: column; align-items: flex-end;">
                     <div style="display: flex; gap: 8px;">
-                        <button class="btn-primary" style="padding: 6px 14px; font-size: 11px; border-radius: 8px;" onclick="openAssignModal(${c.id})"><i class="fa-solid fa-user-plus"></i> Assign</button>
+                        <button class="btn-primary" style="padding: 6px 14px; font-size: 11px; border-radius: 8px;" onclick="openAssignModal(${c.id})"><i class="fa-solid fa-user-plus"></i> ${isAssigned ? 'Re-Assign' : 'Assign'}</button>
                     </div>
             `;
-            if ((c.status === 'ASSIGNED' || c.status === 'IN_PROGRESS') && c.assignedStaff) {
-                actionBtnHTML += `<div style="font-size: 10px; color: var(--text-muted); margin-top: 4px; text-align: right;">Assigned: ${c.assignedStaff.name}</div></div>`;
+            if (isAssigned) {
+                actionBtnHTML += `<div style="font-size: 10px; color: var(--text-muted); margin-top: 4px; text-align: right;"><i class="fa-solid fa-user-check" style="color:var(--success);"></i> Assigned: ${c.assignedStaffName}</div></div>`;
             } else {
                 actionBtnHTML += `</div>`;
             }
-        } else if (c.assignedStaff && c.assignedStaff.name) {
-            actionBtnHTML = `<span style="font-size: 11px; font-weight: 700; color: var(--text-muted);"><i class="fa-solid fa-user-check"></i> ${c.assignedStaff.name}</span>`;
+        } else if (isAssigned) {
+            actionBtnHTML = `<span style="font-size: 11px; font-weight: 700; color: var(--text-muted);"><i class="fa-solid fa-user-check"></i> ${c.assignedStaffName}</span>`;
         } else {
             actionBtnHTML = `<span style="font-size: 11px; color: var(--text-muted);">-</span>`;
         }
@@ -461,19 +465,51 @@ function updatePaginationInfo(start, end, total, totalPages) {
 function handleGlobalSearch() { currentPage = 1; if (currentView === 'users') renderUsersTable(); else renderTable(); }
 function handleFilterChange() { currentPage = 1; renderTable(); }
 
-function updateUserIdentity(email) {
+async function updateUserIdentity(email) {
     const navName = document.getElementById("nav-name");
     const sideName = document.getElementById("sidebar-name");
     const sideEmail = document.getElementById("sidebar-email");
     const sideAvatar = document.getElementById("sidebar-avatar");
 
-    const initial = email ? email.charAt(0).toUpperCase() : "A";
-
+    const cachedName = sessionStorage.getItem('userName');
+    const cachedAvatar = sessionStorage.getItem('userAvatar');
+    const userEmail = email || sessionStorage.getItem('email');
+    
+    // Instant Hydration
     if (navName) navName.textContent = "Admin Control";
-    if (sideName) sideName.textContent = sessionStorage.getItem('userName') || "University Admin";
-    if (sideEmail) sideEmail.textContent = email;
-    if (sideAvatar) sideAvatar.textContent = initial;
+    if (sideName) sideName.textContent = cachedName || "Admin Account";
+    if (sideEmail) sideEmail.textContent = userEmail || "admin@system.com";
+    
+    if (sideAvatar) {
+        if (cachedAvatar) {
+            sideAvatar.innerText = "";
+            sideAvatar.style.backgroundImage = `url('${BASE_URL}${cachedAvatar}')`;
+            sideAvatar.style.backgroundSize = "cover";
+        } else {
+            sideAvatar.innerText = (cachedName || "Admin").charAt(0).toUpperCase();
+        }
+    }
+
+    // Sync from API
+    try {
+        const res = await fetch(`${BASE_URL}/api/v1/profile`, {
+            headers: { "User-Email": userEmail }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            sessionStorage.setItem("userName", data.name);
+            if (data.profilePictureUrl) sessionStorage.setItem("userAvatar", data.profilePictureUrl);
+            
+            // Re-update if data changed
+            if (sideName) sideName.textContent = data.name;
+            if (sideAvatar && data.profilePictureUrl) {
+                sideAvatar.innerText = "";
+                sideAvatar.style.backgroundImage = `url('${BASE_URL}${data.profilePictureUrl}')`;
+            }
+        }
+    } catch(e) { console.warn("Admin profile sync fail", e); }
 }
+
 
 function toggleTheme() {
     UI.toggleTheme();
@@ -484,6 +520,9 @@ function renderCharts(complaints) {
     const dCtx = document.getElementById('distributionChart');
     const pCtx = document.getElementById('trendChart');
     if (!dCtx || !pCtx) return;
+
+    const isMobile = window.innerWidth < 768;
+    const chartFontSize = isMobile ? 9 : 11;
 
     // 📊 CHART 1: WEEKLY INTAKE (Real Data)
     const dailyCounts = [0, 0, 0, 0, 0, 0, 0]; // Mon-Sun
@@ -516,8 +555,15 @@ function renderCharts(complaints) {
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', stepSize: 1 } },
-                x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: 'rgba(255,255,255,0.05)' }, 
+                    ticks: { color: '#94a3b8', stepSize: 1, font: { size: chartFontSize } } 
+                },
+                x: { 
+                    grid: { display: false }, 
+                    ticks: { color: '#94a3b8', font: { size: chartFontSize } } 
+                }
             }
         }
     });
@@ -532,8 +578,29 @@ function renderCharts(complaints) {
     if (window.distChart) window.distChart.destroy();
     window.distChart = new Chart(dCtx.getContext('2d'), {
         type: 'doughnut',
-        data: { labels: Object.keys(categoryData), datasets: [{ data: Object.values(categoryData), backgroundColor: ['#6366f1', '#a855f7', '#f43f5e', '#f59e0b', '#10b981'], borderWidth: 0, hoverOffset: 12 }] },
-        options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { weight: '700', size: 10 } } } } }
+        data: { 
+            labels: Object.keys(categoryData), 
+            datasets: [{ 
+                data: Object.values(categoryData), 
+                backgroundColor: ['#6366f1', '#a855f7', '#f43f5e', '#f59e0b', '#10b981'], 
+                borderWidth: 0, 
+                hoverOffset: 12 
+            }] 
+        },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            cutout: '70%', 
+            plugins: { 
+                legend: { 
+                    position: 'bottom', 
+                    labels: { 
+                        color: '#94a3b8', 
+                        font: { weight: '700', size: chartFontSize - 1 } 
+                    } 
+                } 
+            } 
+        }
     });
 
     // Update Chart Titles
@@ -542,6 +609,7 @@ function renderCharts(complaints) {
 }
 
 // Dynamic sidebar logic is handled via config.js UI.initSidebar()
+
 
 
 let currentSelectedStaffId = null;
@@ -605,8 +673,8 @@ function renderAssignStaffList(suggestedDomainName) {
 
     staffs.forEach(s => {
         const sName = s.name || s.email;
-        const sDept = s.department && s.department.name ? s.department.name : (s.department || 'No Dept');
-        const sSpec = s.specialization && s.specialization.name ? s.specialization.name : null;
+        const sDept = s.departmentName || (s.department && s.department.name ? s.department.name : (s.department || 'No Dept'));
+        const sSpec = s.specializationName || (s.specialization && s.specialization.name ? s.specialization.name : null);
 
         if (q && !sName.toLowerCase().includes(q) && !sDept.toLowerCase().includes(q) && (!sSpec || !sSpec.toLowerCase().includes(q))) {
             return;

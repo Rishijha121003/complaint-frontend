@@ -1,7 +1,7 @@
 // Global Configuration for Smart Complaint Portal
 const CONFIG = {
-    API_BASE_URL: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? `http://${window.location.hostname}:8080`
+    API_BASE_URL: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
+        ? 'http://localhost:8080'
         : 'https://complaint-backend-5rdk.onrender.com',
     APP_NAME: 'GRIEVLY',
     APP_VERSION: '1.2.0-CD',
@@ -19,15 +19,23 @@ const UI = {
     toggleSidebar: () => {
         const sidebar = document.getElementById("sidebar");
         const overlay = document.getElementById("sidebarOverlay");
-        if (sidebar) sidebar.classList.toggle("active");
-        if (overlay) overlay.classList.toggle("active");
+        const body = document.body;
+        if (sidebar) {
+            sidebar.classList.toggle("active");
+            const isActive = sidebar.classList.contains("active");
+            if (overlay) overlay.classList.toggle("active", isActive);
+            body.classList.toggle("sidebar-active", isActive);
+        }
     },
     closeSidebar: () => {
         const sidebar = document.getElementById("sidebar");
         const overlay = document.getElementById("sidebarOverlay");
+        const body = document.body;
         if (sidebar) sidebar.classList.remove("active");
         if (overlay) overlay.classList.remove("active");
+        body.classList.remove("sidebar-active");
     },
+
     toggleTheme: () => {
         const doc = document.documentElement;
         const next = doc.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -162,7 +170,9 @@ const UI = {
         overlay?.addEventListener('click', () => {
             sidebar.classList.remove('active');
             overlay?.classList.remove('active');
+            document.body.classList.remove('sidebar-active');
         });
+
 
         // Auto-close sidebar on mobile when navigation is clicked, but NOT on Appearance/Theme toggles
         sidebar.addEventListener('click', (e) => {
@@ -173,8 +183,10 @@ const UI = {
             if (isMobile && isClosingTrigger) {
                 sidebar.classList.remove('active');
                 overlay?.classList.remove('active');
+                document.body.classList.remove('sidebar-active');
             }
         });
+
     },
     showTableSkeletons: (containerId, rows = 5) => {
         const container = document.getElementById(containerId);

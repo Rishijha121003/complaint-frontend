@@ -7,7 +7,9 @@
     <title>Operations Hub | Smart Complaint</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;800&display=swap"
+        rel="stylesheet">
     <script src="../js/config.js"></script>
     <script src="../js/staff-v1.js"></script>
     <script>UI.initTheme();</script>
@@ -19,8 +21,10 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo" style="display: flex; align-items: center; gap: 14px; cursor: pointer;">
-                <img src="../assets/G-Logo-V2.png" alt="GLogo" style="height: 52px; width: auto; filter: drop-shadow(0px 0px 15px rgba(0, 198, 255, 0.4)); transform: translateY(2px);">
-                <span style="font-family: 'Outfit', sans-serif; font-size: 30px; font-weight: 800; background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px;">GRIEVLY</span>
+                <img src="../assets/G-Logo-V2.png" alt="GLogo"
+                    style="height: 52px; width: auto; filter: drop-shadow(0px 0px 15px rgba(0, 198, 255, 0.4)); transform: translateY(2px);">
+                <span
+                    style="font-family: 'Outfit', sans-serif; font-size: 30px; font-weight: 800; background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px;">GRIEVLY</span>
             </div>
         </div>
 
@@ -36,17 +40,23 @@
         </nav>
 
         <div class="sidebar-footer">
-            <div class="profile-card" onclick="switchView('profile', document.getElementById('nav-profile'))" style="cursor: pointer;" title="View Your Profile">
-                <div class="profile-main">
-                    <div class="profile-avatar" id="sidebar-avatar">S</div>
-                    <div class="profile-info">
-                        <span class="profile-name" id="sidebar-name">Staff Member</span>
-                        <span class="profile-email" id="sidebar-email">staff@system.com</span>
+            <div class="profile-card" onclick="switchView('profile', document.getElementById('nav-profile'))" style="cursor: pointer; background: rgba(15, 23, 42, 0.6); border: 1.5px solid var(--border); padding: 20px; transition: var(--transition); border-radius: 16px;" title="View Your Profile">
+                <div class="profile-main" style="display: flex; align-items: center; gap: 16px;">
+                    <div class="profile-avatar" id="sidebar-avatar" style="width: 48px; height: 48px; min-width: 48px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: white;">S</div>
+                    <div class="profile-info" style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                            <span class="profile-name" id="sidebar-name" style="font-size: 15px; font-weight: 800; color: var(--text-strong); letter-spacing: -0.01em;">Staff Member</span>
+                            <button class="theme-toggle" onclick="event.stopPropagation(); UI.toggleTheme()" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: whitesmoke; cursor: pointer; width: 32px; height: 32px; border-radius: 10px; display: flex !important; align-items: center; justify-content: center; transition: var(--transition);">
+                                <i class="fa-solid fa-moon"></i>
+                            </button>
+                        </div>
+                        <span class="profile-email" id="sidebar-email" style="font-size: 12px; color: var(--text-muted); font-weight: 600; opacity: 0.7;">staff@system.com</span>
                     </div>
                 </div>
-                <button class="logout-btn" onclick="logout()">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    <span>Log Out</span>
+                
+                <button class="logout-btn" onclick="event.stopPropagation(); logout()" style="width: 100%; margin-top: 18px; padding: 12px; border-radius: 12px; border: 1.5px solid rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05); color: #ef4444; font-weight: 800; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: var(--transition);">
+                    <i class="fa-solid fa-power-off"></i>
+                    <span>Secure Logout</span>
                 </button>
             </div>
         </div>
@@ -60,16 +70,15 @@
                 </button>
                 <div class="titles-wrapper">
                     <h1 class="view-title">Service Desk</h1>
-                <p class="view-subtitle hidden-mobile" id="current-date">Fulfilling assigned laboratory and campus requests</p>
+                    <p class="view-subtitle hidden-mobile" id="current-date">Fulfilling assigned laboratory and campus
+                        requests</p>
+                </div>
             </div>
-        </div>
 
             <div class="header-right">
-                <div class="search-bar">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="Filter tasks by title or ID..." onkeyup="filterComplaints()">
-                </div>
-                <button class="refresh-btn" onclick="UI.spinIcon(this); initStaff()" title="Refresh Data"><i class="fa-solid fa-sync"></i></button>
+
+                <button class="refresh-btn" onclick="UI.spinIcon(this); initStaff()" title="Refresh Data"><i
+                        class="fa-solid fa-sync"></i></button>
                 <button class="theme-toggle" onclick="toggleTheme()"><i
                         class="fa-solid fa-circle-half-stroke"></i></button>
 
@@ -79,8 +88,7 @@
         <!-- TASKS VIEW (DEFAULT) -->
         <div id="tasks-view">
             <!-- Global Performance Stats -->
-            <div class="admin-stats-grid"
-                style="margin-top: 32px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+            <div class="admin-stats-grid" style="margin-top: 32px;">
                 <div class="premium-stat-card">
                     <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary);"><i
                             class="fa-solid fa-list-check"></i></div>
@@ -207,6 +215,7 @@
         </div>
     </div>
 
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="UI.closeSidebar()"></div>
     <script>
         function logout() { UI.logout(); }
 
@@ -217,13 +226,13 @@
 
             // Back button logic (Universal)
             const backBtn = document.getElementById('back-btn');
-            if(backBtn) {
+            if (backBtn) {
                 backBtn.style.display = isProfile ? 'flex' : 'none';
             }
 
             // Update Active Class
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-            if(element) element.classList.add('active');
+            if (element) element.classList.add('active');
 
             // Update Header Title
             const title = document.querySelector('.view-title');
@@ -231,10 +240,10 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            if(typeof initStaff === 'function') initStaff();
+            if (typeof initStaff === 'function') initStaff();
         });
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="UI.closeSidebar()"></div>
     </script>
+
 </body>
 
 </html>

@@ -2,9 +2,7 @@
 let allMyComplaints = [];
 let showHistory = false;
 
-const baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? 'http://127.0.0.1:8080'
-    : 'https://complaint-backend-5rdk.onrender.com';
+const baseUrl = CONFIG.API_BASE_URL;
 
 // --- INITIALIZATION ---
 async function initDashboard() {
@@ -14,10 +12,7 @@ async function initDashboard() {
         return;
     }
 
-    // Set Initial Identity
-    const initial = email.charAt(0).toUpperCase();
-
-    // Select Elements explicitly to avoid ReferenceErrors
+    // Select Elements
     const navEmail = document.getElementById("nav-email");
     const navAvatar = document.getElementById("nav-avatar");
     const navName = document.getElementById("nav-name");
@@ -26,10 +21,36 @@ async function initDashboard() {
     const sideName = document.getElementById("sidebar-name");
     const identLink = document.getElementById("sidebar-ident-link");
 
+    // Get Cached Data
+    const cachedName = sessionStorage.getItem("userName");
+    const cachedAvatar = sessionStorage.getItem("userAvatar");
+
+    // Set Instant Identity
+    const initial = (cachedName || email).charAt(0).toUpperCase();
     if (navEmail) navEmail.innerText = email;
-    if (navAvatar) navAvatar.innerText = initial;
+    if (navName) navName.innerText = cachedName || email.split('@')[0];
     if (sideEmail) sideEmail.innerText = email;
-    if (sideAvatar) sideAvatar.innerText = initial;
+    if (sideName) sideName.innerText = cachedName || email.split('@')[0];
+
+    if (sideAvatar) {
+        if (cachedAvatar) {
+            sideAvatar.innerText = "";
+            sideAvatar.style.backgroundImage = `url('${baseUrl}${cachedAvatar}')`;
+            sideAvatar.style.backgroundSize = "cover";
+        } else {
+            sideAvatar.innerText = initial;
+        }
+    }
+    if (navAvatar) {
+        if (cachedAvatar) {
+            navAvatar.innerText = "";
+            navAvatar.style.backgroundImage = `url('${baseUrl}${cachedAvatar}')`;
+            navAvatar.style.backgroundSize = "cover";
+        } else {
+            navAvatar.innerText = initial;
+        }
+    }
+
     if (identLink) {
         identLink.href = "profile.html";
         identLink.style.cursor = "pointer";
@@ -40,19 +61,28 @@ async function initDashboard() {
         UI.showStatSkeletons(['stat-total', 'stat-active', 'stat-resolved']);
         UI.showTableSkeletons("complaint-container", 5);
 
+        // Fetch latest profile to sync cache
         const res = await fetch(`${baseUrl}/api/v1/profile`, {
             headers: { "User-Email": email }
         });
 
         if (res.ok) {
             const data = await res.json();
+            sessionStorage.setItem("userName", data.name || "");
+            sessionStorage.setItem("userAvatar", data.profilePictureUrl || "");
+            
+            // Update UI with latest if different
             if (navName) navName.innerText = data.name || email.split('@')[0];
             if (sideName) sideName.innerText = data.name || email.split('@')[0];
-            if (sideEmail) sideEmail.innerText = data.email;
+            
+            const firstChar = data.name ? data.name.charAt(0).toUpperCase() : email.charAt(0).toUpperCase();
             if (data.profilePictureUrl) {
                 const avatarUrl = `${baseUrl}${data.profilePictureUrl}`;
                 if (navAvatar) { navAvatar.innerText = ""; navAvatar.style.backgroundImage = `url('${avatarUrl}')`; navAvatar.style.backgroundSize = "cover"; }
                 if (sideAvatar) { sideAvatar.innerText = ""; sideAvatar.style.backgroundImage = `url('${avatarUrl}')`; sideAvatar.style.backgroundSize = "cover"; }
+            } else {
+                if (navAvatar) navAvatar.innerText = firstChar;
+                if (sideAvatar) sideAvatar.innerText = firstChar;
             }
         }
 
