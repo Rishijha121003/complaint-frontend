@@ -212,17 +212,29 @@ body {
         transform: translateY(0);
     }
 }
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.brand-text,
-.btn,
-.btn-premium {
+h1, h2, h3, h4, h5, h6, .btn, .btn-premium {
     font-family: 'Outfit', sans-serif;
+}
+
+.brand-text {
+    font-family: 'Outfit', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1.5px;
+    margin-left: -18px;
+}
+
+.logo-image {
+    height: 72px;
+    width: auto;
+    flex-shrink: 0;
+    filter: drop-shadow(0px 0px 20px rgba(0, 198, 255, 0.4));
+    transform: translateX(12px) translateY(-4px);
+    transition: all 0.3s ease;
 }
 
 a {
@@ -2583,8 +2595,40 @@ textarea.auth-input {
     }
 
     .navbar {
-        height: 60px;
-        padding: 0 5%;
+        height: 72px;
+        padding: 0 !important;
+        display: flex;
+        align-items: center;
+    }
+
+    .navbar .content {
+        padding: 0 4px !important; /* Extreme push to edge */
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        width: 100% !important;
+        max-width: 100%;
+    }
+
+    .navbar .logo {
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+    }
+
+    .navbar .logo-image {
+        height: 48px !important;
+        transform: translateY(-2px) !important;
+        margin-left: -14px !important; /* Absolute push to left edge */
+    }
+
+    .navbar .brand-text {
+        font-size: 22px !important;
+        margin-left: -20px !important; /* Tight overlap for side-alignment */
+    }
+
+    .mobile-toggle {
+        padding-right: 0 !important;
+        margin-right: 12px !important; /* Brought back slightly from the absolute edge */
     }
 
     .mobile-only {
